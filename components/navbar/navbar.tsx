@@ -27,7 +27,7 @@ const Navbar = () => {
         <IoFootstepsSharp className=" text-4xl" />
       </div>
 
-      <div className="grid grid-flow-col items-center  gap-10 text-lg">
+      <div className="  hidden md:grid grid-flow-col items-center  gap-10 text-lg">
         <a href="#about" className="hover:underline text-white font-bold  ">
           About
         </a>
