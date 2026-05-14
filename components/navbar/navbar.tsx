@@ -36,7 +36,7 @@ const Navbar = () => {
         </a>
         <a
           href="/users"
-          className="border-[#c9a84c] cursor-pointer border px-10 text-white font-bold py-3 rounded-lg"
+          className="border-[#c9a84c] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-10 text-white font-bold py-3 rounded-lg"
         >
           Get Started
         </a>

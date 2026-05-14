@@ -2,8 +2,8 @@ import React from "react";
 
 const LandingPage = () => {
   return (
-    <section className="grid  py-20 lg:px-20">
-      <h1 className=" text-xl font-bold font-playfair-display text-[#3fbcaa]">
+    <section className="grid  py-16 lg:px-20">
+      <h1 className=" text-xl font-bold font-playfair-display md:mt-30 text-[#3fbcaa]">
         <hr className="border-t border-[#3fbcaa] inline-block w-10 mb-1.5" />{" "}
         Permanent Voter's Card Action Movement
       </h1>
