@@ -10,6 +10,9 @@ const Objective = () => {
             key={index}
             className="bg-[#1a3321b3] shadow-2xl rounded-lg  p-6 mb-6"
           >
+            {/* <span className="text-4xl text-white mb-4 grid justify-center">
+              {React.createElement(item.icon)}
+            </span> */}
             <h2 className="text-2xl text-[#c9a84c] text-center  w-11/12 mx-auto font-bold mb-4">
               {item.title}
             </h2>

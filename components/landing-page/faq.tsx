@@ -37,11 +37,6 @@ const Faq = () => {
                 {showFaq === id && (
                   <div>
                     <p className="text-white opacity-100 ">{answer}</p>
-                    {/* <ul className="grid pt-2 text-white opacity-100 list-disc list-inside">
-                      <li className="text-white opacity-100 ">{slot1}</li>
-                      <li className="text-white opacity-100 ">{slot2}</li>
-                      <li className="text-white opacity-100 ">{slot3}</li>
-                    </ul> */}
                   </div>
                 )}
               </div>
