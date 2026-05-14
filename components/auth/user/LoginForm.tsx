@@ -18,7 +18,7 @@ function LoginForm() {
   return (
     <section className="space-y-4">
       <header className="w-full text-black">
-        <h2 className="text-2xl font-semibold font-Montserrat text-[#10200e]">
+        <h2 className="text-2xl font-semibold font-playfair-display text-[#10200e]">
           Login to PVC Waka
         </h2>
         <p>

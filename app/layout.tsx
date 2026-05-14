@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Montserrat, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  display: 'swap', // Prevents layout shift
+  variable: '--font-playfair-display', // Useful for Tailwind
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  display: 'swap', // Prevents layout shift
+  variable: '--font-montserrat',
+})
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${playfairDisplay.variable} ${montserrat.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
