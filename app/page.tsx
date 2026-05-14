@@ -1,3 +1,4 @@
+import Footer from "@/components/footer/footer";
 import Connect from "@/components/landing-page/connect";
 import Faq from "@/components/landing-page/faq";
 import LandingPage from "@/components/landing-page/home";
@@ -13,6 +14,7 @@ export default function Home() {
       <Objective />
       <Connect />
       <Faq />
+      <Footer />
     </div>
   );
 }
