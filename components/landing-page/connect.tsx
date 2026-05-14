@@ -2,8 +2,9 @@ import React from "react";
 
 const Connect = () => {
   return (
-    <section className="py-10 lg:px-20 text-white px-6 text-center">
-      <h2 className="text-3xl font-bold mb-4 text-[#3fbcaa]">
+    <section className="py-20 lg:px-20 text-white px-6 text-center">
+      <h2 className="text-3xl font-bold mb-4 font-playfair-display text-[#3fbcaa]">
+        <hr className="border-t border-[#3fbcaa] inline-block w-10 mb-2" />
         Connect with ABENOL Foundation
       </h2>
       <p className="mt-4 mb-6">
@@ -11,7 +12,7 @@ const Connect = () => {
         visit our official website:
       </p>
       <a
-        className=" bg-[#3fbcaa] px-7 py-3 rounded-2xl text-white  hover:bg-blue-600"
+        className=" bg-[#c9a84c]  px-7 py-4 font-bold rounded-xl text-white  hover:bg-[#a58a3a]"
         href="https://www.abenolfoundation.org/"
         target="_blank"
         rel="noopener noreferrer"

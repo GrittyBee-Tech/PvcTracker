@@ -13,13 +13,13 @@ const Objective = () => {
             <span className="text-4xl text-white mb-4 grid justify-center">
               <item.icon />
             </span>
-            <h2 className="text-2xl text-[#c9a84c] text-center  w-11/12 mx-auto font-bold mb-4">
+            <h2 className="text-2xl text-[#c9a84c] text-center mt-3  w-11/12 mx-auto font-bold mb-4">
               {item.title}
             </h2>
-            <p className="text-white text-center">{item.description}</p>
+            <p className="text-white  text-center h-50">{item.description}</p>
 
             <button className="bg-[#c9a84c] grid  justify-center w-60 hover:bg-[#a58a3a] mx-auto text-white font-bold py-2 px-4 rounded-lg mt-4">
-              Learn More
+              {item.btntext}
             </button>
           </div>
         ))}

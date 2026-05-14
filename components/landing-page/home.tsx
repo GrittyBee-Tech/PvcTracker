@@ -14,7 +14,7 @@ const LandingPage = () => {
       <h5 className="text-md text-gray-400 mt-3">
         Join the Movement for Electoral Reform
       </h5>
-      <p className="text-md text-gray-400 md:w-7/12 font-playfair-display mt-3">
+      <p className="text-md text-gray-400 md:w-7/12 mt-3">
         Millions of eligible Nigerian voters remain unregistered or have
         uncollected PVCs due to lack of awareness, difficulty locating INEC
         centres, and fragmented grassroots mobilisation efforts.
