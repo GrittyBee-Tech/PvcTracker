@@ -2,11 +2,11 @@ import UserModel from "@/models/user";
 
 type CreateUserRequestData = {
   email: string;
-  first_name: string;
-  last_name: string;
-  date_of_birth: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
   gender: string;
-  phone_number: string;
+  phoneNumber: string;
 };
 
 export async function createUser(userData: CreateUserRequestData) {

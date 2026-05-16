@@ -4,11 +4,11 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IUser extends Document {
   //   externalAuthId?: string; // For third-party auth (Clerk, Auth0, NextAuth)
   email: string;
-  first_name: string;
-  last_name: string;
-  date_of_birth: Date;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: Date;
   gender: string;
-  phone_number: string;
+  phoneNumber: string;
   role: "user" | "admin" | "volunteer"; // Example roles
   nin?: string; // National Identification Number
   emailVerified: boolean;
@@ -20,17 +20,17 @@ export interface IUser extends Document {
 const UserSchema: Schema<IUser> = new Schema(
   {
     email: { type: String, required: true, unique: true },
-    first_name: { type: String, required: true },
-    last_name: { type: String, required: true },
-    date_of_birth: { type: Date, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    dateOfBirth: { type: Date, required: true },
     gender: { type: String, required: true, enum: ["male", "female"] },
-    phone_number: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
     role: {
       type: String,
       enum: ["user", "admin", "volunteer"],
       default: "user",
     },
-    nin: { type: String, unique: true },
+    nin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
     emailVerified: { type: Boolean, default: false },
     ninVerified: { type: Boolean, default: false },
   },
@@ -38,6 +38,7 @@ const UserSchema: Schema<IUser> = new Schema(
 ); // Automatically manage createdAt and updatedAt fields
 
 // 3. Export the model, preventing duplicate compilation errors during Next.js hot-reloads
-const UserModel: Model<IUser> = mongoose.model<IUser>("User", UserSchema);
+const UserModel: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
 
 export default UserModel;
