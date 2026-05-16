@@ -1,5 +1,6 @@
 import bg from "@/public/auth-bg.png";
 import Image from "next/image";
+import { IoArrowUndo, IoFootstepsSharp } from "react-icons/io5";
 
 export default function AuthLayout({
   children,
@@ -7,16 +8,23 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div
-      className="flex justify-center items-center w-full md:h-screen bg-linear-to-br hero-bg"
-    >
+    <div className="flex justify-center items-center w-full md:h-screen bg-linear-to-br hero-bg">
       <div
         className="w-11/12 sm:w-4/5 md:w-2/3 max-w-4xl p-6 sm:p-8 lg:p-12 bg-white rounded-lg flex flex-col"
         style={{ boxShadow: "1px 5px 14px 0px #0000001A" }}
       >
-        <h1 className="text-4xl font-extrabold text-[#10200e]/80 text-center">
-          PVC Waka Logo
-        </h1>
+        <a
+          href="/"
+          className="grid grid-flow-col items-center w-max gap-2 cursor-pointer text-[#10200e]/80"
+        >
+          <IoArrowUndo />
+          <p className="text-lg font-bold">Back</p>
+        </a>
+        <div className=" grid grid-flow-col mt-5 w-max mx-auto text-4xl font-extrabold text-[#10200e]/80 text-center">
+          <h1 className="text-3xl">PVC WAKA</h1>
+          <IoFootstepsSharp className=" text-4xl" />
+        </div>
+
         {children}
       </div>
     </div>

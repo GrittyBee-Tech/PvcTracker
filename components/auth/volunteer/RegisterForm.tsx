@@ -85,7 +85,7 @@ const RegisterForm = () => {
           value={signupDetails.email}
         />
         <div className="col-span-2 flex">
-          <button className="bg-[#10200e] text-white py-2 rounded mt-4 w-1/2 mx-auto font-medium cursor-pointer">
+          <button className="bg-[#10200e] hover:bg-[#10200e]/80 text-white py-2 rounded mt-4 w-1/2 mx-auto font-medium cursor-pointer">
             Create Account
           </button>
         </div>

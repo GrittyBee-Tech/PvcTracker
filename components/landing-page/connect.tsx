@@ -3,7 +3,7 @@ import React from "react";
 const Connect = () => {
   return (
     <section className="py-20 lg:px-20 text-white px-6 text-center">
-      <h2 className="text-3xl font-bold mb-4 font-playfair-display text-[#3fbcaa]">
+      <h2 className="md:text-3xl font-bold mb-4 font-playfair-display text-[#3fbcaa]">
         <hr className="border-t border-[#3fbcaa] inline-block w-10 mb-2" />
         Connect with ABENOL Foundation
       </h2>
