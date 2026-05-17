@@ -21,6 +21,19 @@ const RegisterForm = () => {
     });
   };
 
+  const handleSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    console.log(signupDetails);
+
+    await fetch("/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(signupDetails),
+    });
+  };
+
   return (
     <section className="space-y-4">
       <header className="w-full text-black">
@@ -32,7 +45,10 @@ const RegisterForm = () => {
           amet nec donec sit. Orci.
         </p>
       </header>
-      <form className="grid md:grid-cols-2 gap-x-4 gap-y-5">
+      <form
+        className="grid md:grid-cols-2 gap-x-4 gap-y-5"
+        onSubmit={handleSubmit}
+      >
         <InputGroup
           label="First Name"
           name="firstName"
