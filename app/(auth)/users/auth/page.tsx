@@ -2,6 +2,7 @@
 
 import LoginForm from "@/components/auth/user/LoginForm";
 import RegisterForm from "@/components/auth/user/RegisterForm";
+import Logo from "@/components/ui/Logo";
 import { useState } from "react";
 
 export default function UserAuth() {
@@ -10,15 +11,8 @@ export default function UserAuth() {
     <div className="min-h-screen relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hero-grid absolute inset-0 z-0"></div>
       <div className="hero-bg absolute inset-0 z-0"></div>
-      <div className="sm:mx-auto sm:w-full sm:max-w-lg relative z-10">
-        <div className="flex justify-center">
-            <div className="w-10 h-10 rounded bg-linear-to-br from-green-400 to-green-600 flex items-center justify-center font-bold text-[#10200e] text-2xl">
-                P
-            </div>
-        </div>
-        <h2 className="mt-2 text-center text-3xl font-extrabold text-white font-playfair-display">
-          PVC WAKA
-        </h2>
+      <div className="sm:mx-auto w-fit">
+        <Logo />
       </div>
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-xl relative z-10 overflow-clip">
