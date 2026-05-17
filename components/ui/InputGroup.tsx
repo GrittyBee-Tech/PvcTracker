@@ -7,6 +7,8 @@ const InputGroup = ({
   placeholder,
   value,
   onChange,
+  labelClassName = "text-[#10200e]",
+  inputClassName = "text-[#10200e] border-[#10200e]/50",
 }: {
   name: string;
   label: string;
@@ -14,12 +16,14 @@ const InputGroup = ({
   value: string;
   onChange: (field: string, value: string) => void;
   placeholder: string;
+  labelClassName?: string;
+  inputClassName?: string;
 }) => {
   return (
     <div>
       <label
         htmlFor={name}
-        className="text-[#10200e] font-Montserrat font-semibold text-sm"
+        className={`font-Montserrat font-semibold text-sm ${labelClassName}`}
       >
         {label}
       </label>
@@ -29,7 +33,7 @@ const InputGroup = ({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.id, e.target.value)}
-        className="w-full mt-1.5 p-2 text-[#10200e] text-sm font-Montserrat font-medium border border-[#10200e]/50 outline-none rounded-lg"
+        className={`w-full mt-1.5 p-2 text-sm font-Montserrat font-medium border outline-none rounded-lg ${inputClassName}`}
       />
     </div>
   );

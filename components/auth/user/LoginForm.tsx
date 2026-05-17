@@ -8,8 +8,6 @@ function LoginForm() {
   });
 
   const handleChange = (field: string, value: string) => {
-    const newObject = { ...loginDetails, [field]: value };
-    console.log(newObject);
     setloginDetails({
       ...loginDetails,
       [field]: value,
@@ -17,13 +15,12 @@ function LoginForm() {
   };
   return (
     <section className="space-y-4">
-      <header className="w-full text-black">
-        <h2 className="text-2xl font-semibold font-playfair-display text-[#10200e]">
+      <header className="w-full text-white">
+        <h2 className="text-2xl font-semibold font-playfair-display text-green-400">
           Login to PVC Waka
         </h2>
-        <p>
-          Lorem ipsum dolor sit amet consectetur. Sagittis ullaper ante metus
-          amet nec donec sit. Orci.
+        <p className="text-white/70">
+          Enter your credentials to access your account.
         </p>
       </header>
       <form className="flex flex-col gap-x-4 gap-y-5">
@@ -34,6 +31,8 @@ function LoginForm() {
           placeholder="Enter your email address"
           type="email"
           value={loginDetails.email}
+          labelClassName="text-white/80"
+          inputClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
         />
         <InputGroup
           label="Password"
@@ -42,8 +41,10 @@ function LoginForm() {
           placeholder="********"
           type="password"
           value={loginDetails.password}
+          labelClassName="text-white/80"
+          inputClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
         />
-        <button className="w-full bg-[#10200e] text-white py-2 rounded mt-4">
+        <button className="w-full bg-green-600 text-white py-3 rounded-lg mt-4 font-medium hover:bg-green-700 transition-colors">
           Login
         </button>
       </form>

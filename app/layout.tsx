@@ -30,7 +30,7 @@ export default function RootLayout({
       lang="en"
       className={`${playfairDisplay.variable} ${montserrat.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="">{children}</body>
     </html>
   );
 }
