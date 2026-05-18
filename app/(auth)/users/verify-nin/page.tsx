@@ -6,7 +6,7 @@ export default function UserSetupPage() {
     <div className="min-h-screen relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hero-grid absolute inset-0 z-0"></div>
       <div className="hero-bg absolute inset-0 z-0"></div>
-            <div className="sm:mx-auto w-fit">
+      <div className="sm:mx-auto w-fit">
         <Logo />
       </div>
 

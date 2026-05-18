@@ -33,9 +33,10 @@ body {
 }
 
 .hero-grid {
-  position: absolute;
+  height: 100vh;
+  position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -10;
   background-image:
     linear-gradient(rgba(90, 171, 110, 0.3) 1px, transparent 1px),
     linear-gradient(90deg, rgba(90, 171, 110, 0.3) 1px, transparent 1px);
@@ -49,6 +50,10 @@ body {
 }
 
 .hero-bg {
+  height: 100vh;
+  position: fixed;
+  z-index: -10;
+  inset: 0;
   background:
     radial-gradient(
       ellipse 90% 70% at 90% 80%,

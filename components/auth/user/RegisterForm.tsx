@@ -3,7 +3,7 @@ import Select from "@/components/ui/Select";
 import { useState } from "react";
 import Link from "next/link";
 
-const RegisterForm = () => {
+const RegisterForm = ({ role }: { role: string }) => {
   const [signupDetails, setSignupDetails] = useState({
     firstName: "",
     lastName: "",
@@ -91,7 +91,8 @@ const RegisterForm = () => {
     <section className="space-y-4">
       <header className="w-full text-white">
         <h2 className="text-2xl font-semibold font-Montserrat text-green-400">
-          Register to PVC Waka as a User
+          Register to PVC Waka as a{" "}
+          {role === "volunteer" ? "Volunteer" : "User"}
         </h2>
         <p className="text-white/70">
           Join the movement and register for your Permanent Voter Card.
