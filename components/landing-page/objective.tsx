@@ -7,15 +7,17 @@ const Objective = () => {
         {OBJECTIVE_SCHEMA.map((item, index) => (
           <div
             key={index}
-            className="bg-[#1a3321b3] shadow-2xl rounded-lg p-6 max-h-112 flex flex-col justify-between"
+            className="bg-[#1a3321b3] group  hover:bg-white  shadow-2xl rounded-lg p-6 max-h-112 flex flex-col justify-between"
           >
-            <span className="text-4xl text-white mb-4 grid justify-center">
+            <span className="text-4xl group-hover:text-black text-white mb-4 grid justify-center">
               <item.icon />
             </span>
             <h2 className="md:text-2xl text-[#c9a84c] text-center mt-3  w-11/12 mx-auto font-bold mb-4">
               {item.title}
             </h2>
-            <p className="text-white  text-center h-50">{item.description}</p>
+            <p className="text-white  group-hover:text-black text-center h-50">
+              {item.description}
+            </p>
 
             <a
               href={item.btnLink}
