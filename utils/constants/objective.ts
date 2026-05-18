@@ -36,6 +36,6 @@ export const OBJECTIVE_SCHEMA: ObjectiveType[] = [
     description:
       "We Hold INEC Accountable for You. Our platform allows you to monitor your PVC registration progress. If you face any delays or issues, you can report them easily. We track your case and escalate it to INEC, ensuring your concerns are not ignored and that you get the support you need.",
     btntext: "Report Issue",
-    btnLink: "/",
+    btnLink: "/contact",
   },
 ];
