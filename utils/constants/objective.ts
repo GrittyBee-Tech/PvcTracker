@@ -19,8 +19,8 @@ export const OBJECTIVE_SCHEMA: ObjectiveType[] = [
     icon: BsFillGlobeAmericasFill as IconType,
     description:
       " As a Nigerian citizen, you can now easily check your PVC registration and collection status online. Our platform gives you accurate location info, helps you find INEC centers in your local government area, and lets you track your registration progress",
-    btntext: "Learn More",
-    btnLink: "/users/auth?role=user",
+    btntext: "Join as User",
+    btnLink: "/users",
   },
   {
     title: "Become a PVC WAKA Volunteer, Make a Difference.",
