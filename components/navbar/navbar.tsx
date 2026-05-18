@@ -30,7 +30,7 @@ const Navbar = () => {
           <a href="/about" className="hover:underline text-white font-bold  ">
             About
           </a>
-          <a href="#contact" className="hover:underline text-white font-bold ">
+          <a href="/contact" className="hover:underline text-white font-bold ">
             Contact
           </a>
           <a
@@ -45,7 +45,7 @@ const Navbar = () => {
       {/* Navbar mobile */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 backdrop-blur-lg shadow-primary/40 shadow border-t border-t-[#10200e] z-50">
         <div className="flex justify-between items-center w-full px-8 py-3">
-         <Logo />
+          <Logo />
 
           <a
             href="/about"
@@ -54,7 +54,7 @@ const Navbar = () => {
             About
           </a>
           <a
-            href="#contact"
+            href="/contact"
             className="hover:underline text-white font-bold text-lg"
           >
             Contact
