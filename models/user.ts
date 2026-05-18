@@ -9,10 +9,12 @@ export interface IUser extends Document {
   dateOfBirth: Date;
   gender: string;
   phoneNumber: string;
+  isActive: boolean;
   role: "user" | "admin" | "volunteer"; // Example roles
   nin?: string; // National Identification Number
   emailVerified: boolean;
   ninVerified: boolean;
+  password?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -30,12 +32,14 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: ["user", "admin", "volunteer"],
       default: "user",
     },
+    isActive: { type: Boolean, default: true },
     nin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
     emailVerified: { type: Boolean, default: false },
     ninVerified: { type: Boolean, default: false },
+    password: { type: String, required: true, select: false },
   },
   { timestamps: true },
-); // Automatically manage createdAt and updatedAt fields
+);
 
 // 3. Export the model, preventing duplicate compilation errors during Next.js hot-reloads
 const UserModel: Model<IUser> =

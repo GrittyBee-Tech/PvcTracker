@@ -12,7 +12,9 @@ const RegisterForm = () => {
     email: "",
     phoneNumber: "",
   });
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const handleChange = (field: string, value: string) => {
     setSignupDetails({
@@ -21,12 +23,12 @@ const RegisterForm = () => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setStatus("loading");
 
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,19 +50,38 @@ const RegisterForm = () => {
     return (
       <div className="text-center space-y-4 py-12 px-4">
         <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          <svg
+            className="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            />
           </svg>
         </div>
-        <h3 className="text-2xl font-semibold text-green-400 font-Montserrat">Check your email</h3>
+        <h3 className="text-2xl font-semibold text-green-400 font-Montserrat">
+          Check your email
+        </h3>
         <p className="text-white/70">
-          We've sent a verification link to <span className="font-semibold text-green-400">{signupDetails.email}</span>. 
-          Please check your inbox and click the link to set your password and verify your NIN.
+          We've sent a verification link to{" "}
+          <span className="font-semibold text-green-400">
+            {signupDetails.email}
+          </span>
+          . Please check your inbox and click the link to set your password and
+          verify your NIN.
         </p>
         <div className="pt-6">
-           <Link href="/users/verify-nin" className="text-green-400 hover:underline font-medium">
-             (Demo: Click here to simulate email link)
-           </Link>
+          <Link
+            href="/users/verify-nin"
+            className="text-green-400 hover:underline font-medium"
+          >
+            (Demo: Click here to simulate email link)
+          </Link>
         </div>
       </div>
     );
@@ -144,7 +165,7 @@ const RegisterForm = () => {
           inputClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
         />
         <div className="col-span-2 flex">
-          <button 
+          <button
             disabled={status === "loading"}
             className="bg-green-600 text-white py-3 rounded-lg mt-4 w-1/2 mx-auto font-medium hover:bg-green-700 transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
           >
