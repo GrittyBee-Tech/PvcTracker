@@ -14,7 +14,6 @@ export default function Home() {
       <Objective />
       <Connect />
       <Faq />
-      <Footer />
     </div>
   );
 }
