@@ -20,7 +20,7 @@ export const OBJECTIVE_SCHEMA: ObjectiveType[] = [
     description:
       " As a Nigerian citizen, you can now easily check your PVC registration and collection status online. Our platform gives you accurate location info, helps you find INEC centers in your local government area, and lets you track your registration progress",
     btntext: "Learn More",
-    btnLink: "/users",
+    btnLink: "/users/auth?role=user",
   },
   {
     title: "Become a PVC WAKA Volunteer, Make a Difference.",
@@ -28,7 +28,7 @@ export const OBJECTIVE_SCHEMA: ObjectiveType[] = [
     description:
       " Join us as a community volunteer and help guide fellow Nigerians through the PVC registration process. Empower others, provide critical support, and track multiple users under your account—so together, we can ensure no one is left behind.",
     btntext: "Join as Volunteer",
-    btnLink: "/volunteers",
+    btnLink: "/users/auth?role=volunteer",
   },
   {
     title: "Track and Escalate PVC Delays, Demand Accountability.",

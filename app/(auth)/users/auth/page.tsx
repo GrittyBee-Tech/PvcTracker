@@ -3,10 +3,14 @@
 import LoginForm from "@/components/auth/user/LoginForm";
 import RegisterForm from "@/components/auth/user/RegisterForm";
 import Logo from "@/components/ui/Logo";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
-export default function UserAuth() {
+function AuthPortalContent() {
   const [activeTab, setActiveTab] = useState<"login" | "register">("register");
+  const searchParams = useSearchParams();
+  const role = searchParams.get("role") || "user";
+
   return (
     <div className="min-h-screen relative flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden">
       <div className="hero-grid absolute inset-0 z-0"></div>
@@ -41,9 +45,27 @@ export default function UserAuth() {
           </nav>
 
           {/* Tab Content */}
-          <div>{activeTab === "login" ? <LoginForm /> : <RegisterForm />}</div>
+          <div>
+            {activeTab === "login" ? (
+              <LoginForm />
+            ) : (
+              <RegisterForm role={role} />
+            )}
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function UserAuth() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-center">Loading authentication portal...</div>
+      }
+    >
+      <AuthPortalContent />
+    </Suspense>
   );
 }
