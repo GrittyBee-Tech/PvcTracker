@@ -87,7 +87,7 @@ const SetupForm = () => {
         <h2 className="text-2xl font-semibold font-Montserrat text-[#10200e]">
           Complete Your Registration
         </h2>
-        <p className="text-gray-600 mt-2 text-sm leading-relaxed">
+        <p className="text-black mt-2 text-sm leading-relaxed">
           Set a secure password and provide your National Identification Number
           (NIN) to verify your identity.
         </p>

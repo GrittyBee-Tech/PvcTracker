@@ -39,7 +39,7 @@ export default function AdminDashboard({
               <input
                 type="text"
                 placeholder="Search..."
-                className="bg-[#152b12] border border-green-900/50 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:border-green-500/50 text-green-100 placeholder:text-green-100/30 w-64 transition-all"
+                className="bg-card border border-green-900/50 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:border-green-500/50 text-green-100 placeholder:text-green-100/30 w-64 transition-all"
               />
             </div>
           </div>

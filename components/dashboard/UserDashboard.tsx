@@ -22,6 +22,7 @@ export default function UserDashboard({
           </div>
           <UserSideNav />
         </div>
+
         <div className="p-4 border-t border-green-900/30 text-xs text-green-600/60 flex items-center justify-between">
           <span>User Portal</span>
           <span>v1.0</span>
