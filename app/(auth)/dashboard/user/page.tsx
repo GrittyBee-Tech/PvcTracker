@@ -20,14 +20,16 @@ export default async function UserDashboardPage() {
           text: "Verified",
           icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
           colorClass: "text-green-400",
-          description: "Your National Identification Number has been successfully verified.",
+          description:
+            "Your National Identification Number has been successfully verified.",
         };
       case "Rejected":
         return {
           text: "Rejected",
           icon: <Clock className="w-5 h-5 text-red-500" />,
           colorClass: "text-red-400",
-          description: "Your NIN verification was rejected. Please check your profile for details.",
+          description:
+            "Your NIN verification was rejected. Please check your profile for details.",
         };
       case "Pending Verification":
       default:
@@ -35,7 +37,8 @@ export default async function UserDashboardPage() {
           text: "Pending Verification",
           icon: <Clock className="w-5 h-5 text-yellow-500" />,
           colorClass: "text-yellow-400",
-          description: "Your National Identification Number is being processed.",
+          description:
+            "Your National Identification Number is being processed.",
         };
     }
   };
@@ -47,7 +50,8 @@ export default async function UserDashboardPage() {
           text: "Collected",
           icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
           colorClass: "text-green-400",
-          description: "You have successfully collected your Permanent Voter Card.",
+          description:
+            "You have successfully collected your Permanent Voter Card.",
         };
       case "Pending":
         return {
@@ -74,9 +78,12 @@ export default async function UserDashboardPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Welcome, {user.name}!</h1>
+          <h1 className="text-3xl font-bold text-white">
+            Welcome, {user.name}!
+          </h1>
           <p className="text-muted-foreground mt-1">
-            Here's a quick overview of your PVC WAKA journey and important actions.
+            Here's a quick overview of your PVC WAKA journey and important
+            actions.
           </p>
         </div>
         {/* Potentially add a quick action button here, e.g., "Update Profile" */}
@@ -86,11 +93,15 @@ export default async function UserDashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white/70">NIN Verification</CardTitle>
+            <CardTitle className="text-sm font-medium text-white/70">
+              NIN Verification
+            </CardTitle>
             {ninDisplay.icon}
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${ninDisplay.colorClass}`}>{ninDisplay.text}</div>
+            <div className={`text-2xl font-bold ${ninDisplay.colorClass}`}>
+              {ninDisplay.text}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">
               {ninDisplay.description}
             </p>
@@ -98,11 +109,15 @@ export default async function UserDashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white/70">PVC Collection</CardTitle>
+            <CardTitle className="text-sm font-medium text-white/70">
+              PVC Collection
+            </CardTitle>
             {pvcDisplay.icon}
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${pvcDisplay.colorClass}`}>{pvcDisplay.text}</div>
+            <div className={`text-2xl font-bold ${pvcDisplay.colorClass}`}>
+              {pvcDisplay.text}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">
               {pvcDisplay.description}
             </p>
@@ -110,11 +125,15 @@ export default async function UserDashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white/70">Registered By</CardTitle>
+            <CardTitle className="text-sm font-medium text-white/70">
+              Registered By
+            </CardTitle>
             <User className="w-5 h-5 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{user.registeredBy}</div>
+            <div className="text-2xl font-bold text-white">
+              {user.registeredBy}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">
               You registered yourself on the platform.
             </p>
@@ -128,11 +147,15 @@ export default async function UserDashboardPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium text-white/70">Find INEC Centre</CardTitle>
+              <CardTitle className="text-base font-medium text-white/70">
+                Find INEC Centre
+              </CardTitle>
               <MapPin className="w-5 h-5 text-green-500" />
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">Locate the nearest registration or collection center.</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                Locate the nearest registration or collection center.
+              </p>
               <Link href="/dashboard/user/find-centre" passHref>
                 <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
                   Go to Centre Finder
@@ -142,11 +165,15 @@ export default async function UserDashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium text-white/70">Update Profile</CardTitle>
+              <CardTitle className="text-base font-medium text-white/70">
+                Update Profile
+              </CardTitle>
               <Pencil className="w-5 h-5 text-green-500" />
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">Edit your personal details or PVC information.</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                Edit your personal details or PVC information.
+              </p>
               <Link href="/dashboard/user/profile" passHref>
                 <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
                   Edit Profile

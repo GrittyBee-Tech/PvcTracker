@@ -20,22 +20,28 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`hidden md:grid grid-flow-col lg:px-20 border-b border-b-[#ffffff] bg-[#10200e] items-center justify-between p-6 fixed top-0 w-full ${
-          isScrolled ? "backdrop-blur-sm shadow-2xl" : ""
+        className={`hidden md:grid grid-flow-col lg:px-20 border-b border-b-[#ffffff] bg-[#F9FDFA] items-center justify-between py-3 fixed top-0 w-full ${
+          isScrolled ? "backdrop-blur-sm shadow-primary/40" : ""
         }`}
       >
         <Logo />
 
         <div className="  hidden md:grid grid-flow-col items-center  gap-10 text-lg">
-          <a href="/about" className="hover:underline text-white font-bold  ">
+          <a
+            href="/about"
+            className="hover:underline font-dm-sans text-[#5C675D] font-bold  "
+          >
             About
           </a>
-          <a href="/contact" className="hover:underline text-white font-bold ">
+          <a
+            href="/contact"
+            className="hover:underline font-dm-sans text-[#5C675D] font-bold "
+          >
             Contact
           </a>
           <a
             href="/users/auth"
-            className="border-[#c9a84c] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-10 text-white font-bold py-3 rounded-lg"
+            className="border-[#DDE3DE] font-dm-sans text-[#0A140F] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-10 bg-[#F9FDFA]  font-bold py-2 rounded-lg"
           >
             Get Started
           </a>
@@ -61,7 +67,7 @@ const Navbar = () => {
           </a>
           <a
             href="/users/auth"
-            className="border-[#c9a84c] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-6 py-1.5 text-white font-bold rounded-lg"
+            className="border-[#DDE3DE]  hover:text-white cursor-pointer border px-6 py-1.5 text-white font-bold rounded-lg"
           >
             Get Started
           </a>

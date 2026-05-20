@@ -8,7 +8,7 @@ export default function UserDashboard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-[#0a1208] text-white font-sans">
+    <div className="flex min-h-screen bg-white text-white font-sans">
       {/* Sidebar */}
       <aside className="w-64 bg-[#10200e] border-r border-green-900/30 hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-green-900/30">

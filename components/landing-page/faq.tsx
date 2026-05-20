@@ -14,7 +14,7 @@ const Faq = () => {
   return (
     <section className=" pt-2 pb-12 px-4 sm:px-6 lg:px-20 py-20 lg:pt-3">
       <div className="grid justify-items-center ">
-        <p className="text-2xl mx-auto md:text-4xl font-bold  font-playfair-display bg-clip-text text-[#3fbcaa] mb-6">
+        <p className="text-2xl mx-auto md:text-4xl font-bold  font-space-grotesk bg-clip-text text-[#3fbcaa] mb-6">
           Frequently asked questions
         </p>
         <div className="grid w-full  gap-3 ">
@@ -23,21 +23,23 @@ const Faq = () => {
             return (
               <div key={id} className=" grid  p-4">
                 <div className="grid grid-flow-col justify-between">
-                  <p className="text-md  md:text-xl  bg-clip-text  font-bold text-white mb-2">
+                  <p className="text-md font-space-grotesk  md:text-xl  bg-clip-text  font-bold text-black mb-2">
                     {question}
                   </p>
                   <span onClick={() => toggleFaq(id)}>
                     {showFaq === id ? (
-                      <BsFillNodePlusFill className="text-white" />
+                      <BsFillNodePlusFill className="text-black" />
                     ) : (
-                      <BsFillNodeMinusFill className="text-white" />
+                      <BsFillNodeMinusFill className="text-black" />
                     )}
                   </span>
                 </div>
 
                 {showFaq === id && (
                   <div>
-                    <p className="text-white opacity-100 ">{answer}</p>
+                    <p className="text-black font-dm-sans opacity-100 ">
+                      {answer}
+                    </p>
                   </div>
                 )}
                 <hr className="border-t border-gray-600 my-4" />

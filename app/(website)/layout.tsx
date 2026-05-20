@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Montserrat, Playfair_Display } from "next/font/google";
+import {
+  Montserrat,
+  Playfair_Display,
+  DM_Sans,
+  Space_Grotesk,
+} from "next/font/google";
 import "../globals.css";
 
 const playfairDisplay = Playfair_Display({
@@ -7,7 +12,16 @@ const playfairDisplay = Playfair_Display({
   display: "swap", // Prevents layout shift
   variable: "--font-playfair-display", // Useful for Tailwind
 });
-
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  display: "swap", // Prevents layout shift
+  variable: "--font-dm-sans", // Useful for Tailwind
+});
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap", // Prevents layout shift
+  variable: "--font-space-grotesk  ", // Useful for Tailwind
+});
 const montserrat = Montserrat({
   subsets: ["latin"],
   display: "swap", // Prevents layout shift
@@ -29,9 +43,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen">
-      <div className="hero-grid"></div>
-      <div className="hero-bg"></div>
+    <div className="min-h-screen border-b bg-gradient-to-b from-accent/40 to-background ">
+      <div className=""></div>
+      <div className=""></div>
       <div className="">
         <Navbar />
         {children}
