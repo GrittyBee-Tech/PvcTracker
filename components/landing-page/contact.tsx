@@ -197,22 +197,22 @@ const ContactPage = () => {
 
         {/* Additional Info */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-800 rounded-lg p-6 text-center">
+          <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
             <div className="text-3xl mb-2">📧</div>
             <h3 className="text-lg font-semibold text-white mb-2">Email</h3>
-            <p className="text-gray-300 break-all">support@pvcwaka.org</p>
+            <p className="text-white break-all">support@pvcwaka.org</p>
           </div>
-          <div className="bg-slate-800 rounded-lg p-6 text-center">
+          <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
             <div className="text-3xl mb-2">📞</div>
             <h3 className="text-lg font-semibold text-white mb-2">Phone</h3>
-            <p className="text-gray-300">+234 (0) 800 123 4567</p>
+            <p className="text-white">+234 (0) 800 123 4567</p>
           </div>
-          <div className="bg-slate-800 rounded-lg p-6 text-center">
+          <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
             <div className="text-3xl mb-2">⏱️</div>
             <h3 className="text-lg font-semibold text-white mb-2">
               Response Time
             </h3>
-            <p className="text-gray-300">Within 24-48 hours</p>
+            <p className="text-white">Within 24-48 hours</p>
           </div>
         </div>
       </div>
