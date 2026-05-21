@@ -41,7 +41,7 @@ const Navbar = () => {
           </a>
           <a
             href="/users/auth"
-            className="border-[#DDE3DE] font-dm-sans text-[#0A140F] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-10 bg-[#F9FDFA]  font-bold py-2 rounded-lg"
+            className="border-[#DDE3DE] bg-[#4B6F52] font-dm-sans text-[white] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-10  font-bold py-2 rounded-lg"
           >
             Get Started
           </a>

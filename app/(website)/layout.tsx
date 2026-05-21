@@ -43,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen border-b bg-gradient-to-b from-accent/40 to-background ">
+    <div className="min-h-screen border-b bg-linear-to-b from-accent/40 to-background ">
       <div className=""></div>
       <div className=""></div>
       <div className="">

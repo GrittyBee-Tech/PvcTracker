@@ -14,30 +14,30 @@ const Faq = () => {
   return (
     <section className=" pt-2 pb-12 px-4 sm:px-6 lg:px-20 py-20 lg:pt-3">
       <div className="grid justify-items-center ">
-        <p className="text-2xl mx-auto md:text-4xl font-bold  font-space-grotesk bg-clip-text text-[#3fbcaa] mb-6">
+        <p className="text-2xl mx-auto md:text-4xl font-bold  font-space-grotesk bg-clip-text text-[#4B6F52] mb-6">
           Frequently asked questions
         </p>
         <div className="grid w-full  gap-3 ">
           {FAQ_SCHEMA.map((schema) => {
             const { id, question, answer } = schema;
             return (
-              <div key={id} className=" grid  p-4">
+              <div key={id} className=" grid mt-4 ">
                 <div className="grid grid-flow-col justify-between">
-                  <p className="text-md font-space-grotesk  md:text-xl  bg-clip-text  font-bold text-black mb-2">
+                  <p className="text-md font-space-grotesk  md:text-xl  bg-clip-text  font-bold text-[#0A140F] mb-2">
                     {question}
                   </p>
                   <span onClick={() => toggleFaq(id)}>
                     {showFaq === id ? (
-                      <BsFillNodePlusFill className="text-black" />
+                      <BsFillNodePlusFill className="text-[#0A140F]" />
                     ) : (
-                      <BsFillNodeMinusFill className="text-black" />
+                      <BsFillNodeMinusFill className="text-[#0A140F]" />
                     )}
                   </span>
                 </div>
 
                 {showFaq === id && (
                   <div>
-                    <p className="text-black font-dm-sans opacity-100 ">
+                    <p className="text-[#0A140F] font-dm-sans opacity-100 ">
                       {answer}
                     </p>
                   </div>
