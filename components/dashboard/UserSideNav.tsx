@@ -26,7 +26,7 @@ export default function UserSideNav() {
             href={link.href}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
               isActive
-                ? "bg-green-600/20 text-green-400 font-medium border border-green-500/20 shadow-sm"
+                ? "bg-white text-green-400 font-medium border border-green-500/20 shadow-sm"
                 : "text-green-100/70 hover:bg-green-900/40 hover:text-green-100"
             }`}
           >

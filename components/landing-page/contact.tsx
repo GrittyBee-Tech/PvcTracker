@@ -82,10 +82,10 @@ const ContactPage = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h1 className="md:text-5xl text-3xl font-bold font-playfair-display text-gray-100 mb-4">
-            Get in <span className="text-[#c9a84c]">Touch</span>
+          <h1 className="md:text-5xl text-3xl font-bold font-space-grotesk text-black mb-4">
+            Get in Touch
           </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg font-dm-sans text-black max-w-2xl mx-auto">
             We value your feedback and complaints. Please share your concerns
             with us so we can improve our services and address any issues you
             may have encountered.
@@ -100,7 +100,7 @@ const ContactPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-3">
+              <label className="block text-sm font-semibold font-space-grotesk text-slate-700 mb-3">
                 Full Name *
               </label>
               <input
@@ -116,7 +116,7 @@ const ContactPage = () => {
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-3">
+              <label className="block text-sm font-semibold font-space-grotesk   text-slate-700 mb-3">
                 Email Address *
               </label>
               <input
@@ -132,7 +132,7 @@ const ContactPage = () => {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-3">
+              <label className="block text-sm  font-space-grotesk font-semibold text-slate-700 mb-3">
                 Phone Number
               </label>
               <input
@@ -147,7 +147,7 @@ const ContactPage = () => {
 
             {/* Complaint Type */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-3">
+              <label className="block text-sm font-semibold font-space-grotesk text-slate-700 mb-3">
                 Complaint Type *
               </label>
               <select
@@ -197,22 +197,22 @@ const ContactPage = () => {
 
         {/* Additional Info */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-800 rounded-lg p-6 text-center">
+          <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
             <div className="text-3xl mb-2">📧</div>
             <h3 className="text-lg font-semibold text-white mb-2">Email</h3>
-            <p className="text-gray-300 break-all">support@pvcwaka.org</p>
+            <p className="text-white break-all">support@pvcwaka.org</p>
           </div>
-          <div className="bg-slate-800 rounded-lg p-6 text-center">
+          <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
             <div className="text-3xl mb-2">📞</div>
             <h3 className="text-lg font-semibold text-white mb-2">Phone</h3>
-            <p className="text-gray-300">+234 (0) 800 123 4567</p>
+            <p className="text-white">+234 (0) 800 123 4567</p>
           </div>
-          <div className="bg-slate-800 rounded-lg p-6 text-center">
+          <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
             <div className="text-3xl mb-2">⏱️</div>
             <h3 className="text-lg font-semibold text-white mb-2">
               Response Time
             </h3>
-            <p className="text-gray-300">Within 24-48 hours</p>
+            <p className="text-white">Within 24-48 hours</p>
           </div>
         </div>
       </div>

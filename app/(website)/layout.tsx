@@ -7,9 +7,9 @@ export default function WebsiteLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen">
-      <div className="hero-grid"></div>
-      <div className="hero-bg"></div>
+    <div className="min-h-screen border-b bg-linear-to-b from-accent/40 to-background ">
+      <div className=""></div>
+      <div className=""></div>
       <div className="">
         <Navbar />
         {children}
