@@ -2,7 +2,7 @@ import React from "react";
 
 const Connect = () => {
   return (
-    <section className="py-20 lg:px-20 text-white px-6 text-center">
+    <section className="py-20 lg:px-20 text-white px-6 text-center border-b border-border">
       <h2 className="md:text-3xl font-bold mb-4 font-space-grotesk text-[#4B6F52] ">
         <hr className="border-t border-[#4B6F52]  font-space-grotesk  inline-block w-10 mb-2" />
         Connect with ABENOL Foundation

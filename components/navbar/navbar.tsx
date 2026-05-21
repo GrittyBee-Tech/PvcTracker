@@ -20,13 +20,13 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`hidden md:grid grid-flow-col lg:px-20 border-b border-b-[#ffffff] bg-[#F9FDFA] items-center justify-between py-3 fixed top-0 w-full ${
-          isScrolled ? "backdrop-blur-sm shadow-primary/40" : ""
+        className={`hidden md:grid grid-flow-col p-6 lg:px-20 border-b border-border bg-[#F9FDFA] items-center justify-between py-3 fixed top-0 w-full ${
+          isScrolled ? "backdrop-blur-sm" : ""
         }`}
       >
         <Logo />
 
-        <div className="  hidden md:grid grid-flow-col items-center  gap-10 text-lg">
+        <div className="hidden md:grid grid-flow-col items-center  gap-10 text-lg">
           <a
             href="/about"
             className="hover:underline font-dm-sans text-[#5C675D] font-bold  "
@@ -41,7 +41,7 @@ const Navbar = () => {
           </a>
           <a
             href="/users/auth"
-            className="border-[#DDE3DE] bg-[#4B6F52] font-dm-sans text-[white] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-10  font-bold py-2 rounded-lg"
+            className="border-[#DDE3DE] bg-primary font-dm-sans text-[white] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-10  font-bold py-2 rounded-lg"
           >
             Get Started
           </a>
@@ -49,25 +49,19 @@ const Navbar = () => {
       </nav>
 
       {/* Navbar mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 backdrop-blur-lg shadow-primary/40 shadow border-t border-t-[#10200e] z-50">
-        <div className="flex justify-between items-center w-full px-8 py-3">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/20 backdrop-blur-lg border-t border-t-primary z-50">
+        <div className="flex justify-between items-center w-full px-5 py-3">
           <Logo />
 
-          <a
-            href="/about"
-            className="hover:underline text-white font-bold text-lg"
-          >
+          <a href="/about" className="hover:underline text-primary font-bold">
             About
           </a>
-          <a
-            href="/contact"
-            className="hover:underline text-white font-bold text-lg"
-          >
+          <a href="/contact" className="hover:underline text-primary font-bold -ml-4">
             Contact
           </a>
           <a
-            href="/users/auth"
-            className="border-[#DDE3DE]  hover:text-white cursor-pointer border px-6 py-1.5 text-white font-bold rounded-lg"
+            href="/auth/register"
+            className="text-white bg-primary cursor-pointer border px-4 py-1.5 font-semibold rounded-lg"
           >
             Get Started
           </a>
