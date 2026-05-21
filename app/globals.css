@@ -1,35 +1,75 @@
 @import "tailwindcss";
 
 :root {
-  --background: #10200e;
-  --foreground: #171717;
+    --background: oklch(99% .005 150);
+    --foreground: oklch(18% .02 160);
+    --card: oklch(100% 0 0);
+    --card-foreground: oklch(18% .02 160);
+    --popover: oklch(100% 0 0);
+    --popover-foreground: oklch(18% .02 160);
+    --primary: oklch(45% .13 150);
+    --primary-foreground: oklch(99% .005 150);
+    --secondary: oklch(95% .02 150);
+    --secondary-foreground: oklch(25% .05 160);
+    --muted: oklch(96% .01 150);
+    --muted-foreground: oklch(50% .02 160);
+    --accent: oklch(93% .05 150);
+    --accent-foreground: oklch(25% .05 160);
+    --destructive: oklch(58% .22 27);
+    --destructive-foreground: oklch(99% 0 0);
+    --success: oklch(62% .15 150);
+    --success-foreground: oklch(99% 0 0);
+    --warning: oklch(78% .16 80);
+    --warning-foreground: oklch(20% .05 80);
+    --border: oklch(91% .01 150);
+    --input: oklch(91% .01 150);
+    --ring: oklch(45% .13 150);
+    --sidebar: oklch(98% .01 150);
+    --sidebar-foreground: oklch(18% .02 160);
+    --sidebar-primary: oklch(45% .13 150);
+    --sidebar-primary-foreground: oklch(99% .005 150);
+    --sidebar-accent: oklch(94% .03 150);
+    --sidebar-accent-foreground: oklch(25% .05 160);
+    --sidebar-border: oklch(91% .01 150);
+    --sidebar-ring: oklch(45% .13 150);
 }
 
 @theme inline {
+  /* Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-card: #152b12;
-  --color-card-foreground: #ededed;
-  --color-muted: #1f3d1b;
-  --color-muted-foreground: #a3b8a1;
-  --color-border: rgba(90, 171, 110, 0.2);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-playfair-display: var(--font-playfair-display);
   --font-montserrat: var(--font-montserrat);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hero-grid {
@@ -56,13 +96,13 @@ body {
   inset: 0;
   background:
     radial-gradient(
-      ellipse 90% 70% at 90% 80%,
-      rgba(31, 80, 45, 0.35) 30%,
-      transparent 70%
+      ellipse 90% 70% at 95% 90%,
+      rgba(31, 80, 45, 0.35) 50%,
+      transparent 95%
     ),
     radial-gradient(
       ellipse 70% 50% at 5% 20%,
-      rgba(63, 188, 170, 0.07) 30%,
-      transparent 60%
+      rgba(63, 188, 170, 0.1) 20%,
+      transparent 80%
     );
 }

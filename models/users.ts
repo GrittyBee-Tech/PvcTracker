@@ -9,12 +9,13 @@ export interface IUser extends Document {
   dateOfBirth: Date;
   gender: string;
   phoneNumber: string;
-  isActive: boolean;
+  isEmailVerified: boolean;
   role: "user" | "admin" | "volunteer"; // Example roles
   nin?: string; // National Identification Number
+  vin?: string; // Voter Identification Number
   emailVerified: boolean;
   ninVerified: boolean;
-  password?: string;
+  password: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,8 +33,9 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: ["user", "admin", "volunteer"],
       default: "user",
     },
-    isActive: { type: Boolean, default: true },
+    isEmailVerified: { type: Boolean, default: false },
     nin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
+    vin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
     emailVerified: { type: Boolean, default: false },
     ninVerified: { type: Boolean, default: false },
     password: { type: String, required: true, select: false },

@@ -1,7 +1,9 @@
+"use client";
+
 import InputGroup from "@/components/ui/InputGroup";
 import { useState } from "react";
 
-function LoginForm() {
+export default function Login() {
   const [loginDetails, setloginDetails] = useState({
     email: "",
     password: "",
@@ -51,5 +53,3 @@ function LoginForm() {
     </section>
   );
 }
-
-export default LoginForm;

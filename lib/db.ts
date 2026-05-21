@@ -1,6 +1,5 @@
-// lib/db.ts
+import 'server-only';
 import mongoose from 'mongoose';
-import 'server-only'; // Prevent this from ever leaking to the frontend
 
 const MONGODB_URI = process.env.MONGODB_URI;
 

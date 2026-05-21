@@ -2,7 +2,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import connectDB from "@/lib/db";
-import User from "@/models/user";
+import User from "@/models/users";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 

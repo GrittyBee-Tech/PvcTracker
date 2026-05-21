@@ -7,8 +7,8 @@ const InputGroup = ({
   placeholder,
   value,
   onChange,
-  labelClassName = "text-[#10200e]",
-  inputClassName = "text-[#10200e] border-[#10200e]/50",
+  labelClassName = "",
+  inputClassName = "text-black border-primary/50",
 }: {
   name: string;
   label: string;
@@ -23,7 +23,7 @@ const InputGroup = ({
     <div>
       <label
         htmlFor={name}
-        className={`font-Montserrat font-semibold text-sm ${labelClassName}`}
+        className={`font-dm-sans font-semibold text-sm text-black ${labelClassName}`}
       >
         {label}
       </label>
@@ -33,7 +33,7 @@ const InputGroup = ({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.id, e.target.value)}
-        className={`w-full mt-1.5 p-2 text-sm font-Montserrat font-medium border outline-none rounded-lg ${inputClassName}`}
+        className={`w-full mt-1.5 p-2 text-sm font-dm-sans font-medium border outline-none rounded-lg bg-white/10 border-green-500/30 text-black placeholder:text-gray-400 focus:border-green-500 ${inputClassName}`}
       />
     </div>
   );
