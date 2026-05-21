@@ -49,7 +49,7 @@ const RegisterForm = ({ role }: { role: string }) => {
   if (status === "success") {
     return (
       <div className="text-center space-y-4 py-12 px-4">
-        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-[#4B6F52] text-white  rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
             className="w-8 h-8"
             fill="none"
@@ -64,12 +64,12 @@ const RegisterForm = ({ role }: { role: string }) => {
             />
           </svg>
         </div>
-        <h3 className="text-2xl font-semibold text-green-400 font-Montserrat">
+        <h3 className="text-2xl font-semibold text-[#0A140F] font-dm-sans">
           Check your email
         </h3>
         <p className="text-white/70">
           We've sent a verification link to{" "}
-          <span className="font-semibold text-green-400">
+          <span className="font-semibold text-[#10200e]">
             {signupDetails.email}
           </span>
           . Please check your inbox and click the link to set your password and
@@ -78,7 +78,7 @@ const RegisterForm = ({ role }: { role: string }) => {
         <div className="pt-6">
           <Link
             href="/users/verify-nin"
-            className="text-green-400 hover:underline font-medium"
+            className="text-[#4B6F52] hover:underline font-medium"
           >
             (Demo: Click here to simulate email link)
           </Link>
@@ -90,11 +90,11 @@ const RegisterForm = ({ role }: { role: string }) => {
   return (
     <section className="space-y-4">
       <header className="w-full text-white">
-        <h2 className="text-2xl font-semibold font-Montserrat text-green-400">
+        <h2 className="text-2xl font-semibold font-dm-sans  text-[#4B6F52]">
           Register to PVC Waka as a{" "}
           {role === "volunteer" ? "Volunteer" : "User"}
         </h2>
-        <p className="text-white/70">
+        <p className="text-black font-dm-sans text-sm font-bold mt-2">
           Join the movement and register for your Permanent Voter Card.
         </p>
       </header>
@@ -110,7 +110,7 @@ const RegisterForm = ({ role }: { role: string }) => {
           type="text"
           value={signupDetails.firstName}
           labelClassName="text-white/80"
-          inputClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
+          inputClassName="bg-white/10 border-gray-300 text-black placeholder:text-black focus:border-green-500"
         />
         <InputGroup
           label="Last Name"
@@ -120,7 +120,7 @@ const RegisterForm = ({ role }: { role: string }) => {
           type="text"
           value={signupDetails.lastName}
           labelClassName="text-white/80"
-          inputClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
+          inputClassName="bg-white/10 border-gray-300 text-black placeholder:text-black  focus:border-green-500"
         />
         <InputGroup
           label="Date of Birth"
@@ -130,7 +130,7 @@ const RegisterForm = ({ role }: { role: string }) => {
           type="date"
           value={signupDetails.dateOfBirth}
           labelClassName="text-white/80"
-          inputClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
+          inputClassName="bg-white/10 border-gray-300  text-black placeholder:text-black  focus:border-green-500"
         />
         <Select
           name="gender"
@@ -143,7 +143,7 @@ const RegisterForm = ({ role }: { role: string }) => {
           value={signupDetails.gender}
           placeholder="Choose your gender"
           labelClassName="text-white/80"
-          selectClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
+          selectClassName="bg-white/10 border-gray-300 text-black placeholder:text-black focus:border-green-500"
         />
         <InputGroup
           label="Phone Number"
@@ -153,7 +153,7 @@ const RegisterForm = ({ role }: { role: string }) => {
           type="tel"
           value={signupDetails.phoneNumber}
           labelClassName="text-white/80"
-          inputClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
+          inputClassName="bg-white/10 border-gray-300 text-black placeholder:text-black focus:border-green-500"
         />
         <InputGroup
           label="Email Address"
@@ -163,12 +163,12 @@ const RegisterForm = ({ role }: { role: string }) => {
           type="email"
           value={signupDetails.email}
           labelClassName="text-white/80"
-          inputClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
+          inputClassName="bg-white/10 border-gray-300 text-black placeholder:text-black focus:border-green-500"
         />
         <div className="col-span-2 flex">
           <button
             disabled={status === "loading"}
-            className="bg-green-600 text-white py-3 rounded-lg mt-4 w-1/2 mx-auto font-medium hover:bg-green-700 transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
+            className="bg-[#4B6F52] text-white py-3 rounded-lg mt-4 w-1/2 mx-auto font-medium hover:bg-[#3a5a40] transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
           >
             {status === "loading" ? (
               <>

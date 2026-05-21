@@ -78,10 +78,10 @@ export default async function UserDashboardPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-3xl font-space-grotesk font-bold text-white">
             Welcome, {user.name}!
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 font-dm-sans">
             Here's a quick overview of your PVC WAKA journey and important
             actions.
           </p>

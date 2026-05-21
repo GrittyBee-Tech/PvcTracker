@@ -70,7 +70,7 @@ const SetupForm = () => {
             />
           </svg>
         </div>
-        <h3 className="text-2xl font-semibold text-[#10200e] font-Montserrat">
+        <h3 className="text-2xl font-semibold text-[#10200e] font-dm-sans">
           Setup Complete!
         </h3>
         <p className="text-gray-600">
@@ -83,11 +83,11 @@ const SetupForm = () => {
 
   return (
     <section className="space-y-6">
-      <header className="w-full text-black">
-        <h2 className="text-2xl font-semibold font-Montserrat text-[#10200e]">
+      <header className="w-full text-[#0A140F]">
+        <h2 className="text-2xl font-semibold font-dm-sans text-[#10200e]">
           Complete Your Registration
         </h2>
-        <p className="text-black mt-2 text-sm leading-relaxed">
+        <p className="text-[#0A140F] font-dm-sans mt-2 text-sm leading-relaxed">
           Set a secure password and provide your National Identification Number
           (NIN) to verify your identity.
         </p>

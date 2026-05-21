@@ -16,10 +16,10 @@ function LoginForm() {
   return (
     <section className="space-y-4">
       <header className="w-full text-white">
-        <h2 className="text-2xl font-semibold font-playfair-display text-green-400">
+        <h2 className="text-2xl font-semibold font-dm-sans text-[#4B6F52]">
           Login to PVC Waka
         </h2>
-        <p className="text-white/70">
+        <p className="text-[#0A140F] font-dm-sans">
           Enter your credentials to access your account.
         </p>
       </header>
@@ -32,7 +32,7 @@ function LoginForm() {
           type="email"
           value={loginDetails.email}
           labelClassName="text-white/80"
-          inputClassName="bg-white/10 border-green-500/30 text-white placeholder:text-white/50 focus:border-green-500"
+          inputClassName="bg-white/10 border-green-500/30 text-black placeholder:text-black/50 focus:border-green-500"
         />
         <InputGroup
           label="Password"
