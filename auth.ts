@@ -35,7 +35,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // Find user by email and explicitly select password if omitted by default in schema
         const user = await User.findOne({ email }).select("+password");
-        if (!user || !user?.isActive) {
+        if (!user || !user?.emailVerified) {
           throw new Error("Invalid email or password");
         }
         if (!user.password) {
@@ -43,10 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Validate password (assuming password hashing during user registration)
-        const isPasswordMatch = await bcrypt.compare(
-          password,
-          user?.password,
-        );
+        const isPasswordMatch = await bcrypt.compare(password, user?.password);
 
         if (!isPasswordMatch) {
           throw new Error("Invalid email or password");
