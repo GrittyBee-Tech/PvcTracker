@@ -19,11 +19,6 @@ const Footer = () => {
             abenolfoundation.org
           </a>{" "}
         </p>
-        {/* <div className=" text-[#7ec992]  font-dm-sans">
-          <p className="text-black  text-sm font-dm-sans">
-            CRAFTED BY <span className="text-black">--FIIWE BARRY</span>
-          </p>
-        </div> */}
       </div>
     </footer>
   );
