@@ -5,11 +5,11 @@ import Objective from "@/components/landing-page/objective";
 
 export default function Home() {
   return (
-    <div>
+    <>
       <LandingPage />
       <Objective />
       <Connect />
       <Faq />
-    </div>
+    </>
   );
 }

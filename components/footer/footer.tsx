@@ -3,7 +3,7 @@ import { IoFootstepsSharp } from "react-icons/io5";
 
 const Footer = () => {
   return (
-    <footer className=" grid md:grid-flow-col lg:px-20 border-t  border-t-gray-300  items-center justify-between p-6 shadow-2xl">
+    <footer className="grid md:grid-flow-col lg:px-20 items-center justify-between p-6 shadow-2xl">
       <div className=" grid grid-flow-col gap-2 text-2xl text-black  font-bold">
         <h1 className="text-2xl">PVC WAKA</h1>
         <IoFootstepsSharp className=" text-4xl" />

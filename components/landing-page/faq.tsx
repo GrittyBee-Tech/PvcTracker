@@ -12,7 +12,7 @@ const Faq = () => {
     setShowFaq((prevId) => (prevId === id ? null : id));
   };
   return (
-    <section className=" pt-2 pb-12 px-4 sm:px-6 lg:px-20 py-20 lg:pt-3">
+    <section className="pt-10 pb-12 px-4 sm:px-6 lg:px-20 py-20 lg:pt-3 border-b border-border">
       <div className="grid justify-items-center ">
         <p className="text-2xl mx-auto md:text-4xl font-bold  font-space-grotesk bg-clip-text text-[#4B6F52] mb-6">
           Frequently asked questions

@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
-import { Montserrat, Playfair_Display } from "next/font/google";
+import { DM_Sans, Montserrat, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const playfairDisplay = Playfair_Display({
+const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap", // Prevents layout shift
-  variable: "--font-playfair-display", // Useful for Tailwind
+  variable: "--font-dm-sans", // Useful for Tailwind
 });
-
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap", // Prevents layout shift
+  variable: "--font-space-grotesk  ", // Useful for Tailwind
+});
 const montserrat = Montserrat({
   subsets: ["latin"],
   display: "swap", // Prevents layout shift
@@ -28,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfairDisplay.variable} ${montserrat.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${montserrat.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="">{children}</body>
     </html>
