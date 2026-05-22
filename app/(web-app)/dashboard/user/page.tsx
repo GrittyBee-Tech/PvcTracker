@@ -1,9 +1,35 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CheckCircle2, Clock, MapPin, User, Pencil } from "lucide-react";
+import { useState, useEffect } from "react";
+import Modal from "@/components/ui/modal";
 
-export default async function UserDashboardPage() {
+export default async function UserDashboardPage({
+  children,
+  showModal = true,
+  modalTitle = "Verify Your Information",
+  modalContent = "Please complete your profile setup before continuing.",
+  onModalClose,
+}: {
+  children: React.ReactNode;
+  showModal?: boolean;
+  modalTitle?: string;
+  modalContent?: React.ReactNode;
+  onModalClose?: () => void;
+}) {
+  const [isModalOpen, setIsModalOpen] = useState(showModal);
+
+  useEffect(() => {
+    setIsModalOpen(showModal);
+  }, [showModal]);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    onModalClose?.();
+  };
   // In a real application, you would fetch user-specific data here
   // For now, we'll use dummy data or a simplified representation
   const user = {
@@ -184,6 +210,15 @@ export default async function UserDashboardPage() {
           </Card>
         </div>
       </div>
+      {/* Modal Overlay - Outside overflow container */}
+      <Modal
+        isOpen={isModalOpen}
+        title={modalTitle}
+        onClose={handleCloseModal}
+        closeButton={false}
+      >
+        {modalContent}
+      </Modal>
     </div>
   );
 }

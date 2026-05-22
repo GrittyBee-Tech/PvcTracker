@@ -4,30 +4,7 @@ import Modal from "../ui/modal";
 import { UserCircle, Bell, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export default function UserDashboard({
-  children,
-  showModal = true,
-  modalTitle = "Verify Your Information",
-  modalContent = "Please complete your profile setup before continuing.",
-  onModalClose,
-}: {
-  children: React.ReactNode;
-  showModal?: boolean;
-  modalTitle?: string;
-  modalContent?: React.ReactNode;
-  onModalClose?: () => void;
-}) {
-  const [isModalOpen, setIsModalOpen] = useState(showModal);
-
-  useEffect(() => {
-    setIsModalOpen(showModal);
-  }, [showModal]);
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    onModalClose?.();
-  };
-
+export default function UserDashboard() {
   return (
     <div className="flex min-h-screen bg-white text-white font-sans">
       {/* Sidebar */}
