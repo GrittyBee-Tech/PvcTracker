@@ -1,15 +1,9 @@
-// middleware.ts
-import { NextResponse } from "next/server";
-import { authConfig } from "./auth.config"; // Import the clean configuration profile
-import NextAuth from "next-auth";
+import { NextResponse, NextRequest } from "next/server";
 
-// Initialize NextAuth specifically for the Edge runtime middleware wrapper
-const { auth } = NextAuth(authConfig);
-
-export default auth((req) => {
+export default function proxy(req: NextRequest) {
   const { nextUrl } = req;
-  const isLoggedIn = !!req.auth;
-  const userRole = (req.auth?.user as any)?.role;
+  const isLoggedIn = !!(req as any).auth;
+  const userRole = (req as any).auth?.user?.role;
 
   const isDashboardRoute = nextUrl.pathname.startsWith("/dashboard");
   const isVolunteerRoute = nextUrl.pathname.includes("/volunteer");
@@ -43,7 +37,7 @@ export default auth((req) => {
   }
 
   return NextResponse.next();
-});
+}
 
 // Define exactly which URL paths should trigger this middleware file
 export const config = {
