@@ -1,4 +1,3 @@
-import AdminDashboard from "@/components/dashboard/AdminDashboard";
 import DashboardLayout, {
   DashboardLink,
 } from "@/components/dashboard/DashboardLayout";
