@@ -1,23 +1,22 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-// // 1. Define the TypeScript interface representing the User document
-export interface IUser extends Document {
-  //   externalAuthId?: string; // For third-party auth (Clerk, Auth0, NextAuth)
+export interface UserType {
   email: string;
   firstName: string;
   lastName: string;
   dateOfBirth: Date;
   gender: string;
   phoneNumber: string;
-  isActive: boolean;
+  isEmailVerified: boolean;
   role: "user" | "admin" | "volunteer"; // Example roles
   nin?: string; // National Identification Number
-  emailVerified: boolean;
+  vin?: string; // Voter Identification Number
   ninVerified: boolean;
-  password?: string;
+  password: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
+export interface IUser extends UserType, Document {}
 
 const UserSchema: Schema<IUser> = new Schema(
   {
@@ -32,9 +31,9 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: ["user", "admin", "volunteer"],
       default: "user",
     },
-    isActive: { type: Boolean, default: true },
+    isEmailVerified: { type: Boolean, default: false },
     nin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
-    emailVerified: { type: Boolean, default: false },
+    vin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
     ninVerified: { type: Boolean, default: false },
     password: { type: String, required: true, select: false },
   },

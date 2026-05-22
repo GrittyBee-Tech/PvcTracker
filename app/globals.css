@@ -7,7 +7,7 @@
     --card-foreground: oklch(18% .02 160);
     --popover: oklch(100% 0 0);
     --popover-foreground: oklch(18% .02 160);
-    --primary: oklch(45% .13 150);
+    --primary: #1A5C38;
     --primary-foreground: oklch(99% .005 150);
     --secondary: oklch(95% .02 150);
     --secondary-foreground: oklch(25% .05 160);
@@ -23,15 +23,15 @@
     --warning-foreground: oklch(20% .05 80);
     --border: oklch(91% .01 150);
     --input: oklch(91% .01 150);
-    --ring: oklch(45% .13 150);
+    --ring: #1A5C38;
     --sidebar: oklch(98% .01 150);
     --sidebar-foreground: oklch(18% .02 160);
-    --sidebar-primary: oklch(45% .13 150);
+    --sidebar-primary: #1A5C38;
     --sidebar-primary-foreground: oklch(99% .005 150);
     --sidebar-accent: oklch(94% .03 150);
     --sidebar-accent-foreground: oklch(25% .05 160);
     --sidebar-border: oklch(91% .01 150);
-    --sidebar-ring: oklch(45% .13 150);
+    --sidebar-ring: #1A5C38;
 }
 
 @theme inline {
@@ -72,6 +72,9 @@
   --font-montserrat: var(--font-montserrat);
   --font-dm-sans: var(--font-dm-sans);
   --font-space-grotesk: var(--font-space-grotesk);
+  /* Breakpoints */
+  --breakpoint-3xl: 120rem;
+  --breakpoint-xs: 30rem;
 }
 
 .hero-grid {
@@ -98,13 +101,13 @@
   inset: 0;
   background:
     radial-gradient(
-      ellipse 90% 70% at 90% 80%,
-      rgba(31, 80, 45, 0.35) 30%,
-      transparent 70%
+      ellipse 90% 70% at 95% 90%,
+      rgba(31, 80, 45, 0.35) 50%,
+      transparent 95%
     ),
     radial-gradient(
       ellipse 70% 50% at 5% 20%,
-      rgba(63, 188, 170, 0.07) 30%,
-      transparent 60%
+      rgba(63, 188, 170, 0.1) 20%,
+      transparent 80%
     );
 }

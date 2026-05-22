@@ -1,5 +1,4 @@
 import Logo from "../ui/Logo";
-import SideNav from "./SideNav";
 import { UserCircle, Bell, Search } from "lucide-react";
 
 export default function AdminDashboard({
@@ -10,7 +9,7 @@ export default function AdminDashboard({
   return (
     <div className="flex min-h-screen bg-[#0a1208] text-white font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#10200e] border-r border-green-900/30 hidden md:flex flex-col">
+      <aside className="w-64 bg-primary border-r border-green-900/30 hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-green-900/30">
           <div className="sm:mx-auto w-fit">
             <Logo />
@@ -20,7 +19,6 @@ export default function AdminDashboard({
           <div className="text-xs font-semibold text-green-100/40 uppercase tracking-wider mb-4 px-4">
             Menu
           </div>
-          <SideNav />
         </div>
         <div className="p-4 border-t border-green-900/30 text-xs text-green-600/60 flex items-center justify-between">
           <span>Admin Portal</span>
@@ -31,7 +29,7 @@ export default function AdminDashboard({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-8 border-b border-green-900/30 bg-[#10200e]/50 backdrop-blur-sm sticky top-0 z-10">
+        <header className="h-16 flex items-center justify-between px-8 border-b border-green-900/30 bg-primary/50 backdrop-blur-sm sticky top-0 z-10">
           <div className="flex items-center text-green-100/50">
             {/* Future Breadcrumbs or Search */}
             <div className="relative hidden md:block">

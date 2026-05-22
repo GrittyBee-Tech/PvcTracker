@@ -24,14 +24,14 @@ const Select: React.FC<SelectProps> = ({
   value,
   onChange,
   placeholder,
-  labelClassName = "text-[#10200e]",
-  selectClassName = "text-[#10200e] border-[#10200e]/50",
+  labelClassName = "text-black",
+  selectClassName = "text-black border-primary/50 bg-white/10 border-green-500/30 text-blaxk placeholder:text-white/50 focus:border-green-500",
 }) => {
   return (
     <div>
       <label
         htmlFor={name}
-        className={`font-Montserrat font-semibold text-sm ${labelClassName}`}
+        className={`font-dm-sans font-semibold text-sm ${labelClassName}`}
       >
         {label}
       </label>
@@ -39,7 +39,7 @@ const Select: React.FC<SelectProps> = ({
         id={name}
         value={value}
         onChange={(e) => onChange(e.target.id, e.target.value)}
-        className={`w-full mt-1.5 p-2 text-sm font-Montserrat font-medium border outline-none rounded-lg ${selectClassName}`}
+        className={`w-full mt-1.5 p-2 text-sm font-dm-sans font-medium border outline-none rounded-lg ${selectClassName}`}
       >
         {placeholder && (
           <option value="" disabled>
