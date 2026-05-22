@@ -10,11 +10,11 @@ function AuthPortalContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen relative flex flex-col justify-center bg-linear-to-b from-accent/40 to-background">
-      <div className="sm:mx-auto w-fit">
+      <div className="mx-auto w-fit mt-6">
         <Logo />
       </div>
 
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-xl relative z-10 bg-white py-8 px-4 shadow-xl shadow-primary/10 sm:rounded-lg sm:px-8 border border-primary/70">
+      <div className="mt-4 mb-10 w-11/12 xs:w-10/12 xs:max-w-xl mx-auto relative z-10 bg-white py-8 px-4 shadow-xl shadow-gray-300 rounded-lg sm:px-8 border border-gray-300">
         <nav className="flex w-full gap-9 my-3 px-5 border-b border-b-gray-400 mb-6">
           <Link
             href={"/auth/register"}
@@ -38,7 +38,7 @@ function AuthPortalContent({ children }: { children: React.ReactNode }) {
             Login
           </Link>
         </nav>
-        <div>{children}</div>
+        <>{children}</>
       </div>
     </div>
   );

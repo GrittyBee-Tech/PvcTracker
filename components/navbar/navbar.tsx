@@ -40,7 +40,7 @@ const Navbar = () => {
             Contact
           </a>
           <a
-            href="/users/auth"
+            href="/auth/register"
             className="border-[#DDE3DE] bg-primary font-dm-sans text-[white] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-10  font-bold py-2 rounded-lg"
           >
             Get Started
@@ -56,7 +56,10 @@ const Navbar = () => {
           <a href="/about" className="hover:underline text-primary font-bold">
             About
           </a>
-          <a href="/contact" className="hover:underline text-primary font-bold -ml-4">
+          <a
+            href="/contact"
+            className="hover:underline text-primary font-bold -ml-4"
+          >
             Contact
           </a>
           <a

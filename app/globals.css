@@ -72,6 +72,9 @@
   --font-montserrat: var(--font-montserrat);
   --font-dm-sans: var(--font-dm-sans);
   --font-space-grotesk: var(--font-space-grotesk);
+  /* Breakpoints */
+  --breakpoint-3xl: 120rem;
+  --breakpoint-xs: 30rem;
 }
 
 .hero-grid {

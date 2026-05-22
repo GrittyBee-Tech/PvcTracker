@@ -13,7 +13,6 @@ export interface IUser extends Document {
   role: "user" | "admin" | "volunteer"; // Example roles
   nin?: string; // National Identification Number
   vin?: string; // Voter Identification Number
-  emailVerified: boolean;
   ninVerified: boolean;
   password: string;
   createdAt: Date;
@@ -36,7 +35,6 @@ const UserSchema: Schema<IUser> = new Schema(
     isEmailVerified: { type: Boolean, default: false },
     nin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
     vin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
-    emailVerified: { type: Boolean, default: false },
     ninVerified: { type: Boolean, default: false },
     password: { type: String, required: true, select: false },
   },

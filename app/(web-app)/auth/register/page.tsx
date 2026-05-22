@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Select from "@/components/ui/Select";
 import Swal from "sweetalert2";
+import { SpinnerLoader } from "@/components/ui/Loader";
 
 interface ValidationErrorDetail {
   field: string;
@@ -13,14 +14,14 @@ interface ValidationErrorDetail {
 
 export default function Register() {
   const [signupDetails, setSignupDetails] = useState({
-    firstName: "Obisike",
-    lastName: "Izima",
-    email: "kingsleyizima@gmail.com",
-    phoneNumber: "2348023190624",
-    dateOfBirth: "2000-04-05",
-    nin: "20187347967",
-    gender: "male",
-    password: "2330male",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    dateOfBirth: "",
+    nin: "",
+    gender: "",
+    password: "",
   });
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
@@ -65,13 +66,23 @@ export default function Register() {
             icon: "error",
             title: "Validation Error",
             text: "Please correct the highlighted fields.",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
           });
         } else {
           setGlobalError(data.error || "Registration failed.");
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: data.error || "Registration failed.",
+            text: globalError || "Registration failed.",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
           });
         }
         return;
@@ -89,6 +100,11 @@ export default function Register() {
         icon: "error",
         title: "Error",
         text: "An unexpected error occurred.",
+        toast: true,
+        position: "top-end",
+        timer: 200,
+        timerProgressBar: true,
+        showConfirmButton: false,
       });
     }
   };
@@ -104,7 +120,7 @@ export default function Register() {
         </p>
       </header>
       <form
-        className="grid md:grid-cols-2 gap-x-4 gap-y-5"
+        className="sm:grid not-sm:space-y-5 sm:grid-cols-2 gap-x-4 gap-y-5"
         onSubmit={handleSubmit}
       >
         <div>
@@ -207,26 +223,28 @@ export default function Register() {
           placeholder="Gender"
         />
 
-        <div className="relative">
-          <InputGroup
-            label="Password"
-            name="password"
-            onChange={handleChange}
-            placeholder={showPassword ? "Enter password" : "*********"}
-            type={showPassword ? "text" : "password"}
-            value={signupDetails.password}
-          />
-          {showPassword ? (
-            <EyeOff
-              className="tex absolute right-4 bottom-2"
-              onClick={() => setShowPassword(false)}
+        <div>
+          <div className="relative">
+            <InputGroup
+              label="Password"
+              name="password"
+              onChange={handleChange}
+              placeholder={showPassword ? "Enter password" : "*********"}
+              type={showPassword ? "text" : "password"}
+              value={signupDetails.password}
             />
-          ) : (
-            <Eye
-              className="tex absolute right-4 bottom-2"
-              onClick={() => setShowPassword(true)}
-            />
-          )}
+            {showPassword ? (
+              <EyeOff
+                className="text-primary absolute right-4 bottom-2"
+                onClick={() => setShowPassword(false)}
+              />
+            ) : (
+              <Eye
+                className="text-primary absolute right-4 bottom-2"
+                onClick={() => setShowPassword(true)}
+              />
+            )}
+          </div>
           {getFieldError("password") && (
             <p className="text-red-400 text-xs mt-1">
               {getFieldError("password")}
@@ -236,13 +254,10 @@ export default function Register() {
         <div className="col-span-2 flex">
           <button
             disabled={status === "loading"}
-            className={`bg-primary text-white font-medium py-3 rounded-none mt-4 w-1/2 mx-auto transition-colors disabled:opacity-70 flex justify-center items-center gap-2 ${status === "loading" ? "cursor-not-allowed" : "cursor-pointer"}`}
+            className={`bg-primary text-white font-bold font-dm-sans py-3 rounded-lg mt-4 w-5/6 sm:w-1/2 mx-auto transition-colors disabled:opacity-70 flex justify-center items-center gap-2 ${status === "loading" ? "cursor-not-allowed" : "cursor-pointer"}`}
           >
             {status === "loading" ? (
-              <>
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                Creating...
-              </>
+              <SpinnerLoader text="Creating account..." />
             ) : (
               "Create Account"
             )}

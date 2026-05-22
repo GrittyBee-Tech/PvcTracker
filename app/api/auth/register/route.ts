@@ -43,7 +43,7 @@ export const POST = withDb(async (request: Request) => {
 
     const frontendOrigin =
       process.env.FRONTEND_ORIGIN || "http://localhost:3000";
-    const verificationUrl = `${frontendOrigin}/users/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${frontendOrigin}/verify-email?token=${verificationToken}`;
 
     await Promise.all([
       sendWelcomeEmail(

@@ -40,7 +40,7 @@ function VerifyEmailContent() {
         
         // Auto-redirect to login after 3 seconds
         setTimeout(() => {
-          router.push('users/auth/login');
+          router.push('/auth/login');
         }, 3000);
         
       } catch (err) {

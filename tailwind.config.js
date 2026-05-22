@@ -11,6 +11,10 @@ module.exports = {
         heading: ["Space Grotesk", 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
         body: ["DM Sans", 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
+      animationDelay: {
+      '150': '150ms',
+      '300': '300ms',
+    }
     },
   },
   plugins: [],
