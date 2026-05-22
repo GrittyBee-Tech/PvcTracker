@@ -62,7 +62,7 @@ export default function DashboardLayout({
         </header>
 
         {/* Main Scrollable Content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6 bg-linear-to-b from-accent/40 to-background">
           <div className="max-w-6xl mx-auto">{children}</div>
         </main>
       </div>
@@ -80,7 +80,7 @@ const DashboardSideBar = ({
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-primary border-r border-green-900/30 hidden md:flex flex-col">
+    <aside className="w-64 bg-white border-r border-green-900/30 hidden md:flex flex-col">
       <div className="h-16 flex items-center">
         <div className="sm:mx-auto w-fit" style={{ color: "white" }}>
           <Logo />
