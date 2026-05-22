@@ -1,5 +1,4 @@
 import Logo from "../ui/Logo";
-import SideNav from "./SideNav";
 import { UserCircle, Bell, Search } from "lucide-react";
 
 export default function AdminDashboard({
@@ -20,7 +19,6 @@ export default function AdminDashboard({
           <div className="text-xs font-semibold text-green-100/40 uppercase tracking-wider mb-4 px-4">
             Menu
           </div>
-          <SideNav />
         </div>
         <div className="p-4 border-t border-green-900/30 text-xs text-green-600/60 flex items-center justify-between">
           <span>Admin Portal</span>
