@@ -78,7 +78,7 @@ export default async function UserDashboardPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-space-grotesk font-bold text-white">
+          <h1 className="text-3xl font-space-grotesk font-bold text-primary">
             Welcome, {user.name}!
           </h1>
           <p className="text-muted-foreground mt-1 font-dm-sans">
@@ -86,14 +86,13 @@ export default async function UserDashboardPage() {
             actions.
           </p>
         </div>
-        {/* Potentially add a quick action button here, e.g., "Update Profile" */}
       </div>
 
       {/* Status Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
+        <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white/70">
+            <CardTitle className="text-sm font-medium text-primary">
               NIN Verification
             </CardTitle>
             {ninDisplay.icon}
@@ -107,9 +106,9 @@ export default async function UserDashboardPage() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white/70">
+            <CardTitle className="text-sm font-medium text-primary">
               PVC Collection
             </CardTitle>
             {pvcDisplay.icon}
@@ -123,9 +122,9 @@ export default async function UserDashboardPage() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white/70">
+            <CardTitle className="text-sm font-medium text-primary">
               Registered By
             </CardTitle>
             <User className="w-5 h-5 text-green-500" />
@@ -143,11 +142,11 @@ export default async function UserDashboardPage() {
 
       {/* Quick Actions */}
       <div className="mt-8">
-        <h2 className="text-xl font-semibold text-white">Quick Actions</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
-          <Card>
+        <h2 className="text-xl font-semibold text-primary">Quick Actions</h2>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-4">
+          <Card className="border-gray-400 shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium text-white/70">
+              <CardTitle className="text-base font-medium text-primary">
                 Find INEC Centre
               </CardTitle>
               <MapPin className="w-5 h-5 text-green-500" />
@@ -157,15 +156,15 @@ export default async function UserDashboardPage() {
                 Locate the nearest registration or collection center.
               </p>
               <Link href="/dashboard/user/find-centre" passHref>
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                <Button className="w-full bg-primary text-white">
                   Go to Centre Finder
                 </Button>
               </Link>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-gray-400 shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium text-white/70">
+              <CardTitle className="text-base font-medium text-primary">
                 Update Profile
               </CardTitle>
               <Pencil className="w-5 h-5 text-green-500" />
@@ -175,7 +174,7 @@ export default async function UserDashboardPage() {
                 Edit your personal details or PVC information.
               </p>
               <Link href="/dashboard/user/profile" passHref>
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                <Button className="w-full bg-primary text-white">
                   Edit Profile
                 </Button>
               </Link>

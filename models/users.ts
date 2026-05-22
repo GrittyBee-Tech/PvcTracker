@@ -1,8 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-// // 1. Define the TypeScript interface representing the User document
-export interface IUser extends Document {
-  //   externalAuthId?: string; // For third-party auth (Clerk, Auth0, NextAuth)
+export interface UserType {
   email: string;
   firstName: string;
   lastName: string;
@@ -17,7 +15,8 @@ export interface IUser extends Document {
   password: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
+export interface IUser extends UserType, Document {}
 
 const UserSchema: Schema<IUser> = new Schema(
   {

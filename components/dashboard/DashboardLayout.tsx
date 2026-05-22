@@ -6,6 +6,7 @@ import { UserCircle, Bell, Search } from "lucide-react";
 import * as Icons from "lucide-react";
 import Link from "next/link";
 import LogoutButton from "../ui/LogoutButton";
+import { useStore } from "@/store";
 
 export type DashboardLink = {
   href: string;
@@ -22,6 +23,9 @@ export default function DashboardLayout({
   role: "User" | "Volunteer" | "Admin";
   links: DashboardLink[];
 }) {
+  const { user } = useStore();
+  const displayName = user?.firstName || "User";
+
   return (
     <div className="flex h-screen bg-white text-white font-sans">
       <DashboardSideBar links={links} role={role} />
@@ -29,7 +33,7 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-8 border-b border-green-900/30 bg-primary/50 backdrop-blur-sm sticky top-0 z-10">
+        <header className="h-16 flex items-center justify-between px-8 border-b border-green-900/30 bg-primary/80 backdrop-blur-sm sticky top-0 z-10">
           <div className="flex items-center text-green-100/50">
             {/* Future Breadcrumbs or Search */}
             <div className="relative hidden md:block">
@@ -51,7 +55,7 @@ export default function DashboardLayout({
               <UserCircle className="w-7 h-7 text-green-400" />
               <div className="flex flex-col items-start text-left">
                 <span className="text-sm font-medium leading-none">
-                  Normal User
+                  {displayName}
                 </span>
                 <span className="text-[10px] text-green-100/40 mt-1">
                   {role}
@@ -80,19 +84,18 @@ const DashboardSideBar = ({
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-white border-r border-green-900/30 hidden md:flex flex-col">
+    <aside className="w-64 bg-[#F9FDFA] border-r border-green-900/30 hidden md:flex flex-col">
       <div className="h-16 flex items-center">
         <div className="sm:mx-auto w-fit" style={{ color: "white" }}>
           <Logo />
         </div>
       </div>
-      <div className="flex-1 py-6 px-4">
-        <div className="text-xs font-semibold text-green-100/40 uppercase tracking-wider mb-4 px-4">
+      <div className="flex-1 p-4 pb-0 h-full flex flex-col">
+        <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-4 px-4">
           Menu
         </div>
         <nav className="flex flex-col gap-2 mt-4 h-full">
           {links.map((link) => {
-            // const Icon = link.icon;
             const isActive = pathname === link.href;
             const IconComponent = Icons[
               link.icon as keyof typeof Icons
@@ -102,15 +105,15 @@ const DashboardSideBar = ({
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-primary hover:bg-primary/90 hover:text-white ${
                   isActive
-                    ? "bg-white text-green-400 font-medium border border-green-500/20 shadow-sm"
-                    : "text-green-100/70 hover:bg-green-900/40 hover:text-green-100"
+                    ? "font-medium border border-green-500/20 shadow-sm bg-primary text-white"
+                    : "text-green-100/70 hover:text-green-100"
                 }`}
               >
                 {IconComponent && (
                   <IconComponent
-                    className={`w-5 h-5 ${isActive ? "text-green-400" : "text-green-100/50"}`}
+                    className={`w-5 h-5 hover:text-white ${isActive ? "tex-white" : "text-primary"}`}
                   />
                 )}
                 {link.label}
@@ -119,13 +122,12 @@ const DashboardSideBar = ({
           })}
           <div className="mt-auto w-full">
             <LogoutButton />
+            <div className="mt-4 p-4 border-t border-primary text-xs text-primary flex items-center justify-between">
+              <span>{role} Portal</span>
+              <span>v1.0</span>
+            </div>
           </div>
         </nav>
-      </div>
-
-      <div className="p-4 border-t border-green-900/30 text-xs text-green-600/60 flex items-center justify-between">
-        <span>{role} Portal</span>
-        <span>v1.0</span>
       </div>
     </aside>
   );

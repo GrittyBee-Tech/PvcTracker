@@ -87,7 +87,6 @@ export default function Login() {
       const sessionResponse = await fetch("/api/auth/session");
       const session = await sessionResponse.json();
       setIsLoading(false);
-      console.log({ session });
 
       const userRole = session?.user?.role;
       setTimeout(() => {
