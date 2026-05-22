@@ -13,7 +13,7 @@ export async function sendWelcomeEmail(
 ) {
   try {
     const { data, error } = await resend.emails.send({
-      from: "PVC WAKA <onboarding@izzyman.space>",
+      from: "PVC WAKA <onboarding@pvc-waka.izzyman.space",
       to: [email],
       subject: "Welcome to PVC WAKA!",
       react: WelcomeEmail({ firstName, verificationUrl }) as React.ReactElement,
