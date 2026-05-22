@@ -1,9 +1,7 @@
-import VolunteerDashboard from "@/components/dashboard/VolunteerDashboard";
-
 export default function VolunteerPage() {
-    return (
-        <div>
-            <VolunteerDashboard />
-        </div>
-    );
+  return (
+    <div>
+      <h1>Volunteer Dashboard</h1>
+    </div>
+  );
 }

@@ -7,14 +7,69 @@ import { CheckCircle2, Clock, MapPin, User, Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
 import Modal from "@/components/ui/modal";
 
-export default async function UserDashboardPage({
-  children,
+const getNinStatusDisplay = (status: string) => {
+  switch (status) {
+    case "Verified":
+      return {
+        text: "Verified",
+        icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+        colorClass: "text-green-400",
+        description:
+          "Your National Identification Number has been successfully verified.",
+      };
+    case "Rejected":
+      return {
+        text: "Rejected",
+        icon: <Clock className="w-5 h-5 text-primary" />,
+        colorClass: "text-red-400",
+        description:
+          "Your NIN verification was rejected. Please check your profile for details.",
+      };
+    case "Pending Verification":
+    default:
+      return {
+        text: "Pending Verification",
+        icon: <Clock className="w-5 h-5 text-primary " />,
+        colorClass: "text-yellow-400",
+        description: "Your National Identification Number is being processed.",
+      };
+  }
+};
+
+const getPvcStatusDisplay = (status: string) => {
+  switch (status) {
+    case "Collected":
+      return {
+        text: "Collected",
+        icon: <CheckCircle2 className="w-5 h-5 text-primary" />,
+        colorClass: "text-green-400",
+        description:
+          "You have successfully collected your Permanent Voter Card.",
+      };
+    case "Pending":
+      return {
+        text: "Pending",
+        icon: <Clock className="w-5 h-5 text-primary" />,
+        colorClass: "text-yellow-400",
+        description: "Your PVC collection status is pending update.",
+      };
+    case "Not Collected":
+    default:
+      return {
+        text: "Not Collected",
+        icon: <Clock className="w-5 h-5 text-primary" />,
+        colorClass: "text-red-400",
+        description: "You have not yet collected your Permanent Voter Card.",
+      };
+  }
+};
+
+export default function UserDashboardPage({
   showModal = true,
   modalTitle = "Verify Your Information",
   modalContent = "Please complete your profile setup before continuing.",
   onModalClose,
 }: {
-  children: React.ReactNode;
   showModal?: boolean;
   modalTitle?: string;
   modalContent?: React.ReactNode;
@@ -30,71 +85,11 @@ export default async function UserDashboardPage({
     setIsModalOpen(false);
     onModalClose?.();
   };
-  // In a real application, you would fetch user-specific data here
-  // For now, we'll use dummy data or a simplified representation
   const user = {
     name: "Normal User",
     ninStatus: "Pending Verification", // Can be "Pending Verification", "Verified", "Rejected"
     pvcStatus: "Not Collected", // Can be "Not Collected", "Collected", "Pending"
     registeredBy: "Self",
-  };
-
-  const getNinStatusDisplay = (status: string) => {
-    switch (status) {
-      case "Verified":
-        return {
-          text: "Verified",
-          icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
-          colorClass: "text-green-400",
-          description:
-            "Your National Identification Number has been successfully verified.",
-        };
-      case "Rejected":
-        return {
-          text: "Rejected",
-          icon: <Clock className="w-5 h-5 text-primary" />,
-          colorClass: "text-red-400",
-          description:
-            "Your NIN verification was rejected. Please check your profile for details.",
-        };
-      case "Pending Verification":
-      default:
-        return {
-          text: "Pending Verification",
-          icon: <Clock className="w-5 h-5 text-primary " />,
-          colorClass: "text-yellow-400",
-          description:
-            "Your National Identification Number is being processed.",
-        };
-    }
-  };
-
-  const getPvcStatusDisplay = (status: string) => {
-    switch (status) {
-      case "Collected":
-        return {
-          text: "Collected",
-          icon: <CheckCircle2 className="w-5 h-5 text-primary" />,
-          colorClass: "text-green-400",
-          description:
-            "You have successfully collected your Permanent Voter Card.",
-        };
-      case "Pending":
-        return {
-          text: "Pending",
-          icon: <Clock className="w-5 h-5 text-primary" />,
-          colorClass: "text-yellow-400",
-          description: "Your PVC collection status is pending update.",
-        };
-      case "Not Collected":
-      default:
-        return {
-          text: "Not Collected",
-          icon: <Clock className="w-5 h-5 text-primary" />,
-          colorClass: "text-red-400",
-          description: "You have not yet collected your Permanent Voter Card.",
-        };
-    }
   };
 
   const ninDisplay = getNinStatusDisplay(user.ninStatus);
