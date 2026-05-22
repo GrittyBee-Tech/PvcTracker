@@ -34,30 +34,30 @@ export default function DashboardLayout({
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
         <header className="h-16 flex items-center justify-between px-8 border-b border-green-900/30 bg-primary/80 backdrop-blur-sm sticky top-0 z-10">
-          <div className="flex items-center text-green-100/50">
+          <div className="flex items-center text-primary">
             {/* Future Breadcrumbs or Search */}
             <div className="relative hidden md:block">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-green-100/40" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-primary" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="bg-[#152b12] border border-green-900/50 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:border-green-500/50 text-green-100 placeholder:text-green-100/30 w-64 transition-all"
+                className="bg-white border border-green-900/50 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:border-primary text-primary placeholder:text-primary w-64 transition-all"
               />
             </div>
           </div>
           <div className="flex items-center gap-4">
             <button className="relative p-2 text-green-100/70 hover:text-white transition-colors rounded-full hover:bg-green-900/20">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-yellow-500 rounded-full"></span>
             </button>
             <div className="h-8 w-px bg-green-900/50 mx-2"></div>
-            <button className="flex items-center gap-2 p-1.5 pr-3 text-green-100/70 hover:text-white transition-colors rounded-full hover:bg-green-900/20 border border-transparent hover:border-green-900/30">
-              <UserCircle className="w-7 h-7 text-green-400" />
+            <button className="flex items-center gap-2 p-1.5 pr-3 text-white hover:text-white transition-colors rounded-full hover:bg-green-900/20 border border-transparent hover:border-green-900/30">
+              <UserCircle className="w-7 h-7 text-white" />
               <div className="flex flex-col items-start text-left">
-                <span className="text-sm font-medium leading-none">
+                <span className="text-sm  text-white font-dm-sans font-medium leading-none">
                   {displayName}
                 </span>
-                <span className="text-[10px] text-green-100/40 mt-1">
+                <span className="text-[10px] text-white font-bold mt-1">
                   {role}
                 </span>
               </div>
@@ -86,12 +86,12 @@ const DashboardSideBar = ({
   return (
     <aside className="w-64 bg-[#F9FDFA] border-r border-green-900/30 hidden md:flex flex-col">
       <div className="h-16 flex items-center">
-        <div className="sm:mx-auto w-fit" style={{ color: "white" }}>
+        <div className="sm:mx-auto w-fit pr-6" style={{ color: "white" }}>
           <Logo />
         </div>
       </div>
-      <div className="flex-1 p-4 pb-0 h-full flex flex-col">
-        <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-4 px-4">
+      <div className="flex-1 p-4 mt-4 pb-0 h-full flex flex-col">
+        <div className="text-lg font-bold text-primary uppercase tracking-wider mb-4 px-4">
           Menu
         </div>
         <nav className="flex flex-col gap-2 mt-4 h-full">

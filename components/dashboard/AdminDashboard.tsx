@@ -11,7 +11,7 @@ export default function AdminDashboard({
       {/* Sidebar */}
       <aside className="w-64 bg-primary border-r border-green-900/30 hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-green-900/30">
-          <div className="sm:mx-auto w-fit">
+          <div className="sm:mx-auto w-fit ">
             <Logo />
           </div>
         </div>

@@ -26,7 +26,7 @@ export default async function UserDashboardPage() {
       case "Rejected":
         return {
           text: "Rejected",
-          icon: <Clock className="w-5 h-5 text-red-500" />,
+          icon: <Clock className="w-5 h-5 text-primary" />,
           colorClass: "text-red-400",
           description:
             "Your NIN verification was rejected. Please check your profile for details.",
@@ -35,7 +35,7 @@ export default async function UserDashboardPage() {
       default:
         return {
           text: "Pending Verification",
-          icon: <Clock className="w-5 h-5 text-yellow-500" />,
+          icon: <Clock className="w-5 h-5 text-primary " />,
           colorClass: "text-yellow-400",
           description:
             "Your National Identification Number is being processed.",
@@ -48,7 +48,7 @@ export default async function UserDashboardPage() {
       case "Collected":
         return {
           text: "Collected",
-          icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+          icon: <CheckCircle2 className="w-5 h-5 text-primary" />,
           colorClass: "text-green-400",
           description:
             "You have successfully collected your Permanent Voter Card.",
@@ -56,7 +56,7 @@ export default async function UserDashboardPage() {
       case "Pending":
         return {
           text: "Pending",
-          icon: <Clock className="w-5 h-5 text-yellow-500" />,
+          icon: <Clock className="w-5 h-5 text-primary" />,
           colorClass: "text-yellow-400",
           description: "Your PVC collection status is pending update.",
         };
@@ -64,7 +64,7 @@ export default async function UserDashboardPage() {
       default:
         return {
           text: "Not Collected",
-          icon: <Clock className="w-5 h-5 text-red-500" />,
+          icon: <Clock className="w-5 h-5 text-primary" />,
           colorClass: "text-red-400",
           description: "You have not yet collected your Permanent Voter Card.",
         };
@@ -89,26 +89,28 @@ export default async function UserDashboardPage() {
       </div>
 
       {/* Status Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-10">
         <Card className="border-gray-400 shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row  items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-primary">
               NIN Verification
             </CardTitle>
             {ninDisplay.icon}
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${ninDisplay.colorClass}`}>
+            <div
+              className={`text-2xl  font-dm-sans font-bold ${ninDisplay.colorClass}`}
+            >
               {ninDisplay.text}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs font-dm-sans text-muted-foreground mt-1">
               {ninDisplay.description}
             </p>
           </CardContent>
         </Card>
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-primary">
+            <CardTitle className="text-sm font-space-grotesk font-medium text-primary">
               PVC Collection
             </CardTitle>
             {pvcDisplay.icon}
@@ -127,13 +129,13 @@ export default async function UserDashboardPage() {
             <CardTitle className="text-sm font-medium text-primary">
               Registered By
             </CardTitle>
-            <User className="w-5 h-5 text-green-500" />
+            <User className="w-5 h-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold text-primary">
               {user.registeredBy}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs font-dm-sans text-muted-foreground mt-1">
               You registered yourself on the platform.
             </p>
           </CardContent>
@@ -149,10 +151,10 @@ export default async function UserDashboardPage() {
               <CardTitle className="text-base font-medium text-primary">
                 Find INEC Centre
               </CardTitle>
-              <MapPin className="w-5 h-5 text-green-500" />
+              <MapPin className="w-5 h-5 text-primary" />
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-3">
                 Locate the nearest registration or collection center.
               </p>
               <Link href="/dashboard/user/find-centre" passHref>
@@ -167,10 +169,10 @@ export default async function UserDashboardPage() {
               <CardTitle className="text-base font-medium text-primary">
                 Update Profile
               </CardTitle>
-              <Pencil className="w-5 h-5 text-green-500" />
+              <Pencil className="w-5 h-5 text-primary" />
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-8">
                 Edit your personal details or PVC information.
               </p>
               <Link href="/dashboard/user/profile" passHref>
