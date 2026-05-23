@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 
 interface ModalProps {
   isOpen: boolean;
+  position?: "fixed" | "absolute";
   title?: string;
   children: ReactNode;
   onClose?: () => void;
@@ -13,6 +14,7 @@ interface ModalProps {
 
 export default function Modal({
   isOpen,
+  position = "fixed",
   title,
   children,
   onClose,
@@ -22,8 +24,11 @@ export default function Modal({
 }: ModalProps) {
   if (!isOpen) return null;
 
+  const wrapperClass =
+    position === "absolute" ? "absolute inset-0" : "fixed inset-0";
+
   return (
-    <div className="fixed inset-0 z-50">
+    <div className={`${wrapperClass} z-50`}>
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
