@@ -1,6 +1,7 @@
 import Logo from "../ui/Logo";
 
 import Modal from "../ui/modal";
+import InputGroup from "../ui/InputGroup";
 import { UserCircle, Bell, Search } from "lucide-react";
 import { useState, useEffect, ReactNode } from "react";
 
@@ -9,23 +10,72 @@ export default function UserDashboard({
   showModal = false,
   modalTitle = "Verify Your Information",
   modalContent = "Please complete your profile setup before continuing.",
+  verifyEndpoint = "/api/verify-nin",
   onModalClose,
 }: {
   children: ReactNode;
   showModal?: boolean;
   modalTitle?: string;
   modalContent?: ReactNode;
+  verifyEndpoint?: string;
   onModalClose?: () => void;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(showModal);
+  const [nin, setNin] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [verified, setVerified] = useState(false);
 
   useEffect(() => {
     setIsModalOpen(showModal);
   }, [showModal]);
 
   const handleCloseModal = () => {
+    // Prevent closing if not verified to keep the modal blocking.
+    if (!verified) return;
     setIsModalOpen(false);
     onModalClose?.();
+  };
+
+  const verifyNin = async () => {
+    setErrorMsg("");
+    if (nin.length !== 11) {
+      setErrorMsg("NIN must be exactly 11 digits");
+      return;
+    }
+
+    setStatus("loading");
+
+    try {
+      const res = await fetch(verifyEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nin }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error || "Verification failed");
+      }
+
+      const data = await res.json().catch(() => ({}));
+      // Assume external API returns { verified: true } on success
+      if (data?.verified) {
+        setStatus("success");
+        setVerified(true);
+        // allow closing now
+        setIsModalOpen(false);
+        onModalClose?.();
+      } else {
+        setStatus("error");
+        setErrorMsg(data?.message || "NIN could not be verified");
+      }
+    } catch (err: any) {
+      setStatus("error");
+      setErrorMsg(err?.message || "Verification failed");
+    }
   };
 
   return (
@@ -93,7 +143,33 @@ export default function UserDashboard({
             onClose={handleCloseModal}
             closeButton={false}
           >
-            {modalContent}
+            <div className="space-y-4">
+              <p className="text-sm text-green-100">{modalContent}</p>
+
+              {errorMsg && (
+                <div className="p-3 bg-red-600/20 text-red-300 rounded-lg text-sm font-medium">
+                  {errorMsg}
+                </div>
+              )}
+
+              <InputGroup
+                label="National Identification Number (NIN)"
+                name="nin"
+                placeholder="Enter your 11-digit NIN"
+                value={nin}
+                onChange={(_, v) => setNin(v)}
+              />
+
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={verifyNin}
+                  disabled={status === "loading"}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg disabled:opacity-60"
+                >
+                  {status === "loading" ? "Verifying..." : "Verify NIN"}
+                </button>
+              </div>
+            </div>
           </Modal>
         </main>
       </div>

@@ -6,6 +6,8 @@ import Link from "next/link";
 import { CheckCircle2, Clock, MapPin, User, Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
 import Modal from "@/components/ui/modal";
+import InputGroup from "@/components/ui/InputGroup";
+import { SpinnerLoader } from "@/components/ui/Loader";
 
 const getNinStatusDisplay = (status: string) => {
   switch (status) {
@@ -85,6 +87,32 @@ export default function UserDashboardPage({
     setIsModalOpen(false);
     onModalClose?.();
   };
+  const [nin, setNin] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [ninError, setNinError] = useState<string | null>(null);
+
+  const handleVerify = async () => {
+    setNinError(null);
+    if (!nin || nin.trim().length < 6) {
+      setNinError("Please enter a valid NIN.");
+      return;
+    }
+    setIsVerifying(true);
+    // Mock verification flow for demo purposes
+    try {
+      await new Promise((res) => setTimeout(res, 1000));
+      // simple mock rule: if length >= 9 consider verified
+      if (nin.replace(/\D/g, "").length >= 9) {
+        // update local display state (for demo only)
+        user.ninStatus = "Verified";
+      } else {
+        user.ninStatus = "Rejected";
+      }
+    } finally {
+      setIsVerifying(false);
+      setIsModalOpen(false);
+    }
+  };
   const user = {
     name: "Normal User",
     ninStatus: "Pending Verification", // Can be "Pending Verification", "Verified", "Rejected"
@@ -96,7 +124,7 @@ export default function UserDashboardPage({
   const pvcDisplay = getPvcStatusDisplay(user.pvcStatus);
 
   return (
-    <div className="space-y-8">
+    <div className=" relative space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-space-grotesk font-bold text-primary">
@@ -205,15 +233,69 @@ export default function UserDashboardPage({
           </Card>
         </div>
       </div>
-      {/* Modal Overlay - Outside overflow container */}
-      <Modal
-        isOpen={isModalOpen}
-        title={modalTitle}
-        onClose={handleCloseModal}
-        closeButton={false}
-      >
-        {modalContent}
-      </Modal>
+      {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
+      {isModalOpen && (
+        <div
+          className="fixed top-0 bottom-0 right-0 z-50"
+          style={{ left: "256px" }}
+        >
+          <Modal
+            isOpen={isModalOpen}
+            position="fixed"
+            title={modalTitle}
+            onClose={handleCloseModal}
+            closeButton={false}
+            className="absolute!"
+            actions={
+              <>
+                <button
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 rounded bg-transparent border border-green-700 text-green-200"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={handleVerify}
+                  disabled={isVerifying}
+                  className="px-4 py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
+                >
+                  {isVerifying ? (
+                    <SpinnerLoader text="Verifying..." />
+                  ) : (
+                    "Verify NIN"
+                  )}
+                </button>
+              </>
+            }
+          >
+            <div className="space-y-3">
+              <p className="text-sm text-green-100">{modalContent}</p>
+              <InputGroup
+                label="NIN"
+                name="nin"
+                onChange={(field, value) => setNin(value)}
+                placeholder="Enter your NIN"
+                type="text"
+                value={nin}
+              />
+              {ninError && <p className="text-sm text-red-400">{ninError}</p>}
+              <p className="text-xs text-muted-foreground">
+                This is a visual demo. Verification is mocked locally.
+              </p>
+            </div>
+          </Modal>
+        </div>
+      )}
+
+      {/* Demo trigger button */}
+      <div>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="mt-6 inline-block bg-primary text-white px-4 py-2 rounded"
+        >
+          Open NIN Verify Modal
+        </button>
+      </div>
     </div>
   );
 }
