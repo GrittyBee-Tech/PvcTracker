@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   title: "PVC WAKA - Empowering Voters, Strengthening Democracy",
   description:
     "PVC WAKA is a platform dedicated to empowering Nigerian voters by providing easy access to information about Permanent Voter's Card (PVC) registration and collection. Our mission is to strengthen democracy by ensuring that every eligible voter can easily check their PVC status, find INEC centers, and track their registration progress online. Join us in our movement for electoral reform and make your voice heard.",
+  icons: [
+    { rel: "icon", url: "/favicon.png" },
+    { rel: "apple-touch-icon", url: "/favicon.png" },
+  ],
 };
 
 export default function RootLayout({
