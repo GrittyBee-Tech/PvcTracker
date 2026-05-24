@@ -20,7 +20,7 @@ export const authConfig = {
       return session;
     },
   },
-  pages: {
-    signIn: "/auth/login", // Redirects to your custom login page if unauthenticated
-  },
+     pages: {
+     signIn: "/auth/login", // Redirects to your custom login page if unauthenticated
+   },
 } satisfies NextAuthConfig;

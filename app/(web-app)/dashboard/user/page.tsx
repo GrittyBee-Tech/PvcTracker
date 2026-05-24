@@ -124,7 +124,7 @@ export default function UserDashboardPage({
   const pvcDisplay = getPvcStatusDisplay(user.pvcStatus);
 
   return (
-    <div className=" relative space-y-8">
+    <div className="relative space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-space-grotesk font-bold text-primary">
@@ -236,21 +236,20 @@ export default function UserDashboardPage({
       {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
       {isModalOpen && (
         <div
-          className="fixed top-0 bottom-0 right-0 z-50"
-          style={{ left: "256px" }}
+          className="fixed top-0 right-0 bottom-0 z-50"
+          style={{ left: "16rem" }}
         >
           <Modal
             isOpen={isModalOpen}
-            position="fixed"
+            position="absolute"
             title={modalTitle}
             onClose={handleCloseModal}
             closeButton={false}
-            className="absolute!"
             actions={
               <>
                 <button
                   onClick={handleCloseModal}
-                  className="px-4 py-2 rounded bg-transparent border border-green-700 text-green-200"
+                  className="px-4 py-2 rounded bg-primary border border-green-700 text-green-200"
                 >
                   Close
                 </button>
@@ -260,16 +259,23 @@ export default function UserDashboardPage({
                   className="px-4 py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
                 >
                   {isVerifying ? (
-                    <SpinnerLoader text="Verifying..." />
+                    <SpinnerLoader text="Processing..." />
                   ) : (
-                    "Verify NIN"
+                    "Pay ₦50 & Verify"
                   )}
                 </button>
               </>
             }
           >
-            <div className="space-y-3">
-              <p className="text-sm text-green-100">{modalContent}</p>
+            <div className="space-y-4">
+              <p className="text-primary">{modalContent}</p>
+              <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
+                <p className="font-semibold">Verification Fee</p>
+                <p>₦50 will be charged for this NIN verification request.</p>
+              </div>
+              <p className="text-primary font-dm-sans -mt-3">
+                Please enter your NIN and continue to pay the verification fee.
+              </p>
               <InputGroup
                 label="NIN"
                 name="nin"
