@@ -285,7 +285,7 @@ export default function UserDashboardPage({
                 value={nin}
               />
               {ninError && <p className="text-sm text-red-400">{ninError}</p>}
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs font-dm-sans text-muted-foreground">
                 This is a visual demo. Verification is mocked locally.
               </p>
             </div>
