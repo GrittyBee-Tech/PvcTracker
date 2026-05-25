@@ -10,6 +10,8 @@ interface ModalProps {
   actions?: ReactNode;
   closeButton?: boolean;
   className?: string;
+  size?: "sm" | "md" | "lg" | "xl";
+  bg?: string;
 }
 
 export default function Modal({
@@ -21,11 +23,20 @@ export default function Modal({
   actions,
   closeButton = true,
   className = "",
+  size = "md",
+  bg = "bg-white",
 }: ModalProps) {
   if (!isOpen) return null;
 
   const wrapperClass =
     position === "absolute" ? "absolute inset-0" : "fixed inset-0";
+
+  const sizeClasses = {
+    sm: "w-[300px] max-w-sm",
+    md: "w-[500px] max-w-md",
+    lg: "w-[700px] max-w-lg",
+    xl: "w-[900px] max-w-xl",
+  };
 
   return (
     <div className={`${wrapperClass} z-50`}>
@@ -38,7 +49,15 @@ export default function Modal({
       {/* Modal Content */}
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
-          className={`bg-white border border-green-900/30 rounded-lg shadow-2xl max-w-lg w-full ${className}`}
+          className={`
+            ${bg}
+            ${sizeClasses[size]}
+            w-full
+            border border-green-900/30
+            rounded-lg
+            shadow-2xl
+            ${className}
+          `}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -47,6 +66,7 @@ export default function Modal({
               <h2 className="text-xl font-heading font-semibold text-primary">
                 {title}
               </h2>
+
               {closeButton && (
                 <button
                   onClick={onClose}
@@ -61,7 +81,7 @@ export default function Modal({
           {/* Body */}
           <div className="px-6 py-4 text-primary">{children}</div>
 
-          {/* Footer / Actions */}
+          {/* Footer */}
           {actions && (
             <div className="px-6 py-4 border-t border-green-900/30 flex items-center justify-end gap-3">
               {actions}
