@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import Modal from "@/components/ui/modal";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
+// import PaystackPop from "@paystack/inline-js";
 
 const getNinStatusDisplay = (status: string) => {
   switch (status) {
@@ -87,6 +88,7 @@ export default function UserDashboardPage({
     setIsModalOpen(false);
     onModalClose?.();
   };
+  // const paystack = new PaystackPop();
   const [nin, setNin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [ninError, setNinError] = useState<string | null>(null);
@@ -123,6 +125,35 @@ export default function UserDashboardPage({
   const ninDisplay = getNinStatusDisplay(user.ninStatus);
   const pvcDisplay = getPvcStatusDisplay(user.pvcStatus);
 
+  //handle payment with paystack inline js
+  // const handlePayment = () => {
+  //   paystack.newTransaction({
+  //     key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+
+  //     email: "user@email.com",
+
+  //     amount: 15000, // ₦150 in kobo
+
+  //     currency: "NGN",
+
+  //     reference: `nin_${Date.now()}`,
+
+  //     onSuccess(transaction) {
+  //       console.log(transaction);
+
+  //       // call your backend here
+  //       verifyNIN(transaction.reference);
+  //     },
+
+  //     onCancel() {
+  //       console.log("Payment cancelled");
+  //     },
+
+  //     onError(error) {
+  //       console.log(error);
+  //     },
+  //   });
+  // };
   return (
     <div className="relative space-y-8">
       <div className="flex items-center justify-between">
