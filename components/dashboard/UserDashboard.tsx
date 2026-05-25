@@ -88,7 +88,7 @@ export default function UserDashboard({
           </div>
         </div>
         <div className="flex-1 py-6 px-4">
-          <div className="text-xs font-semibold text-green-100/40 uppercase tracking-wider mb-4 px-4">
+          <div className="text-xs border-border border-b  font-semibold text-green-100/40 uppercase tracking-wider mb-4 px-4">
             Menu
           </div>
         </div>

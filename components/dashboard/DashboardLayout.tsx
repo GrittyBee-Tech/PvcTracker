@@ -2,11 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import Logo from "../ui/Logo";
-import { UserCircle, Bell, Search } from "lucide-react";
+import { UserCircle, Bell, Search, Navigation } from "lucide-react";
 import * as Icons from "lucide-react";
 import Link from "next/link";
 import LogoutButton from "../ui/LogoutButton";
 import { useStore } from "@/store";
+import { TbNavigationDown } from "react-icons/tb";
 
 export type DashboardLink = {
   href: string;
@@ -91,7 +92,8 @@ const DashboardSideBar = ({
         </div>
       </div>
       <div className="flex-1 p-4 mt-4 pb-0 h-full flex flex-col">
-        <div className="text-lg font-bold text-primary uppercase tracking-wider mb-4 px-4">
+        <div className="flex items-center gap-2 text-lg border-b border-primary font-bold text-primary uppercase tracking-wider mb-4 px-4">
+          <TbNavigationDown className="w-4 h-4 text-primary" />
           Menu
         </div>
         <nav className="flex flex-col gap-2 mt-4 h-full">
@@ -105,7 +107,7 @@ const DashboardSideBar = ({
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-primary hover:bg-primary/90 hover:text-white ${
+                className={`group flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-primary hover:bg-primary/90 hover:text-white ${
                   isActive
                     ? "font-medium border border-green-500/20 shadow-sm bg-primary text-white"
                     : "text-green-100/70 hover:text-green-100"
@@ -113,7 +115,7 @@ const DashboardSideBar = ({
               >
                 {IconComponent && (
                   <IconComponent
-                    className={`w-5 h-5 hover:text-white ${isActive ? "tex-white" : "text-primary"}`}
+                    className={`w-5 h-5 group-hover:text-white ${isActive ? "text-white" : "text-primary"}`}
                   />
                 )}
                 {link.label}

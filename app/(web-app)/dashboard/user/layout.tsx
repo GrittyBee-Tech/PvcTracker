@@ -4,6 +4,12 @@ const links = [
   { href: "/dashboard/user", label: "Dashboard", icon: "LayoutDashboard" },
   { href: "/dashboard/user/profile", label: "Profile", icon: "User" },
   { href: "/dashboard/user/find-centre", label: "Find Centre", icon: "MapPin" },
+
+  {
+    href: "/dashboard/user/find-centre",
+    label: "Report Issue",
+    icon: "AlertTriangle",
+  },
 ];
 
 export default function UserLayout({
