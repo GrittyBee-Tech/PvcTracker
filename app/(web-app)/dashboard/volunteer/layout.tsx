@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { useAuth } from "@/hooks/useAuth";
 
 const links = [
   { href: "/dashboard/volunteer", label: "Dashboard", icon: "LayoutDashboard" },
@@ -15,15 +15,15 @@ export default function VolunteerLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   useEffect(() => {
-    if (status === "authenticated" && session?.user?.role !== "volunteer") {
+    if (isAuthenticated && user?.role !== "volunteer") {
       router.replace("/dashboard/user");
     }
-  }, [router, session, status]);
+  }, [router, isAuthenticated, user]);
 
-  if (status === "loading") {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
         <p className="text-sm text-slate-500">Checking authorization…</p>
@@ -31,11 +31,9 @@ export default function VolunteerLayout({
     );
   }
 
-  if (status === "authenticated" && session?.user?.role === "volunteer") {
+  if (isAuthenticated && user?.role === "volunteer") {
     return (
-      <DashboardLayout links={links} role="Volunteer">
-        {children}
-      </DashboardLayout>
+      <DashboardLayout links={links} role="Volunteer" children={children} />
     );
   }
 
