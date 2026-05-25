@@ -325,14 +325,14 @@ export default function UserDashboardPage({
       )}
 
       {/* Demo trigger button */}
-      <div>
+      {/* <div>
         <button
           onClick={() => setIsModalOpen(true)}
           className="mt-6 inline-block bg-primary text-white px-4 py-2 rounded"
         >
           Open NIN Verify Modal
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
