@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Montserrat, Space_Grotesk } from "next/font/google";
-// import "./globals.css";
+import "./globals.css";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
