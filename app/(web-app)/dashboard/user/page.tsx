@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import Modal from "@/components/ui/modal";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
+// import PaystackPop from "@paystack/inline-js";
 
 export default function UserDashboardPage({
   showModal = true,
@@ -30,6 +31,7 @@ export default function UserDashboardPage({
     setIsModalOpen(false);
     onModalClose?.();
   };
+  // const paystack = new PaystackPop();
   const [nin, setNin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [ninError, setNinError] = useState<string | null>(null);
@@ -124,8 +126,37 @@ export default function UserDashboardPage({
   const ninDisplay = getNinStatusDisplay(user.ninStatus);
   const pvcDisplay = getPvcStatusDisplay(user.pvcStatus);
 
+  //handle payment with paystack inline js
+  // const handlePayment = () => {
+  //   paystack.newTransaction({
+  //     key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+
+  //     email: "user@email.com",
+
+  //     amount: 15000, // ₦150 in kobo
+
+  //     currency: "NGN",
+
+  //     reference: `nin_${Date.now()}`,
+
+  //     onSuccess(transaction) {
+  //       console.log(transaction);
+
+  //       // call your backend here
+  //       verifyNIN(transaction.reference);
+  //     },
+
+  //     onCancel() {
+  //       console.log("Payment cancelled");
+  //     },
+
+  //     onError(error) {
+  //       console.log(error);
+  //     },
+  //   });
+  // };
   return (
-    <div className=" relative space-y-8">
+    <div className="relative space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-space-grotesk font-bold text-primary">
@@ -237,21 +268,20 @@ export default function UserDashboardPage({
       {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
       {isModalOpen && (
         <div
-          className="fixed top-0 bottom-0 right-0 z-50"
-          style={{ left: "256px" }}
+          className="fixed top-0 right-0 bottom-0 z-50"
+          style={{ left: "16rem" }}
         >
           <Modal
             isOpen={isModalOpen}
-            position="fixed"
+            position="absolute"
             title={modalTitle}
             onClose={handleCloseModal}
             closeButton={false}
-            className="absolute!"
             actions={
               <>
                 <button
                   onClick={handleCloseModal}
-                  className="px-4 py-2 rounded bg-transparent border border-green-700 text-green-200"
+                  className="px-4 py-2 rounded bg-primary border border-green-700 text-green-200"
                 >
                   Close
                 </button>
@@ -261,16 +291,23 @@ export default function UserDashboardPage({
                   className="px-4 py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
                 >
                   {isVerifying ? (
-                    <SpinnerLoader text="Verifying..." />
+                    <SpinnerLoader text="Processing..." />
                   ) : (
-                    "Verify NIN"
+                    "Pay ₦50 & Verify"
                   )}
                 </button>
               </>
             }
           >
-            <div className="space-y-3">
-              <p className="text-sm text-green-100">{modalContent}</p>
+            <div className="space-y-4">
+              <p className="text-primary">{modalContent}</p>
+              <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
+                <p className="font-semibold">Verification Fee</p>
+                <p>₦50 will be charged for this NIN verification request.</p>
+              </div>
+              <p className="text-primary font-dm-sans -mt-3">
+                Please enter your NIN and continue to pay the verification fee.
+              </p>
               <InputGroup
                 label="NIN"
                 name="nin"
@@ -280,7 +317,7 @@ export default function UserDashboardPage({
                 value={nin}
               />
               {ninError && <p className="text-sm text-red-400">{ninError}</p>}
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs font-dm-sans text-muted-foreground">
                 This is a visual demo. Verification is mocked locally.
               </p>
             </div>
@@ -289,14 +326,14 @@ export default function UserDashboardPage({
       )}
 
       {/* Demo trigger button */}
-      <div>
+      {/* <div>
         <button
           onClick={() => setIsModalOpen(true)}
           className="mt-6 inline-block bg-primary text-white px-4 py-2 rounded"
         >
           Open NIN Verify Modal
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
