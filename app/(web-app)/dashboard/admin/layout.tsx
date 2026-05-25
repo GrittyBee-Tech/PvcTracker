@@ -37,9 +37,7 @@ export default function AdminLayout({
 
   if (isAuthenticated && user?.role === "admin") {
     return (
-      <DashboardLayout links={adminLinks} role="Admin">
-        {children}
-      </DashboardLayout>
+      <DashboardLayout links={adminLinks} role="Admin" children={children} />
     );
   }
 
