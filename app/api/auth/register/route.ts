@@ -2,7 +2,7 @@ import "server-only";
 
 import { withDb } from "@/lib/withDb";
 import UserModel from "@/models/users";
-import { CreateUserRequestData, createUserSchema } from "@/schemas/userSchema";
+import { createUserSchema } from "@/schemas/userSchema";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import bcrypt from "bcryptjs";

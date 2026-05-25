@@ -1,6 +1,11 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import DashboardLayout, {
   DashboardLink,
 } from "@/components/dashboard/DashboardLayout";
+import { useAuth } from "@/hooks/useAuth";
 
 const adminLinks: DashboardLink[] = [
   { href: "/dashboard/admin", label: "Dashboard", icon: "Home" },
@@ -13,7 +18,28 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <DashboardLayout links={adminLinks} role="Admin" children={children} />
-  );
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role !== "admin") {
+      router.replace("/dashboard/user");
+    }
+  }, [router, isAuthenticated, user]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <p className="text-sm text-slate-500">Checking authorization…</p>
+      </div>
+    );
+  }
+
+  if (isAuthenticated && user?.role === "admin") {
+    return (
+      <DashboardLayout links={adminLinks} role="Admin" children={children} />
+    );
+  }
+
+  return null;
 }

@@ -2,8 +2,10 @@
 
 import Logo from "@/components/ui/Logo";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Suspense } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { SpinnerLoader } from "@/components/ui/Loader";
+import { useAuth } from "@/hooks/useAuth";
 
 function AuthPortalContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -45,13 +47,19 @@ function AuthPortalContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function UserAuth({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/dashboard");
+    }
+  }, [pathname]);
+
   return (
-    <Suspense
-      fallback={
-        <div className="p-8 text-center">Loading authentication portal...</div>
-      }
-    >
-      <AuthPortalContent children={children} />
+    <Suspense fallback={<SpinnerLoader />}>
+      <AuthPortalContent>{children}</AuthPortalContent>
     </Suspense>
   );
 }

@@ -2,16 +2,16 @@
 
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
+import { authClient } from "@/lib/auth-client";
 import { Eye, EyeOff } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
 export default function Login() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -47,73 +47,51 @@ export default function Login() {
       setIsLoading(false);
       return;
     }
-    try {
-      const result = await signIn("credentials", {
+
+    const callbackURL = searchParams?.get("callbackUrl") ?? undefined;
+
+    const { data, error } = await authClient.signIn.email(
+      {
         email: formData.email,
         password: formData.password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        switch (result.error) {
-          case "CredentialsSignin":
-            setError("Invalid email or password.");
-            Swal.fire({
-              title: error || "Internal Server Error",
-              icon: "error",
-              toast: true,
-              position: "top-end",
-              timer: 2500,
-              timerProgressBar: true,
-              showConfirmButton: false,
-            });
-            break;
-          default:
-            setError(result.error || "An unexpected error occurred.");
-        }
-        setIsLoading(false);
-        return;
-      }
-
-      Swal.fire({
-        title: "Logged in successfully!",
-        icon: "success",
-        toast: true,
-        position: "top-end",
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false,
-      });
-      const sessionResponse = await fetch("/api/auth/session");
-      const session = await sessionResponse.json();
-      setIsLoading(false);
-
-      const userRole = session?.user?.role;
-      setTimeout(() => {
-        if (userRole === "volunteer") {
-          router.push("/dashboard/volunteer");
-        } else if (userRole === "admin") {
-          router.push("/dashboard/admin");
-        } else {
+        rememberMe: true,
+        callbackURL,
+      },
+      {
+        onRequest: (ctx) => {
+          setIsLoading(true);
+        },
+        onSuccess: (ctx) => {
+          Swal.fire({
+            title: "Login successful!",
+            icon: "success",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
           router.push("/dashboard/user");
-        }
-      }, 2000);
-    } catch (error) {
-      setError("An unexpected error occurred. Please try again.");
-      Swal.fire({
-        title:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred.",
-        icon: "error",
-        toast: true,
-        position: "top-end",
-        timer: 2500,
-        timerProgressBar: true,
-        showConfirmButton: false,
-      });
-      setIsLoading(false);
-    }
+        },
+        onError: (ctx) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: ctx.error.message || "Login failed.",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        },
+      },
+    );
+
+    console.log({ data, error });
+
+    // signIn will redirect the browser; if it doesn't, stop loading.
+    setIsLoading(false);
   };
 
   return (
@@ -163,6 +141,9 @@ export default function Login() {
         >
           {isLoading ? <SpinnerLoader text="Logging in..." /> : "Login"}
         </button>
+        {error && (
+          <p className="text-sm text-red-500 mt-2 text-center">{error}</p>
+        )}
       </form>
     </section>
   );

@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { useEffect } from "react";
-import { useSession } from "next-auth/react";
 
 export interface User {
   email: string;
@@ -57,36 +56,5 @@ export const useStore = create<Store>()(
     },
   ),
 );
-
-/**
- * Hook to sync NextAuth session with Zustand store
- * Call this in your root layout or app component
- */
-export function useSyncSession() {
-  const { data: session } = useSession();
-  const { setUser, clearUser } = useStore();
-
-  useEffect(() => {
-    if (session?.user) {
-      setUser(session.user as unknown as User);
-    } else {
-      clearUser();
-    }
-  }, [session, setUser, clearUser]);
-}
-
-/**
- * Hook to access auth context from either Zustand store or NextAuth session
- * Prefers Zustand store (cached) but falls back to NextAuth session
- */
-export function useAuthContext() {
-  const { user } = useStore();
-  const { data: session } = useSession();
-
-  return {
-    user: user || (session?.user as User | undefined),
-    isLoading: !useStore.getState().isHydrated,
-  };
-}
 
 export default useStore;

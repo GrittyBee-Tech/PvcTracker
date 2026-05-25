@@ -6,7 +6,7 @@ import { UserCircle, Bell, Search, Navigation } from "lucide-react";
 import * as Icons from "lucide-react";
 import Link from "next/link";
 import LogoutButton from "../ui/LogoutButton";
-import { useStore } from "@/store";
+import { useAuth } from "@/hooks/useAuth";
 import { TbNavigationDown } from "react-icons/tb";
 
 export type DashboardLink = {
@@ -24,8 +24,8 @@ export default function DashboardLayout({
   role: "User" | "Volunteer" | "Admin";
   links: DashboardLink[];
 }) {
-  const { user } = useStore();
-  const displayName = user?.firstName || "User";
+  const { user } = useAuth();
+  const displayName = user?.name.split(" ")[0] || "User";
 
   return (
     <div className="flex h-screen bg-white text-white font-sans">

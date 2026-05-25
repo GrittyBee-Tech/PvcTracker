@@ -6,6 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import Select from "@/components/ui/Select";
 import Swal from "sweetalert2";
 import { SpinnerLoader } from "@/components/ui/Loader";
+import { authClient } from "@/lib/auth-client";
 
 interface ValidationErrorDetail {
   field: string;
@@ -26,7 +27,6 @@ export default function Register() {
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
-  const [globalError, setGlobalError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<ValidationErrorDetail[]>([]);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -43,70 +43,120 @@ export default function Register() {
     return fieldErrors.find((err) => err.field === fieldName)?.message;
   };
 
+  const validateForm = () => {
+    const errors: ValidationErrorDetail[] = [];
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\+?[0-9]{7,15}$/;
+
+    if (!signupDetails.firstName.trim()) {
+      errors.push({ field: "firstName", message: "First name is required." });
+    }
+
+    if (!signupDetails.lastName.trim()) {
+      errors.push({ field: "lastName", message: "Last name is required." });
+    }
+
+    if (!signupDetails.email.trim()) {
+      errors.push({ field: "email", message: "Email address is required." });
+    } else if (!emailRegex.test(signupDetails.email)) {
+      errors.push({ field: "email", message: "Enter a valid email address." });
+    }
+
+    if (!signupDetails.phoneNumber.trim()) {
+      errors.push({
+        field: "phoneNumber",
+        message: "Phone number is required.",
+      });
+    } else if (!phoneRegex.test(signupDetails.phoneNumber)) {
+      errors.push({
+        field: "phoneNumber",
+        message: "Enter a valid phone number.",
+      });
+    }
+
+    if (!signupDetails.nin.trim()) {
+      errors.push({ field: "nin", message: "NIN is required." });
+    }
+
+    if (!signupDetails.dateOfBirth.trim()) {
+      errors.push({
+        field: "dateOfBirth",
+        message: "Date of birth is required.",
+      });
+    }
+
+    if (!signupDetails.gender.trim()) {
+      errors.push({ field: "gender", message: "Gender is required." });
+    }
+
+    if (!signupDetails.password.trim()) {
+      errors.push({ field: "password", message: "Password is required." });
+    } else if (signupDetails.password.length < 8) {
+      errors.push({
+        field: "password",
+        message: "Password must be at least 8 characters.",
+      });
+    }
+
+    setFieldErrors(errors);
+    return errors.length === 0;
+  };
+
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    setStatus("loading");
 
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(signupDetails),
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        setStatus("error");
-        // Catch structured Zod validation errors from your backend
-        if (data.details && Array.isArray(data.details)) {
-          setFieldErrors(data.details);
-          Swal.fire({
-            icon: "error",
-            title: "Validation Error",
-            text: "Please correct the highlighted fields.",
-            toast: true,
-            position: "top-end",
-            timer: 2000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        } else {
-          setGlobalError(data.error || "Registration failed.");
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: globalError || "Registration failed.",
-            toast: true,
-            position: "top-end",
-            timer: 2000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        }
-        return;
-      }
-
-      setStatus("success");
-      Swal.fire({
-        icon: "success",
-        title: "Registration Successful",
-        text: "Check your email for verification link.",
-      });
-    } catch (error) {
+    if (!validateForm()) {
       setStatus("error");
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: "An unexpected error occurred.",
+        title: "Validation Error",
+        text: "Please correct the highlighted fields.",
         toast: true,
         position: "top-end",
-        timer: 200,
+        timer: 2000,
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      return;
     }
+
+    const { data, error } = await authClient.signUp.email(
+      {
+        ...signupDetails,
+        role: "user",
+        name: `${signupDetails.firstName} ${signupDetails.lastName}`,
+        dateOfBirth: new Date(signupDetails.dateOfBirth),
+        callbackURL: "/dashboard/user",
+      },
+      {
+        onRequest: (ctx) => {
+          setStatus("loading");
+        },
+        onSuccess: (ctx) => {
+          setStatus("success");
+          Swal.fire({
+            icon: "success",
+            title: "Registration Successful",
+            text: "Account created. Check your inbox for a verification link.",
+          });
+        },
+        onError: (ctx) => {
+          // display the error message
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: ctx.error.message || "Registration failed.",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        },
+      },
+    );
+
+    console.log({ data, error });
   };
 
   return (
@@ -187,14 +237,19 @@ export default function Register() {
           )}
         </div>
 
-        <InputGroup
-          label="National Identification Number (NIN)"
-          name="nin"
-          onChange={handleChange}
-          placeholder="Enter your NIN"
-          type="text"
-          value={signupDetails.nin}
-        />
+        <div>
+          <InputGroup
+            label="National Identification Number (NIN)"
+            name="nin"
+            onChange={handleChange}
+            placeholder="Enter your NIN"
+            type="text"
+            value={signupDetails.nin}
+          />
+          {getFieldError("nin") && (
+            <p className="text-red-400 text-xs mt-1">{getFieldError("nin")}</p>
+          )}
+        </div>
 
         <div>
           <InputGroup
