@@ -9,10 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@better-auth/mongo-adapter": "^1.6.11",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@react-email/components": "^1.0.12",
     "@tanstack/react-table": "^8.21.3",
     "bcryptjs": "^3.0.3",
+    "better-auth": "^1.6.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.16.0",

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Montserrat, Space_Grotesk } from "next/font/google";
-import "./globals.css";
-import { AppSessionProvider } from "@/components/SessionProvider";
+// import "./globals.css";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -39,9 +38,7 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${montserrat.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="">
-        <AppSessionProvider>{children}</AppSessionProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

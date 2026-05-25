@@ -1,9 +1,9 @@
 export const WaveLoader = () => (
-  <div className="flex items-center justify-center space-x-2">
+  <div className="flex items-center justify-center space-x-2 h-screen w-full">
     <span className="sr-only">Loading...</span>
-    <div className="h-3 w-3 animate-bounce rounded-full bg-blue-600 [animation-delay:-0.3s]"></div>
-    <div className="h-3 w-3 animate-bounce rounded-full bg-blue-600 [animation-delay:-0.15s]"></div>
-    <div className="h-3 w-3 animate-bounce rounded-full bg-blue-600"></div>
+    <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+    <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.15s]"></div>
+    <div className="h-3 w-3 animate-bounce rounded-full bg-primary"></div>
   </div>
 );
 
@@ -25,9 +25,17 @@ export const SkeletonLoader = () => (
   </div>
 );
 
-export const SpinnerLoader = ({ text }: { text?: string }) => (
-  <div className="flex items-center justify-center">
-    <div className="h-5 w-5 animate-spin rounded-full border-3 border-gray-200 border-t-green-500" />
+export const SpinnerLoader = ({
+  text,
+  size = "size-5",
+}: {
+  text?: string;
+  size?: string;
+}) => (
+  <div className="flex items-center justify-center h-full w-full">
+    <div
+      className={`${size} animate-spin rounded-full border-3 border-gray-200 border-t-green-500`}
+    />
     {text && <span className="ml-2">{text}</span>}
   </div>
 );

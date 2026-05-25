@@ -9,63 +9,6 @@ import Modal from "@/components/ui/modal";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
 
-const getNinStatusDisplay = (status: string) => {
-  switch (status) {
-    case "Verified":
-      return {
-        text: "Verified",
-        icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
-        colorClass: "text-green-400",
-        description:
-          "Your National Identification Number has been successfully verified.",
-      };
-    case "Rejected":
-      return {
-        text: "Rejected",
-        icon: <Clock className="w-5 h-5 text-primary" />,
-        colorClass: "text-red-400",
-        description:
-          "Your NIN verification was rejected. Please check your profile for details.",
-      };
-    case "Pending Verification":
-    default:
-      return {
-        text: "Pending Verification",
-        icon: <Clock className="w-5 h-5 text-primary " />,
-        colorClass: "text-yellow-400",
-        description: "Your National Identification Number is being processed.",
-      };
-  }
-};
-
-const getPvcStatusDisplay = (status: string) => {
-  switch (status) {
-    case "Collected":
-      return {
-        text: "Collected",
-        icon: <CheckCircle2 className="w-5 h-5 text-primary" />,
-        colorClass: "text-green-400",
-        description:
-          "You have successfully collected your Permanent Voter Card.",
-      };
-    case "Pending":
-      return {
-        text: "Pending",
-        icon: <Clock className="w-5 h-5 text-primary" />,
-        colorClass: "text-yellow-400",
-        description: "Your PVC collection status is pending update.",
-      };
-    case "Not Collected":
-    default:
-      return {
-        text: "Not Collected",
-        icon: <Clock className="w-5 h-5 text-primary" />,
-        colorClass: "text-red-400",
-        description: "You have not yet collected your Permanent Voter Card.",
-      };
-  }
-};
-
 export default function UserDashboardPage({
   showModal = true,
   modalTitle = "Verify Your Information",
@@ -118,6 +61,64 @@ export default function UserDashboardPage({
     ninStatus: "Pending Verification", // Can be "Pending Verification", "Verified", "Rejected"
     pvcStatus: "Not Collected", // Can be "Not Collected", "Collected", "Pending"
     registeredBy: "Self",
+  };
+
+  const getNinStatusDisplay = (status: string) => {
+    switch (status) {
+      case "Verified":
+        return {
+          text: "Verified",
+          icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+          colorClass: "text-green-400",
+          description:
+            "Your National Identification Number has been successfully verified.",
+        };
+      case "Rejected":
+        return {
+          text: "Rejected",
+          icon: <Clock className="w-5 h-5 text-primary" />,
+          colorClass: "text-red-400",
+          description:
+            "Your NIN verification was rejected. Please check your profile for details.",
+        };
+      case "Pending Verification":
+      default:
+        return {
+          text: "Pending Verification",
+          icon: <Clock className="w-5 h-5 text-primary " />,
+          colorClass: "text-yellow-400",
+          description:
+            "Your National Identification Number is being processed.",
+        };
+    }
+  };
+
+  const getPvcStatusDisplay = (status: string) => {
+    switch (status) {
+      case "Collected":
+        return {
+          text: "Collected",
+          icon: <CheckCircle2 className="w-5 h-5 text-primary" />,
+          colorClass: "text-green-400",
+          description:
+            "You have successfully collected your Permanent Voter Card.",
+        };
+      case "Pending":
+        return {
+          text: "Pending",
+          icon: <Clock className="w-5 h-5 text-primary" />,
+          colorClass: "text-yellow-400",
+          description: "Your PVC collection status is pending update.",
+        };
+      case "Not Collected":
+      default:
+        return {
+          text: "Not Collected",
+          icon: <Clock className="w-5 h-5 text-primary" />,
+          colorClass: "text-red-400",
+          description: "You have not yet collected your Permanent Voter Card.",
+        };
+    }
   };
 
   const ninDisplay = getNinStatusDisplay(user.ninStatus);

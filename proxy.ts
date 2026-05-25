@@ -1,54 +1,69 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export default function proxy(req: NextRequest) {
-  const { nextUrl } = req;
-  const isLoggedIn = !!(req as any).auth;
-  const userRole = (req as any).auth?.user?.role;
+const authPages = ["/auth/login", "/auth/register", "/verify-email"];
+const protectedPaths = ["/dashboard"];
 
-  const isDashboardRoute = nextUrl.pathname.startsWith("/dashboard");
-  const isVolunteerRoute = nextUrl.pathname.includes("/volunteer");
-  const isUserRoute = nextUrl.pathname.includes("/user");
-  const isAdminRoute = nextUrl.pathname.includes("/admin");
-  const isAuthRoute =
-    nextUrl.pathname === "/auth/login" || nextUrl.pathname === "/auth/register";
+function getDashboardDestination(role?: string) {
+  if (role === "admin") return "/dashboard/admin";
+  if (role === "volunteer") return "/dashboard/volunteer";
+  return "/dashboard/user";
+}
 
-  // 1. Guard: If trying to access a protected dashboard route and NOT logged in
-  if (isDashboardRoute && !isLoggedIn) {
-    // Redirect them to login, and remember where they were trying to go using callbackUrl
-    const loginUrl = new URL("/auth/login", nextUrl);
-    return NextResponse.redirect(loginUrl);
-  }
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
-  // 2. Guard: Role-Based Authorization
-  if (isVolunteerRoute && userRole !== "volunteer") {
-    // If they are logged in but aren't a volunteer, kick them to the standard user space
-    return NextResponse.redirect(new URL("/dashboard/user", nextUrl));
-  }
+export async function proxy(request: NextRequest) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  // 3. Guard: Prevent logged-in users from seeing login/register pages again
-  if (isAuthRoute && isLoggedIn) {
-    const destination =
-      userRole === "volunteer"
-        ? "/dashboard/volunteer"
-        : userRole === "admin"
-          ? "/dashboard/admin"
-          : "/dashboard/user";
-    return NextResponse.redirect(new URL(destination, nextUrl));
+  if (!session) {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
   return NextResponse.next();
 }
 
-// Define exactly which URL paths should trigger this middleware file
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (handled separately or explicitly in route layers)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/dashboard"], // Specify the routes the middleware applies to
 };
+
+// export async function proxy(request: NextRequest) {
+//   const { nextUrl: url } = request;
+//   const pathname = url.pathname;
+
+//   if (
+//     pathname.startsWith("/_next") ||
+//     pathname.startsWith("/static") ||
+//     pathname.startsWith("/favicon.ico") ||
+//     PUBLIC_FILE.test(pathname)
+//   ) {
+//     return NextResponse.next();
+//   }
+
+//   const token = await getToken({
+//     req: request,
+//     secret: authSecret,
+//   });
+
+//   if (protectedPaths.some((path) => pathname.startsWith(path))) {
+//     if (!token) {
+//       const loginUrl = new URL("/auth/login", url);
+//       loginUrl.searchParams.set("callbackUrl", pathname + url.search);
+//       return NextResponse.redirect(loginUrl);
+//     }
+//     return NextResponse.next();
+//   }
+
+//   if (authPages.some((path) => pathname.startsWith(path)) && token) {
+//     return NextResponse.redirect(
+//       new URL(getDashboardDestination(token.role), url),
+//     );
+//   }
+
+//   return NextResponse.next();
+// }
+
+// export const config = {
+//   matcher: ["/dashboard/:path*", "/auth/:path*", "/verify-email"],
+// };
