@@ -6,7 +6,7 @@ const links = [
   { href: "/dashboard/user/find-centre", label: "Find Centre", icon: "MapPin" },
 
   {
-    href: "/dashboard/user/find-centre",
+    href: "/dashboard/user/report-issues",
     label: "Report Issue",
     icon: "AlertTriangle",
   },
