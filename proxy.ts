@@ -13,11 +13,11 @@ export default function proxy(req: NextRequest) {
     nextUrl.pathname === "/auth/login" || nextUrl.pathname === "/auth/register";
 
   // 1. Guard: If trying to access a protected dashboard route and NOT logged in
-  if (isDashboardRoute && !isLoggedIn) {
-    // Redirect them to login, and remember where they were trying to go using callbackUrl
-    const loginUrl = new URL("/auth/login", nextUrl);
-    return NextResponse.redirect(loginUrl);
-  }
+  // if (isDashboardRoute && !isLoggedIn) {
+  //   // Redirect them to login, and remember where they were trying to go using callbackUrl
+  //   const loginUrl = new URL("/auth/login", nextUrl);
+  //   return NextResponse.redirect(loginUrl);
+  // }
 
   // 2. Guard: Role-Based Authorization
   if (isVolunteerRoute && userRole !== "volunteer") {

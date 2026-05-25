@@ -7,7 +7,7 @@ import { useState, useEffect, ReactNode } from "react";
 
 export default function UserDashboard({
   children,
-  showModal = false,
+  showModal = true,
   modalTitle = "Verify Your Information",
   modalContent = "Please complete your profile setup before continuing.",
   verifyEndpoint = "/api/verify-nin",
