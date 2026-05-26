@@ -1,0 +1,20 @@
+// better-auth.d.ts
+import { auth } from "@/lib/auth";
+import { IUser } from "./models/users";
+
+declare module "better-auth" {
+  interface User {
+    // ✅ This makes your code editor recognize custom properties on the user object
+    role: IUser["role"];
+    firstName: IUser["firstName"];
+    lastName: IUser["lastName"];
+    phoneNumber: IUser["phoneNumber"];
+    dateOfBirth: IUser["dateOfBirth"];
+    gender: IUser["gender"];
+    emailVerified: boolean;
+    nin: string;
+    vin: string;
+    ninVerified: boolean;
+    pvcStatus: IUser["pvcStatus"];
+  }
+}
