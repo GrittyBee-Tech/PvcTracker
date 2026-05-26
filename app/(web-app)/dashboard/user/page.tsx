@@ -22,8 +22,6 @@ interface UserProfile {
   isEmailVerified: boolean;
 }
 
-// import PaystackPop from "@paystack/inline-js";
-
 export default function UserDashboardPage({
   showModal = true,
   modalTitle = "Verify Your Information",
