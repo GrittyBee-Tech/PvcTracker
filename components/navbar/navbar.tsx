@@ -7,16 +7,11 @@ import { GiHamburgerMenu } from "react-icons/gi";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-  // Handle scrolling effect for navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const handleMoblileMenuToggle = () => {
+    setShowMobileMenu((prev) => !prev);
+  };
 
   return (
     <>
@@ -49,32 +44,40 @@ const Navbar = () => {
             </a>
           </div>
 
-          <GiHamburgerMenu className="md:hidden text-lg  text-[#5C675D]" />
+          <GiHamburgerMenu
+            onClick={handleMoblileMenuToggle}
+            className="md:hidden text-lg  text-[#5C675D]"
+          />
         </div>
       </nav>
 
       {/* Navbar mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/20 backdrop-blur-lg border-t border-t-primary z-50">
-        {/* <div className="flex justify-between items-center w-full px-5 py-3">
-          <Logo />
+      {showMobileMenu && (
+        <nav className="fixed h-screen  bg-primary backdrop-blur-lg border-t border-t-primary z-50">
+          <div className="grid grid-flow-row items-center w-full px-5 py-3">
+            <Logo />
 
-          <a href="/about" className="hover:underline text-primary font-bold">
-            About
-          </a>
-          <a
-            href="/contact"
-            className="hover:underline text-primary font-bold -ml-4"
-          >
-            Contact
-          </a>
-          <a
-            href="/auth/register"
-            className="text-white bg-primary cursor-pointer border px-4 py-1.5 font-semibold rounded-lg"
-          >
-            Get Started
-          </a>
-        </div> */}
-      </nav>
+            <a
+              href="/about"
+              className="hover:underline text-white  mt-4 font-bold"
+            >
+              About
+            </a>
+            <a
+              href="/contact"
+              className="hover:underline text-white mt-4 font-bold "
+            >
+              Contact
+            </a>
+            <a
+              href="/auth/register"
+              className="text-white bg-primary cursor-pointer mt-5 border px-4 py-1.5 font-semibold rounded-lg"
+            >
+              Get Started
+            </a>
+          </div>
+        </nav>
+      )}
     </>
   );
 };
