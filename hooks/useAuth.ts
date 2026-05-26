@@ -1,57 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { UserType } from "@/models/users";
 
 interface AuthSession {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    role?: "user" | "admin" | "volunteer";
-  } | null;
+  user: UserType | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
 
 export function useAuth(): AuthSession {
-  const [session, setSession] = useState<AuthSession>({
-    user: null,
-    isLoading: true,
-    isAuthenticated: false,
-  });
+  const { data: session, isPending, error } = authClient.useSession();
 
-  useEffect(() => {
-    async function getSession() {
-      try {
-        const { data } = await authClient.getSession();
-        if (!data) return;
-        if (data.user) {
-          setSession({
-            user: data.user as AuthSession["user"],
-            isLoading: false,
-            isAuthenticated: true,
-          });
-        } else {
-          setSession({
-            user: null,
-            isLoading: false,
-            isAuthenticated: false,
-          });
-        }
-      } catch (error) {
-        setSession({
-          user: null,
-          isLoading: false,
-          isAuthenticated: false,
-        });
-      }
-    }
+  // 3. Fallback safely if a network error occurs or the user is unauthenticated
+  if (isPending) {
+    return {
+      user: null,
+      isLoading: true,
+      isAuthenticated: false,
+    };
+  }
 
-    getSession();
-  }, []);
+  if (error || !session?.user) {
+    return {
+      user: null,
+      isLoading: false,
+      isAuthenticated: false,
+    };
+  }
 
-  return session;
+  // 4. Return your exact custom object interface to the rest of your app
+  return {
+    user: session.user as AuthSession["user"], // Typecasted cleanly to match your strict union roles
+    isLoading: false,
+    isAuthenticated: true,
+  };
 }
 
 export { authClient };

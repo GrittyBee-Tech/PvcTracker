@@ -8,6 +8,20 @@ import { useState, useEffect } from "react";
 import Modal from "@/components/ui/modal";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
+import { authClient } from "@/lib/auth-client";
+
+interface UserProfile {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: "user" | "admin" | "volunteer";
+  phoneNumber?: string;
+  nin?: string;
+  ninVerified: boolean;
+  isEmailVerified: boolean;
+}
+
 // import PaystackPop from "@paystack/inline-js";
 
 export default function UserDashboardPage({
@@ -31,6 +45,34 @@ export default function UserDashboardPage({
     setIsModalOpen(false);
     onModalClose?.();
   };
+
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const response = await fetch("/api/auth/me");
+        const result = await response.json();
+        console.log(result);
+
+        if (!response.ok) {
+          throw new Error(result?.error || "Unable to load profile");
+        }
+
+        setProfile(result.data);
+      } catch (error) {
+        console.error(error);
+        setProfileError((error as Error).message || "Unable to load profile");
+      } finally {
+        setLoadingProfile(false);
+      }
+    }
+
+    loadProfile();
+  }, []);
+
   // const paystack = new PaystackPop();
   const [nin, setNin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
@@ -59,10 +101,18 @@ export default function UserDashboardPage({
     }
   };
   const user = {
-    name: "Normal User",
-    ninStatus: "Pending Verification", // Can be "Pending Verification", "Verified", "Rejected"
-    pvcStatus: "Not Collected", // Can be "Not Collected", "Collected", "Pending"
-    registeredBy: "Self",
+    name: profile
+      ? `${profile.firstName} ${profile.lastName}`
+      : "Loading user...",
+    ninStatus: profile
+      ? profile.ninVerified
+        ? "Verified"
+        : profile.nin
+          ? "Pending Verification"
+          : "Not Submitted"
+      : "Pending Verification",
+    pvcStatus: "Not Collected",
+    registeredBy: profile?.email ? "Self" : "Self",
   };
 
   const getNinStatusDisplay = (status: string) => {

@@ -25,7 +25,7 @@ export default function DashboardLayout({
   links: DashboardLink[];
 }) {
   const { user } = useAuth();
-  const displayName = user?.name.split(" ")[0] || "User";
+  const displayName = user?.firstName || "User";
 
   return (
     <div className="flex h-screen bg-white text-white font-sans">

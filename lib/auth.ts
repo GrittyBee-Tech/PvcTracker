@@ -3,6 +3,7 @@ import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MONGODB_URI } from "./db";
 import { sendWelcomeEmail } from "@/services/emailService";
+import { nextCookies } from "better-auth/next-js";
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -28,7 +29,6 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url, token }, request) => {
       void sendWelcomeEmail(user.email, user.name, url);
     },
-    
   },
   user: {
     additionalFields: {
@@ -56,11 +56,25 @@ export const auth = betterAuth({
         type: "string",
         input: true,
       },
+      vin: {
+        type: "string",
+        input: false,
+      },
       nin: {
         type: "string",
         input: true,
       },
+      ninVerified: {
+        type: "boolean",
+        input: false,
+      },
+      pvcStatus: {
+        type: "string",
+        input: false,
+      },
     },
     modelName: "users",
   },
+  plugins: [nextCookies()],
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
 });

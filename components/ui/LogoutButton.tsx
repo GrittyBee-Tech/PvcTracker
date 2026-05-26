@@ -1,14 +1,19 @@
 // components/LogoutButton.tsx
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import { LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LogoutButton() {
+  const router = useRouter();
   const handleLogout = async () => {
-    await signOut({
-      callbackUrl: "/auth/login",
-      redirect: true,
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/auth/login"); // redirect to login page
+        },
+      },
     });
   };
 
