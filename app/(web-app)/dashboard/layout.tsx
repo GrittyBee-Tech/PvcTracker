@@ -10,10 +10,10 @@ export default function DashboardAuthLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const {isAuthenticated, user, isLoading} = useAuth()
+  const { isAuthenticated, user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !isLoading) {
       router.replace("/auth/login");
     } else {
       const destination =

@@ -7,15 +7,15 @@ export interface UserType {
   dateOfBirth: Date;
   gender: string;
   phoneNumber: string;
-  isEmailVerified: boolean;
+  emailVerified: boolean;
   role: "user" | "admin" | "volunteer"; // Example roles
   nin?: string; // National Identification Number
   vin?: string; // Voter Identification Number
   ninVerified: boolean;
-  password: string;
+  pvcStatus: "collected" | "not_collected";
   createdAt: Date;
   updatedAt: Date;
-};
+}
 export interface IUser extends UserType, Document {}
 
 const UserSchema: Schema<IUser> = new Schema(
@@ -31,11 +31,15 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: ["user", "admin", "volunteer"],
       default: "user",
     },
-    isEmailVerified: { type: Boolean, default: false },
+    emailVerified: { type: Boolean, default: false },
     nin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
     vin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
     ninVerified: { type: Boolean, default: false },
-    password: { type: String, required: true, select: false },
+    pvcStatus: {
+      type: String,
+      enum: ["collected", "not_collected"],
+      default: "not_collected",
+    },
   },
   { timestamps: true },
 );
