@@ -4,9 +4,8 @@ import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import { authClient } from "@/lib/auth-client";
 import { Eye, EyeOff } from "lucide-react";
-import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Swal from "sweetalert2";
 
 export default function Login() {
@@ -74,6 +73,7 @@ export default function Login() {
           router.push("/dashboard/user");
         },
         onError: (ctx) => {
+          console.log(ctx.error);
           Swal.fire({
             icon: "error",
             title: "Error",
@@ -84,12 +84,10 @@ export default function Login() {
             timerProgressBar: true,
             showConfirmButton: false,
           });
+          setIsLoading(false);
         },
       },
     );
-
-    console.log({ data, error });
-
     // signIn will redirect the browser; if it doesn't, stop loading.
     setIsLoading(false);
   };

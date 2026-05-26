@@ -141,7 +141,7 @@ export default function Register() {
           });
         },
         onError: (ctx) => {
-          // display the error message
+          console.log(ctx.error);
           Swal.fire({
             icon: "error",
             title: "Error",
@@ -152,6 +152,7 @@ export default function Register() {
             timerProgressBar: true,
             showConfirmButton: false,
           });
+          setStatus("error")
         },
       },
     );
