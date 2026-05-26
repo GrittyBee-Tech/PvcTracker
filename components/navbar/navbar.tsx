@@ -53,7 +53,7 @@ const Navbar = () => {
 
       {/* Navbar mobile */}
       {showMobileMenu && (
-        <nav className="fixed h-screen  bg-primary backdrop-blur-lg border-t border-t-primary z-50">
+        <nav className="fixed md:hidden h-screen  bg-primary backdrop-blur-lg border-t border-t-primary z-50">
           <div className="grid grid-flow-row items-center w-full px-5 py-3">
             <Logo />
 
