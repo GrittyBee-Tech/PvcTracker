@@ -279,7 +279,7 @@ export default function UserDashboardPage({
         </div>
       </div>
       {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <div
           className="fixed top-0 right-0 bottom-0 z-50"
           style={{ left: "16rem" }}
@@ -337,7 +337,7 @@ export default function UserDashboardPage({
             </div>
           </Modal>
         </div>
-      )}
+      )} */}
 
       {/* Demo trigger button */}
       {/* <div>
