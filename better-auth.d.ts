@@ -14,7 +14,7 @@ declare module "better-auth" {
     emailVerified: boolean;
     nin: string;
     vin: string;
-    ninVerified: boolean;
+    ninStatus: IUser["ninStatus"];
     pvcStatus: IUser["pvcStatus"];
     // pvcStatusUpdatedAt: IUser["pvcStatusUpdatedAt"];
   }
