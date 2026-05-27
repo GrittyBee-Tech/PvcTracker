@@ -1,45 +1,45 @@
-
-import React from "react";
-
 interface SelectOption {
   name: string;
   value: string;
 }
 
-interface SelectProps {
-  name: string;
+// ✅ Add the generic constraint <T extends string> to the props interface
+interface SelectProps<T extends string> {
+  name: T; // The name must match the tracked key exactly
   label: string;
   options: SelectOption[];
   value: string;
-  onChange: (field: string, value: string) => void;
+  onChange: (field: T, value: string) => void; // ✅ Enforces type alignment here
   placeholder?: string;
   labelClassName?: string;
   selectClassName?: string;
 }
 
-const Select: React.FC<SelectProps> = ({
+// ✅ Pass the generic parameter down into the functional component definition
+const Select = <T extends string>({
   name,
   label,
   options,
   value,
   onChange,
   placeholder,
-  labelClassName = "text-black",
-  selectClassName = "text-black border-primary/50 bg-white/10 border-green-500/30 text-blaxk placeholder:text-white/50 focus:border-green-500",
-}) => {
+  labelClassName,
+  selectClassName,
+}: SelectProps<T>) => {
   return (
-    <div>
+    <div className="w-full">
       <label
         htmlFor={name}
-        className={`font-dm-sans font-semibold text-sm ${labelClassName}`}
+        className={`font-semibold text-sm block text-black ${labelClassName}`}
       >
         {label}
       </label>
       <select
         id={name}
         value={value}
-        onChange={(e) => onChange(e.target.id, e.target.value)}
-        className={`w-full mt-1.5 p-2 text-sm font-dm-sans font-medium border outline-none rounded-lg ${selectClassName}`}
+        // ✅ TypeScript now guarantees that 'name' matches your strict type T
+        onChange={(e) => onChange(name, e.target.value)}
+        className={`w-full mt-1.5 p-2.5 text-sm border outline-none rounded-lg text-primary border-zinc-700 bg-white focus:border-green-500 ${selectClassName}`}
       >
         {placeholder && (
           <option value="" disabled>

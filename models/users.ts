@@ -13,6 +13,7 @@ export interface UserType {
   vin?: string; // Voter Identification Number
   ninVerified: boolean;
   pvcStatus: "collected" | "not_collected";
+  pvcStatusUpdatedAt: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,6 +41,10 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: ["collected", "not_collected"],
       default: "not_collected",
     },
+    pvcStatusUpdatedAt: {
+      type: Date,
+      default: Date.now,
+    }
   },
   { timestamps: true },
 );
