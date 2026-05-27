@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { NextResponse } from "next/server";
 
 export interface UserType {
   email: string;
@@ -50,6 +51,24 @@ const UserSchema: Schema<IUser> = new Schema(
   },
   { timestamps: true },
 );
+
+UserSchema.pre("save", function () {
+  // Check if 'pvcStatus' was modified during this specific database operation
+  if (this.isModified("pvcStatus")) {
+    const now = Date.now();
+    const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+    // const pvcStatusLastUpdated = new Date(this.pvcStatusUpdatedAt).getTime();
+    const pvcStatusLastUpdated = this.pvcStatusUpdatedAt
+      ? new Date(this.pvcStatusUpdatedAt).getTime()
+      : 0;
+    const timeDifference = now - pvcStatusLastUpdated;
+
+    if (timeDifference < twentyFourHoursInMs) {
+      throw new Error("PvcCooldownActive");
+    }
+    this.pvcStatusUpdatedAt = new Date();
+  }
+});
 
 // 3. Export the model, preventing duplicate compilation errors during Next.js hot-reloads
 const UserModel: Model<IUser> =
