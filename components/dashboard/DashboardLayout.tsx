@@ -7,7 +7,9 @@ import * as Icons from "lucide-react";
 import Link from "next/link";
 import LogoutButton from "../ui/LogoutButton";
 import { useAuth } from "@/hooks/useAuth";
-import { TbNavigationDown } from "react-icons/tb";
+import { TbNavigationDown, TbMenu } from "react-icons/tb";
+import Image from "next/image";
+import { useState } from "react";
 
 export type DashboardLink = {
   href: string;
@@ -26,17 +28,17 @@ export default function DashboardLayout({
 }) {
   const { user } = useAuth();
   const displayName = user?.firstName || "User";
+  const [navOpen, setNavOpen] = useState(true);
 
   return (
     <div className="flex h-screen bg-white text-white font-sans">
-      <DashboardSideBar links={links} role={role} />
+      <DashboardSideBar links={links} role={role} navOpen={navOpen} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-8 border-b border-green-900/30 bg-primary/80 backdrop-blur-sm sticky top-0 z-10">
-          <div className="flex items-center text-primary">
-            {/* Future Breadcrumbs or Search */}
+        <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-green-900/30 bg-primary/80 backdrop-blur-sm sticky top-0 z-10">
+          <div className="hidden md:flex items-center text-primary">
             <div className="relative hidden md:block">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-primary" />
               <input
@@ -46,19 +48,24 @@ export default function DashboardLayout({
               />
             </div>
           </div>
+          <TbMenu
+            size={20}
+            onClick={() => setNavOpen((prev) => !prev)}
+            className="block md:hidden hover:scale-105"
+          />
           <div className="flex items-center gap-4">
             <button className="relative p-2 text-green-100/70 hover:text-white transition-colors rounded-full hover:bg-green-900/20">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-yellow-500 rounded-full"></span>
             </button>
-            <div className="h-8 w-px bg-green-900/50 mx-2"></div>
-            <button className="flex items-center gap-2 p-1.5 pr-3 text-white hover:text-white transition-colors rounded-full hover:bg-green-900/20 border border-transparent hover:border-green-900/30">
-              <UserCircle className="w-7 h-7 text-white" />
+            <div className="h-9 w-px bg-green-900/50" />
+            <button className="flex items-center gap-2.5 p-1.5 pr-3 text-white hover:text-white transition-colors rounded-full hover:bg-green-900/20 border border-transparent hover:border-green-900/30">
+              <UserCircle className="w-8 h-8 text-white" />
               <div className="flex flex-col items-start text-left">
                 <span className="text-sm  text-white font-dm-sans font-medium leading-none">
                   {displayName}
                 </span>
-                <span className="text-[10px] text-white font-bold mt-1">
+                <span className="text-[10px] text-black font-bold mt-0.5">
                   {role}
                 </span>
               </div>
@@ -78,23 +85,36 @@ export default function DashboardLayout({
 const DashboardSideBar = ({
   links,
   role,
+  navOpen,
 }: {
   role: "User" | "Volunteer" | "Admin";
   links: DashboardLink[];
+  navOpen: Boolean;
 }) => {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-[#F9FDFA] border-r border-green-900/30 hidden md:flex flex-col">
-      <div className="h-16 flex items-center">
-        <div className="sm:mx-auto w-fit pr-6" style={{ color: "white" }}>
-          <Logo />
+    <aside
+      className={`${navOpen ? "w-38" : "w-13"} transition-width duration-200 ease-in md:w-64 bg-[#F9FDFA] border-r border-green-900/30 flex flex-col`}
+    >
+      <div className="h-16 flex items-center border-b-gray-500 border-b">
+        <div className="mx-auto w-fit md:pr-6" style={{ color: "white" }}>
+          <Image
+            src={"/favicon.png"}
+            alt="Logo"
+            className="block md:hidden"
+            width={52}
+            height={52}
+          />
+          <div className="hidden md:block">
+            <Logo />
+          </div>
         </div>
       </div>
-      <div className="flex-1 p-4 mt-4 pb-0 h-full flex flex-col">
-        <div className="flex items-center gap-2 text-lg border-b border-primary font-bold text-primary uppercase tracking-wider mb-4 px-4">
-          <TbNavigationDown className="w-4 h-4 text-primary" />
-          Menu
+      <div className="flex-1 not-md:px-1.5 p-4 md:mt-4 pb-0 h-full flex flex-col">
+        <div className="flex items-center not-md:justify-center gap-2 text-xl md:text-lg md:border-b md:border-primary font-bold text-primary uppercase tracking-wider mb-4 px-1 md:px-4">
+          <TbNavigationDown className="size-6 md:size-4 text-primary" />
+          <p className={`${navOpen ? "block" : "hidden"} md:block`}>Menu</p>
         </div>
         <nav className="flex flex-col gap-2 mt-4 h-full">
           {links.map((link) => {
@@ -107,7 +127,7 @@ const DashboardSideBar = ({
               <Link
                 key={link.href}
                 href={link.href}
-                className={`group flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-primary hover:bg-primary/90 hover:text-white ${
+                className={`group flex items-center gap-3 px-1.5 md:px-4 py-2 md:py-3 rounded-lg transition-background ease-in-out duration-200 text-primary hover:bg-primary/90 hover:text-white ${
                   isActive
                     ? "font-medium border border-green-500/20 shadow-sm bg-primary text-white"
                     : "text-green-100/70 hover:text-green-100"
@@ -115,16 +135,20 @@ const DashboardSideBar = ({
               >
                 {IconComponent && (
                   <IconComponent
-                    className={`w-5 h-5 group-hover:text-white ${isActive ? "text-white" : "text-primary"}`}
+                    className={`${navOpen ? "size-5" : "size-6"} group-hover:text-white ${isActive ? "text-white" : "text-primary"}`}
                   />
                 )}
-                {link.label}
+                <span
+                  className={`${navOpen ? "block" : "hidden"} transition-display ease-out md:block`}
+                >
+                  {link.label}
+                </span>
               </Link>
             );
           })}
-          <div className="mt-auto w-full">
-            <LogoutButton />
-            <div className="mt-4 p-4 border-t border-primary text-xs text-primary flex items-center justify-between">
+          <div className="mt-auto w-full not-sm:mb-4">
+            <LogoutButton navOpen={navOpen} />
+            <div className="mt-4 px-2 py-4 md:p-4 border-t border-primary text-xs text-primary hidden sm:flex items-center justify-between">
               <span>{role} Portal</span>
               <span>v1.0</span>
             </div>

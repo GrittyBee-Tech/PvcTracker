@@ -28,13 +28,15 @@ export const SkeletonLoader = () => (
 export const SpinnerLoader = ({
   text,
   size = "size-5",
+  border = "border-2",
 }: {
   text?: string;
   size?: string;
+  border?: string;
 }) => (
   <div className="flex items-center justify-center h-full w-full">
     <div
-      className={`${size} animate-spin rounded-full border-3 border-gray-200 border-t-green-500`}
+      className={`${size} animate-spin rounded-full ${border} border-gray-200 border-t-green-500`}
     />
     {text && <span className="ml-2">{text}</span>}
   </div>
