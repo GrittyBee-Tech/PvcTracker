@@ -8,22 +8,8 @@ import { useState, useEffect } from "react";
 import Modal from "@/components/ui/modal";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
-import { authClient } from "@/lib/auth-client";
 import { useAuth } from "@/hooks/useAuth";
-
-interface UserProfile {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: "user" | "admin" | "volunteer";
-  phoneNumber?: string;
-  nin?: string;
-  ninVerified: boolean;
-  isEmailVerified: boolean;
-}
-
-// import PaystackPop from "@paystack/inline-js";
+import { useRouter } from "next/navigation";
 
 export default function UserDashboardPage({
   showModal = true,
@@ -37,6 +23,7 @@ export default function UserDashboardPage({
   onModalClose?: () => void;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(showModal);
+  const router = useRouter();
 
   useEffect(() => {
     setIsModalOpen(showModal);
@@ -47,40 +34,48 @@ export default function UserDashboardPage({
     onModalClose?.();
   };
 
+  // const [profile, setProfile] = useState<UserProfile | null>(null);
+  // const [loadingProfile, setLoadingProfile] = useState(true);
+  // const [profileError, setProfileError] = useState<string | null>(null);
   const { user } = useAuth();
-  console.log
+
+  useEffect(() => {
+    if (!user) return;
+
+    setNin(user.nin);
+  }, [user]);
 
   // const paystack = new PaystackPop();
   const [nin, setNin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [ninError, setNinError] = useState<string | null>(null);
 
-  const handleVerify = async () => {
-    setNinError(null);
-    if (!nin || nin.trim().length < 6) {
-      setNinError("Please enter a valid NIN.");
-      return;
-    }
-    setIsVerifying(true);
-    // Mock verification flow for demo purposes
-    try {
-      await new Promise((res) => setTimeout(res, 1000));
-      // simple mock rule: if length >= 9 consider verified
-      if (nin.replace(/\D/g, "").length >= 9) {
-        // update local display state (for demo only)
-        user.ninStatus = "Verified";
-      } else {
-        user.ninStatus = "Rejected";
-      }
-    } finally {
-      setIsVerifying(false);
-      setIsModalOpen(false);
-    }
-  };
+  // const handleVerify = async () => {
+  //   setNinError(null);
+  //   if (!nin || nin.trim().length < 6) {
+  //     setNinError("Please enter a valid NIN.");
+  //     return;
+  //   }
+  //   setIsVerifying(true);
+  //   // Mock verification flow for demo purposes
+  //   try {
+  //     await new Promise((res) => setTimeout(res, 1000));
+  //     // simple mock rule: if length >= 9 consider verified
+  //     if (nin.replace(/\D/g, "").length >= 9) {
+  //       // update local display state (for demo only)
+  //       user.ninStatus = "Verified";
+  //     } else {
+  //       user.ninStatus = "Rejected";
+  //     }
+  //   } finally {
+  //     setIsVerifying(false);
+  //     setIsModalOpen(false);
+  //   }
+  // };
 
-  const getNinStatusDisplay = (status: string) => {
+  const getNinStatusDisplay = (status?: string) => {
     switch (status) {
-      case "Verified":
+      case "verified":
         return {
           text: "Verified",
           icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
@@ -88,7 +83,7 @@ export default function UserDashboardPage({
           description:
             "Your National Identification Number has been successfully verified.",
         };
-      case "Rejected":
+      case "rejected":
         return {
           text: "Rejected",
           icon: <Clock className="w-5 h-5 text-primary" />,
@@ -96,7 +91,7 @@ export default function UserDashboardPage({
           description:
             "Your NIN verification was rejected. Please check your profile for details.",
         };
-      case "Pending Verification":
+      case "pending":
       default:
         return {
           text: "Pending Verification",
@@ -108,9 +103,9 @@ export default function UserDashboardPage({
     }
   };
 
-  const getPvcStatusDisplay = (status: string) => {
+  const getPvcStatusDisplay = (status?: string) => {
     switch (status) {
-      case "Collected":
+      case "collected":
         return {
           text: "Collected",
           icon: <CheckCircle2 className="w-5 h-5 text-primary" />,
@@ -118,14 +113,7 @@ export default function UserDashboardPage({
           description:
             "You have successfully collected your Permanent Voter Card.",
         };
-      case "Pending":
-        return {
-          text: "Pending",
-          icon: <Clock className="w-5 h-5 text-primary" />,
-          colorClass: "text-yellow-400",
-          description: "Your PVC collection status is pending update.",
-        };
-      case "Not Collected":
+      case "not_collected":
       default:
         return {
           text: "Not Collected",
@@ -136,8 +124,8 @@ export default function UserDashboardPage({
     }
   };
 
-  // const ninDisplay = getNinStatusDisplay(user.ninStatus);
-  // const pvcDisplay = getPvcStatusDisplay(user.pvcStatus);
+  const ninDisplay = getNinStatusDisplay(user?.ninStatus);
+  const pvcDisplay = getPvcStatusDisplay(user?.pvcStatus);
 
   //handle payment with paystack inline js
   // const handlePayment = () => {
@@ -173,7 +161,7 @@ export default function UserDashboardPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-space-grotesk font-bold text-primary">
-            Welcome, {user?.firstName}!
+            {/* Welcome, {user.name}! */}
           </h1>
           <p className="text-muted-foreground mt-1 font-dm-sans">
             Here's a quick overview of your PVC WAKA journey and important
@@ -184,7 +172,7 @@ export default function UserDashboardPage({
 
       {/* Status Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-10">
-        {/* <Card className="border-gray-400 shadow-md">
+        <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row  items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-primary">
               NIN Verification
@@ -201,21 +189,21 @@ export default function UserDashboardPage({
               {ninDisplay.description}
             </p>
           </CardContent>
-        </Card> */}
+        </Card>
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-space-grotesk font-medium text-primary">
               PVC Collection
             </CardTitle>
-            {/* {pvcDisplay.icon} */}
+            {pvcDisplay.icon}
           </CardHeader>
           <CardContent>
-            {/* <div className={`text-2xl font-bold ${pvcDisplay.colorClass}`}>
+            <div className={`text-2xl font-bold ${pvcDisplay.colorClass}`}>
               {pvcDisplay.text}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {pvcDisplay.description}
-            </p> */}
+            </p>
           </CardContent>
         </Card>
         <Card className="border-gray-400 shadow-md">
@@ -226,9 +214,9 @@ export default function UserDashboardPage({
             <User className="w-5 h-5 text-primary" />
           </CardHeader>
           <CardContent>
-            {/* <div className="text-2xl font-bold text-primary">
-              {user.registeredBy}
-            </div> */}
+            <div className="text-2xl font-bold text-primary">
+              {/* {user?.registeredBy} */}
+            </div>
             <p className="text-xs font-dm-sans text-muted-foreground mt-1">
               You registered yourself on the platform.
             </p>
@@ -299,7 +287,7 @@ export default function UserDashboardPage({
                   Close
                 </button>
                 <button
-                  onClick={handleVerify}
+                  // onClick={handleVerify}
                   disabled={isVerifying}
                   className="px-4 py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
                 >
