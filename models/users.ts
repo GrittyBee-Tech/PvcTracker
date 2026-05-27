@@ -13,11 +13,12 @@ export interface UserType {
   vin?: string; // Voter Identification Number
   ninVerified: boolean;
   pvcStatus: "collected" | "not_collected";
-  pvcStatusUpdatedAt: Date;
   createdAt: Date;
   updatedAt: Date;
 }
-export interface IUser extends UserType, Document {}
+export interface IUser extends UserType, Document {
+  pvcStatusUpdatedAt: Date;
+}
 
 const UserSchema: Schema<IUser> = new Schema(
   {
@@ -44,7 +45,8 @@ const UserSchema: Schema<IUser> = new Schema(
     pvcStatusUpdatedAt: {
       type: Date,
       default: Date.now,
-    }
+      required: true,
+    },
   },
   { timestamps: true },
 );
