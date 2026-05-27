@@ -35,7 +35,7 @@ export default function Login() {
     if (!formData.email || !formData.password) {
       setError("Please fill in all fields.");
       Swal.fire({
-        title: "Please fill in all fields.",
+        text: "Please fill in all fields.",
         icon: "error",
         toast: true,
         position: "top-end",

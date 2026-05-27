@@ -16,5 +16,6 @@ declare module "better-auth" {
     vin: string;
     ninStatus: IUser["ninStatus"];
     pvcStatus: IUser["pvcStatus"];
+    // pvcStatusUpdatedAt: IUser["pvcStatusUpdatedAt"];
   }
 }

@@ -16,7 +16,9 @@ export interface UserType {
   createdAt: Date;
   updatedAt: Date;
 }
-export interface IUser extends UserType, Document {}
+export interface IUser extends UserType, Document {
+  pvcStatusUpdatedAt: Date;
+}
 
 const UserSchema: Schema<IUser> = new Schema(
   {
@@ -44,6 +46,11 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       enum: ["collected", "not_collected"],
       default: "not_collected",
+      required: true,
+    },
+    pvcStatusUpdatedAt: {
+      type: Date,
+      default: Date.now,
       required: true,
     },
   },
