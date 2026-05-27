@@ -63,77 +63,43 @@ export default function UserProfilePage() {
 
   const handleUpdateProfile = async (e: React.SubmitEvent) => {
     e.preventDefault();
+    if (isFormUnchanged) return;
 
-    const { pvcStatus, ...rest } = updateProfileData;
-    console.log({ pvcStatus, former: user?.pvcStatus });
-    if (pvcStatus !== user?.pvcStatus) {
-      Swal.fire({
-        icon: "warning",
-        text: `You're updating your PVC status to ${pvcStatus}. You can't update this until another 24 hours`,
-        showCancelButton: true,
-        showConfirmButton: true,
-        timer: 0,
-      }).then(async ({ isConfirmed }) => {
-        if (isConfirmed) {
-          console.log("Updating PVC status");
-          const res = await fetch("/api/user/update-pvc");
-          const data = await res.json();
-
-          if (!res.ok) {
-            Swal.fire({
-              icon: "error",
-              text: data.message || "Failed to update PVC Status",
-              toast: true,
-              position: "top-end",
-              timer: 2000,
-              timerProgressBar: true,
-              showConfirmButton: false,
-            });
-            return;
-          }
-          
-        }
-      });
-    } else {
-      if (isFormUnchanged) return;
-      console.log("Firing API request");
-
-      // await authClient.updateUser(
-      //   {
-      //     ...rest,
-      //     dateOfBirth: new Date(updateProfileData.dateOfBirth),
-      //   },
-      //   {
-      //     onRequest() {
-      //       setStatus("loading");
-      //     },
-      //     onSuccess() {
-      //       setStatus("success");
-      //       Swal.fire({
-      //         icon: "success",
-      //         text: "Profile updated successfully",
-      //         toast: true,
-      //         position: "top-end",
-      //         timer: 2000,
-      //         timerProgressBar: true,
-      //         showConfirmButton: false,
-      //       });
-      //     },
-      //     onError(ctx) {
-      //       setStatus("error");
-      //       Swal.fire({
-      //         icon: "error",
-      //         text: ctx.error?.message || "Failed to update profile",
-      //         toast: true,
-      //         position: "top-end",
-      //         timer: 2000,
-      //         timerProgressBar: true,
-      //         showConfirmButton: false,
-      //       });
-      //     },
-      //   },
-      // );
-    }
+    await authClient.updateUser(
+      {
+        ...updateProfileData,
+        dateOfBirth: new Date(updateProfileData.dateOfBirth),
+      },
+      {
+        onRequest() {
+          setStatus("loading");
+        },
+        onSuccess() {
+          setStatus("success");
+          Swal.fire({
+            icon: "success",
+            text: "Profile updated successfully",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        },
+        onError(ctx) {
+          setStatus("error");
+          Swal.fire({
+            icon: "error",
+            text: ctx.error?.message || "Failed to update profile",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        },
+      },
+    );
   };
 
   return (

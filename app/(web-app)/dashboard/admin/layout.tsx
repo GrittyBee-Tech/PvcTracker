@@ -6,6 +6,7 @@ import DashboardLayout, {
   DashboardLink,
 } from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/hooks/useAuth";
+import { SpinnerLoader } from "@/components/ui/Loader";
 
 const adminLinks: DashboardLink[] = [
   { href: "/dashboard/admin", label: "Dashboard", icon: "Home" },
@@ -29,8 +30,9 @@ export default function AdminLayout({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
-        <p className="text-sm text-slate-500">Checking authorization…</p>
+      <div className="flex flex-col min-h-screen items-center justify-center bg-white">
+        <SpinnerLoader size="size-20" border="border-6" />
+        <p className="text-slate-600 mt-4">Checking authentication</p>
       </div>
     );
   }
