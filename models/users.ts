@@ -9,9 +9,9 @@ export interface UserType {
   phoneNumber: string;
   emailVerified: boolean;
   role: "user" | "admin" | "volunteer"; // Example roles
-  nin?: string; // National Identification Number
+  nin: string; // National Identification Number
   vin?: string; // Voter Identification Number
-  ninVerified: boolean;
+  ninStatus: "pending" | "rejected" | "verified";
   pvcStatus: "collected" | "not_collected";
   createdAt: Date;
   updatedAt: Date;
@@ -32,13 +32,19 @@ const UserSchema: Schema<IUser> = new Schema(
       default: "user",
     },
     emailVerified: { type: Boolean, default: false },
-    nin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
+    nin: { type: String, unique: true, required: true },
     vin: { type: String, unique: true, sparse: true }, // Optional and unique if provided
-    ninVerified: { type: Boolean, default: false },
+    ninStatus: {
+      type: String,
+      enum: ["pending", "rejected", "verified"],
+      default: "pending",
+      required: true,
+    },
     pvcStatus: {
       type: String,
       enum: ["collected", "not_collected"],
       default: "not_collected",
+      required: true,
     },
   },
   { timestamps: true },

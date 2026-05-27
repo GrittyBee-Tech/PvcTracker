@@ -58,19 +58,18 @@ export const auth = betterAuth({
       },
       vin: {
         type: "string",
-        input: false,
       },
       nin: {
         type: "string",
         input: true,
       },
-      ninVerified: {
-        type: "boolean",
-        input: false,
+      ninStatus: {
+        type: "string",
+        defaultValue: "pending",
       },
       pvcStatus: {
         type: "string",
-        input: false,
+        defaultValue: "not_collected",
       },
     },
     modelName: "users",
