@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import InputGroup from "@/components/ui/InputGroup";
 import Select from "@/components/ui/Select";
 import { authClient, useAuth } from "@/hooks/useAuth";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ChangePasswordSection from "./ChangePassword";
 import Swal from "sweetalert2";
 import { formatToInputDate } from "@/lib/utils";
@@ -14,23 +14,45 @@ type UpdateProfileFormType = {
   vin?: string;
   firstName: string;
   lastName: string;
-  dateOfBirth: string;
+  dateOfBirth: Date;
   phoneNumber: string;
 };
 
 export default function UserProfilePage() {
+  const { user } = useAuth();
   const [updateProfileData, setUpdateProfileData] =
     useState<UpdateProfileFormType>({
       pvcStatus: "not_collected",
       vin: "",
       firstName: "",
       lastName: "",
-      dateOfBirth: "",
+      dateOfBirth: new Date(),
       phoneNumber: "",
     });
   const [status, setStatus] = useState<
     "idle" | "error" | "loading" | "success"
   >("idle");
+
+  const initialData = useMemo(
+    () => ({
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      vin: user?.vin || "",
+      pvcStatus: user?.pvcStatus || "not_collected",
+      dateOfBirth: new Date(user?.dateOfBirth || ""),
+      phoneNumber: user?.phoneNumber || "",
+    }),
+    [user],
+  );
+
+  useEffect(() => {
+    if (!user) return;
+
+    setUpdateProfileData(initialData);
+  }, [user]);
+
+  const isFormUnchanged =
+    JSON.stringify(initialData) === JSON.stringify(updateProfileData);
 
   const handleChange = (field: keyof UpdateProfileFormType, value: string) => {
     setUpdateProfileData({
@@ -38,68 +60,80 @@ export default function UserProfilePage() {
       [field]: value,
     });
   };
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (!user) return;
-
-    setUpdateProfileData({
-      ...user,
-      dateOfBirth: new Date(user.dateOfBirth).toDateString(),
-    });
-  }, [user]);
 
   const handleUpdateProfile = async (e: React.SubmitEvent) => {
     e.preventDefault();
+
     const { pvcStatus, ...rest } = updateProfileData;
+    console.log({ pvcStatus, former: user?.pvcStatus });
     if (pvcStatus !== user?.pvcStatus) {
       Swal.fire({
         icon: "warning",
         text: `You're updating your PVC status to ${pvcStatus}. You can't update this until another 24 hours`,
         showCancelButton: true,
         showConfirmButton: true,
-      }).then(({ isConfirmed }) => {
+        timer: 0,
+      }).then(async ({ isConfirmed }) => {
         if (isConfirmed) {
           console.log("Updating PVC status");
+          const res = await fetch("/api/user/update-pvc");
+          const data = await res.json();
+
+          if (!res.ok) {
+            Swal.fire({
+              icon: "error",
+              text: data.message || "Failed to update PVC Status",
+              toast: true,
+              position: "top-end",
+              timer: 2000,
+              timerProgressBar: true,
+              showConfirmButton: false,
+            });
+            return;
+          }
+          
         }
       });
-    }
+    } else {
+      if (isFormUnchanged) return;
+      console.log("Firing API request");
 
-    await authClient.updateUser(
-      {
-        ...rest,
-        dateOfBirth: new Date(updateProfileData.dateOfBirth),
-      },
-      {
-        onRequest() {
-          setStatus("loading");
-        },
-        onSuccess() {
-          setStatus("success");
-          Swal.fire({
-            icon: "success",
-            text: "Profile updated successfully",
-            toast: true,
-            position: "top-end",
-            timer: 2000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        },
-        onError(ctx) {
-          setStatus("error");
-          Swal.fire({
-            icon: "error",
-            text: ctx.error?.message || "Failed to update profile",
-            toast: true,
-            position: "top-end",
-            timer: 2000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        },
-      },
-    );
+      // await authClient.updateUser(
+      //   {
+      //     ...rest,
+      //     dateOfBirth: new Date(updateProfileData.dateOfBirth),
+      //   },
+      //   {
+      //     onRequest() {
+      //       setStatus("loading");
+      //     },
+      //     onSuccess() {
+      //       setStatus("success");
+      //       Swal.fire({
+      //         icon: "success",
+      //         text: "Profile updated successfully",
+      //         toast: true,
+      //         position: "top-end",
+      //         timer: 2000,
+      //         timerProgressBar: true,
+      //         showConfirmButton: false,
+      //       });
+      //     },
+      //     onError(ctx) {
+      //       setStatus("error");
+      //       Swal.fire({
+      //         icon: "error",
+      //         text: ctx.error?.message || "Failed to update profile",
+      //         toast: true,
+      //         position: "top-end",
+      //         timer: 2000,
+      //         timerProgressBar: true,
+      //         showConfirmButton: false,
+      //       });
+      //     },
+      //   },
+      // );
+    }
   };
 
   return (
@@ -133,7 +167,17 @@ export default function UserProfilePage() {
               every 24 hours
             </p>
           </div>
-          <div className="col-start-1 col-span-4 md:col-span-2">
+          <div className="md:col-start-1 col-span-4 sm:col-span-3 md:col-span-3 xl:col-span-2">
+            <InputGroup
+              label="Voter Registration Number"
+              name="vin"
+              onChange={handleChange}
+              placeholder="Change your VIN"
+              type="text"
+              value={updateProfileData.vin || ""}
+            />
+          </div>
+          <div className="md:col-start-1 col-span-4 md:col-span-2">
             <InputGroup
               label="First Name"
               name="firstName"
