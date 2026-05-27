@@ -58,6 +58,7 @@ export const auth = betterAuth({
       },
       vin: {
         type: "string",
+        input: false,
       },
       nin: {
         type: "string",
