@@ -10,11 +10,18 @@ import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import {
+  FaHandDots,
+  FaHandsClapping,
+  FaHourglassStart,
+  FaLocationDot,
+} from "react-icons/fa6";
+import { FaUser, FaUserCheck, FaUserEdit, FaUserTimes } from "react-icons/fa";
 
 export default function UserDashboardPage({
   showModal = true,
   modalTitle = "Verify Your Information",
-  modalContent = "Please complete your profile setup before continuing.",
+  modalContent = "To complete your profile setup kindly verify your NIN",
   onModalClose,
 }: {
   showModal?: boolean;
@@ -23,6 +30,7 @@ export default function UserDashboardPage({
   onModalClose?: () => void;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(showModal);
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -37,7 +45,6 @@ export default function UserDashboardPage({
   // const [profile, setProfile] = useState<UserProfile | null>(null);
   // const [loadingProfile, setLoadingProfile] = useState(true);
   // const [profileError, setProfileError] = useState<string | null>(null);
-  const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
@@ -78,7 +85,7 @@ export default function UserDashboardPage({
       case "verified":
         return {
           text: "Verified",
-          icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+          icon: <FaUserCheck className="w-5 h-5 text-green-500" />,
           colorClass: "text-green-400",
           description:
             "Your National Identification Number has been successfully verified.",
@@ -95,7 +102,7 @@ export default function UserDashboardPage({
       default:
         return {
           text: "Pending Verification",
-          icon: <Clock className="w-5 h-5 text-primary " />,
+          icon: <FaUserTimes className="w-5 h-5 text-yellow-400 " />,
           colorClass: "text-yellow-400",
           description:
             "Your National Identification Number is being processed.",
@@ -108,6 +115,7 @@ export default function UserDashboardPage({
       case "collected":
         return {
           text: "Collected",
+
           icon: <CheckCircle2 className="w-5 h-5 text-primary" />,
           colorClass: "text-green-400",
           description:
@@ -117,7 +125,7 @@ export default function UserDashboardPage({
       default:
         return {
           text: "Not Collected",
-          icon: <Clock className="w-5 h-5 text-primary" />,
+          icon: <FaHourglassStart className="w-5 h-5 text-red-400" />,
           colorClass: "text-red-400",
           description: "You have not yet collected your Permanent Voter Card.",
         };
@@ -160,10 +168,14 @@ export default function UserDashboardPage({
     <div className="relative space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-space-grotesk font-bold text-primary">
-            {/* Welcome, {user.name}! */}
-          </h1>
-          <p className="text-muted-foreground mt-1 font-dm-sans">
+          <div className="grid grid-flow-col items-center w-max gap-2">
+            <h1 className="text-3xl font-space-grotesk font-bold text-primary">
+              Welcome, {user?.lastName} {user?.firstName}
+            </h1>
+            <FaHandsClapping className="text-primary text-4xl" />
+          </div>
+
+          <p className="text-muted-foreground mt-3 font-dm-sans">
             Here's a quick overview of your PVC WAKA journey and important
             actions.
           </p>
@@ -171,7 +183,7 @@ export default function UserDashboardPage({
       </div>
 
       {/* Status Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-10">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-6">
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row  items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-primary">
@@ -211,7 +223,7 @@ export default function UserDashboardPage({
             <CardTitle className="text-sm font-medium text-primary">
               Registered By
             </CardTitle>
-            <User className="w-5 h-5 text-primary" />
+            <FaUser className="w-5 h-5 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">
@@ -233,7 +245,7 @@ export default function UserDashboardPage({
               <CardTitle className="text-base font-medium text-primary">
                 Find INEC Centre
               </CardTitle>
-              <MapPin className="w-5 h-5 text-primary" />
+              <FaLocationDot className="w-5 h-5 text-primary" />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-3">
@@ -251,7 +263,7 @@ export default function UserDashboardPage({
               <CardTitle className="text-base font-medium text-primary">
                 Update Profile
               </CardTitle>
-              <Pencil className="w-5 h-5 text-primary" />
+              <FaUserEdit className="w-5 h-5 text-primary" />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-8">
@@ -267,7 +279,7 @@ export default function UserDashboardPage({
         </div>
       </div>
       {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <div
           className="fixed top-0 right-0 bottom-0 z-50"
           style={{ left: "16rem" }}
@@ -282,29 +294,32 @@ export default function UserDashboardPage({
               <>
                 <button
                   onClick={handleCloseModal}
-                  className="px-4 py-2 rounded bg-primary border border-green-700 text-green-200"
+                  className="px-4 py-2 font-bold rounded bg-primary border border-green-700 text-green-200"
                 >
                   Close
                 </button>
                 <button
                   // onClick={handleVerify}
                   disabled={isVerifying}
-                  className="px-4 py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
+                  className="px-4  font-bold py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
                 >
                   {isVerifying ? (
                     <SpinnerLoader text="Processing..." />
                   ) : (
-                    "Pay ₦50 & Verify"
+                    "Pay ₦150 & Verify"
                   )}
                 </button>
               </>
             }
           >
             <div className="space-y-4">
+              <p className="font-bold">
+                Hello, {user?.lastName} {user?.firstName}
+              </p>
               <p className="text-primary">{modalContent}</p>
               <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
                 <p className="font-semibold">Verification Fee</p>
-                <p>₦50 will be charged for this NIN verification request.</p>
+                <p>₦150 will be charged for this NIN verification request.</p>
               </div>
               <p className="text-primary font-dm-sans -mt-3">
                 Please enter your NIN and continue to pay the verification fee.
@@ -318,13 +333,11 @@ export default function UserDashboardPage({
                 value={nin}
               />
               {ninError && <p className="text-sm text-red-400">{ninError}</p>}
-              <p className="text-xs font-dm-sans text-muted-foreground">
-                This is a visual demo. Verification is mocked locally.
-              </p>
+              <p className="text-xs font-dm-sans text-muted-foreground"></p>
             </div>
           </Modal>
         </div>
-      )}
+      )} */}
 
       {/* Demo trigger button */}
       {/* <div>
