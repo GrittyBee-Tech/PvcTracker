@@ -128,7 +128,7 @@ const ChangePasswordSection = () => {
     }
   };
   return (
-    <section className="mt-6">
+    <section>
       <h2 className="text-2xl font-semibold text-primary">Change Password</h2>
       <p className="text-black -mt-">
         Update your account password. Choose a strong password.
@@ -167,7 +167,7 @@ const ChangePasswordSection = () => {
             value={passwordData.confirmPassword}
           />
         </div>
-        <div className="col-start-4 ml-auto">
+        <div className="col-span-4 ml-auto">
           <Button type="submit" disabled={pwLoading}>
             {pwLoading ? "Updating..." : "Change Password"}
           </Button>

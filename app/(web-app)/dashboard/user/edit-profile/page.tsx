@@ -113,10 +113,10 @@ export default function UserProfilePage() {
           Personal Information
         </h2>
         <form
-          className="grid grid-cols-4 gap-6 mt-4"
+          className="w-full grid grid-cols-4 gap-6 mt-4"
           onSubmit={handleUpdateProfile}
         >
-          <div className="col-span-4 sm:col-span-3 md:col-span-3 xl:col-span-2">
+          <div className="col-span-4 sm:col-span-3 md:col-span-3 2xl:col-span-2">
             <Select
               label="PVC Collection Status"
               name="pvcStatus"
@@ -133,7 +133,7 @@ export default function UserProfilePage() {
               every 24 hours
             </p>
           </div>
-          <div className="md:col-start-1 col-span-4 sm:col-span-3 md:col-span-3 xl:col-span-2">
+          <div className="col-span-4 sm:col-span-3 md:col-span-3 2xl:col-span-2">
             <InputGroup
               label="Voter Registration Number"
               name="vin"
@@ -165,7 +165,7 @@ export default function UserProfilePage() {
           </div>
           <div className="col-span-4 md:col-span-2">
             <InputGroup
-              label="Phone Number (eg. 23480XXXXXXXX)"
+              label="Phone Number (eg. 23480....)"
               name="phoneNumber"
               onChange={handleChange}
               placeholder="Change your phone number"
@@ -175,20 +175,20 @@ export default function UserProfilePage() {
           </div>
           <div className="col-span-4 md:col-span-2">
             <InputGroup
-              label="Phone Number (eg. 23480XXXXXXXX)"
-              name="phoneNumber"
+              label="Date of Birth"
+              name="dateOfBirth"
               onChange={handleChange}
-              placeholder="Change your phone number"
+              placeholder="Change your date of birth"
               type="date"
               value={formatToInputDate(updateProfileData.dateOfBirth)}
             />
           </div>
-          <div className="col-start-4 ml-auto">
+          <div className="col-span-4 ml-auto">
             <Button type="submit">Update Profile</Button>
           </div>
         </form>
       </section>
-      <hr className="text-gray-600 font-semibold" />
+      <hr className="text-gray-600 font-semibold my-6" />
       <ChangePasswordSection />
     </div>
   );

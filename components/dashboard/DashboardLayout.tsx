@@ -28,7 +28,7 @@ export default function DashboardLayout({
 }) {
   const { user } = useAuth();
   const displayName = user?.firstName || "User";
-  const [navOpen, setNavOpen] = useState(true);
+  const [navOpen, setNavOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-white text-white font-sans">
