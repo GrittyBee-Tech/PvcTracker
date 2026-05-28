@@ -157,9 +157,10 @@ export default function UserProfilePage() {
   return (
     <div className="space-y-4 md:px-8 py-4 xl:pr-12">
       <h1 className="text-2xl font-bold text-primary">User Profile</h1>
-      <p className="text-black -mt-6">
+      <p className="text-black -mt-2  text-lg">
         Manage your personal information and PVC details here.
       </p>
+      <hr className="text-gray-600 font-semibold my-6" />
       <section>
         <h2 className="text-xl font-semibold text-primary">
           Personal Information

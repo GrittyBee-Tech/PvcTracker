@@ -99,170 +99,117 @@ export default function ReportIssuePage({
     }
   };
   return (
-    <div className="space-y-6">
-      {/* Additional Info */}
-      {/* <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
-          <div className="text-3xl mb-2">📧</div>
-          <h3 className="text-lg font-semibold text-white mb-2">Email</h3>
-          <p className="text-white break-all">support@pvcwaka.org</p>
+    <div className="space-y-4 md:px-8 py-4 xl:pr-12">
+      <div>
+        <h1 className="text-2xl font-bold text-primary">Report an Issue</h1>
+        <h5 className="text-primary mt-4">
+          Report any issues you encounter with the INEC registration or
+          collection centre.
+        </h5>
+      </div>
+      <hr className="text-gray-600 font-semibold my-6" />
+      <form onSubmit={handleSubmit} className=" p-2 md:p-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Name */}
+          <div>
+            <label className="block text-lg font-semibold font-space-grotesk text-primary mb-3">
+              Full Name *
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-3  text-primary border bg-white border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition"
+              placeholder="Your name"
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-lg font-semibold font-space-grotesk text-primary mb-3">
+              Email Address *
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full px-4 bg-white py-3  text-primary border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition"
+              placeholder="your.email@example.com"
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-lg font-semibold font-space-grotesk   text-primary mb-3">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className="w-full px-4 py-3 text-primary bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition"
+              placeholder="+234 (0)123 456 7890"
+            />
+          </div>
+
+          {/* Complaint Type */}
+          <div>
+            <label className="block text-lg font-semibold font-space-grotesk text-primary mb-3">
+              Complaint Type *
+            </label>
+            <select
+              name="complaintType"
+              value={formData.complaintType}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-3 text-primary  border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition bg-white"
+            >
+              <option className="" value="">
+                Select a category
+              </option>
+              <option value="technical">Technical Issue</option>
+              <option value="registration">Registration Problem</option>
+              <option value="pvc-collection">PVC Collection Issue</option>
+              <option value="user-experience">User Experience</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
         </div>
-        <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
-          <div className="text-3xl mb-2">📞</div>
-          <h3 className="text-lg font-semibold text-white mb-2">Phone</h3>
-          <p className="text-white">+234 (0) 800 123 4567</p>
+
+        {/* Message */}
+        <div className="mb-6">
+          <label className="block text-lg font-semibold text-primary mb-3">
+            Complaint Details *
+          </label>
+          <textarea
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            required
+            rows={6}
+            className="w-full px-4 py-3 border text-primary bg-white border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition resize-none"
+            placeholder="Please describe your complaint in detail. The more information you provide, the better we can assist you."
+          />
         </div>
-        <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
-          <div className="text-3xl mb-2">⏱️</div>
-          <h3 className="text-lg font-semibold text-white mb-2">
-            Response Time
-          </h3>
-          <p className="text-white">Within 24-48 hours</p>
+
+        {/* Submit Button */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-primary hover:bg-[#a58a3a] disabled:bg-gray-400 text-white font-bold py-3 px-8 rounded-lg transition duration-200"
+          >
+            {loading ? "Submitting..." : "Submit Complaint"}
+          </button>
         </div>
-      </div> */}
+      </form>
 
       {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
-      {isModalOpen && (
-        <div
-          className="fixed top-0 right-0 bottom-0 z-50"
-          style={{ left: "16rem" }}
-        >
-          <ReportModal
-            isOpen={isModalOpen}
-            position="absolute"
-            title={modalTitle}
-            onClose={handleCloseModal}
-            size="xl"
-            closeButton={false}
-            actions={
-              <>
-                {/* <button
-                  onClick={handleCloseModal}
-                  className="px-4 py-2 rounded bg-primary border border-green-700 text-green-200"
-                >
-                  Close
-                </button> */}
-                {/* <button
-                  onClick={handleVerify}
-                  disabled={isVerifying}
-                  className="px-4 py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
-                >
-                  {isVerifying ? (
-                    <SpinnerLoader text="Processing..." />
-                  ) : (
-                    "Pay ₦50 & Verify"
-                  )}
-                </button> */}
-              </>
-            }
-          >
-            <div className="space-y-4">
-              <p className="text-primary">{modalContent}</p>
-              <form onSubmit={handleSubmit} className=" p-2 md:p-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  {/* Name */}
-                  <div>
-                    <label className="block text-sm font-semibold font-space-grotesk text-primary mb-3">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition"
-                      placeholder="Your name"
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-semibold font-space-grotesk   text-primary mb-3">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition"
-                      placeholder="your.email@example.com"
-                    />
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <label className="block text-sm  font-space-grotesk font-semibold text-primary mb-3">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition"
-                      placeholder="+234 (0)123 456 7890"
-                    />
-                  </div>
-
-                  {/* Complaint Type */}
-                  <div>
-                    <label className="block text-sm font-semibold font-space-grotesk text-primary mb-3">
-                      Complaint Type *
-                    </label>
-                    <select
-                      name="complaintType"
-                      value={formData.complaintType}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition bg-white"
-                    >
-                      <option value="">Select a category</option>
-                      <option value="technical">Technical Issue</option>
-                      <option value="registration">Registration Problem</option>
-                      <option value="pvc-collection">
-                        PVC Collection Issue
-                      </option>
-                      <option value="user-experience">User Experience</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Message */}
-                <div className="mb-6">
-                  <label className="block text-sm font-semibold text-primary mb-3">
-                    Complaint Details *
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={6}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition resize-none"
-                    placeholder="Please describe your complaint in detail. The more information you provide, the better we can assist you."
-                  />
-                </div>
-
-                {/* Submit Button */}
-                <div className="flex justify-end">
-                  <button
-                    // onClick={handleCloseModal}
-                    type="submit"
-                    disabled={loading}
-                    className="bg-primary hover:bg-[#a58a3a] disabled:bg-gray-400 text-white font-bold py-3 px-8 rounded-lg transition duration-200"
-                  >
-                    {loading ? "Submitting..." : "Submit Complaint"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </ReportModal>
-        </div>
-      )}
     </div>
   );
 }
