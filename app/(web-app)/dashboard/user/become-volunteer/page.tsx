@@ -158,7 +158,7 @@ export default function VolunteerPage({
               <div className=" grid grid-flow-col w-max items-center gap-2 font-bold font-space-grotesk text-primary">
                 <p className="text-primary text-lg">
                   {" "}
-                  You are almost there, {user?.firstName}!
+                  You are almost there, {user?.firstName}.!
                 </p>
                 <TbLockSquareRoundedFilled className="text-4xl" />
               </div>
