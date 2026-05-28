@@ -1,3 +1,5 @@
+import FindCentreClient from "./FindCentreClient";
+
 export default function FindCentrePage() {
   return (
     <div className="space-y-4 md:px-8 py-4 xl:pr-12">
@@ -6,7 +8,7 @@ export default function FindCentrePage() {
         Search for the nearest INEC registration or collection centre.
       </p>
       <hr className="text-gray-600 font-semibold my-6" />
-      {/* Search form and map/list of centres will go here */}
+      <FindCentreClient />
     </div>
   );
 }
