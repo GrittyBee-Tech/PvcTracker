@@ -11,7 +11,6 @@ import { formatToInputDate } from "@/lib/utils";
 
 type UpdateProfileFormType = {
   pvcStatus: "collected" | "not_collected";
-  vin?: string;
   firstName: string;
   lastName: string;
   dateOfBirth: Date;
@@ -23,12 +22,12 @@ export default function UserProfilePage() {
   const [updateProfileData, setUpdateProfileData] =
     useState<UpdateProfileFormType>({
       pvcStatus: "not_collected",
-      vin: "",
       firstName: "",
       lastName: "",
       dateOfBirth: new Date(),
       phoneNumber: "",
     });
+  const [vin, setVin] = useState("");
   const [status, setStatus] = useState<
     "idle" | "error" | "loading" | "success"
   >("idle");
@@ -37,7 +36,6 @@ export default function UserProfilePage() {
     () => ({
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
-      vin: user?.vin || "",
       pvcStatus: user?.pvcStatus || "not_collected",
       dateOfBirth: new Date(user?.dateOfBirth || ""),
       phoneNumber: user?.phoneNumber || "",
@@ -49,6 +47,7 @@ export default function UserProfilePage() {
     if (!user) return;
 
     setUpdateProfileData(initialData);
+    user?.vin && setVin(user?.vin);
   }, [user]);
 
   const isFormUnchanged =
@@ -61,14 +60,11 @@ export default function UserProfilePage() {
     });
   };
 
-  const handleUpdateProfile = async (e: React.SubmitEvent) => {
-    e.preventDefault();
-    if (isFormUnchanged) return;
-
+  const handleUpdateProfileAPICall = async (data: UpdateProfileFormType) => {
     await authClient.updateUser(
       {
-        ...updateProfileData,
-        dateOfBirth: new Date(updateProfileData.dateOfBirth),
+        ...data,
+        ...(data.dateOfBirth && { dateOfBirth: new Date(data.dateOfBirth) }),
       },
       {
         onRequest() {
@@ -102,6 +98,62 @@ export default function UserProfilePage() {
     );
   };
 
+  const handleSubmitVIN = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    if (!vin) return;
+
+    await authClient.updateUser(
+      { vin },
+      {
+        onRequest() {
+          setStatus("loading");
+        },
+        onSuccess() {
+          setStatus("success");
+          Swal.fire({
+            icon: "success",
+            text: "Profile updated successfully",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        },
+        onError(ctx) {
+          setStatus("error");
+          Swal.fire({
+            icon: "error",
+            text: ctx.error?.message || "Failed to update profile",
+            toast: true,
+            position: "top-end",
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        },
+      },
+    );
+  };
+
+  const handleUpdateProfile = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    if (isFormUnchanged) return;
+
+    Swal.fire({
+      icon: "warning",
+      titleText: "Warning",
+      text: "You are updating your profile. You can only update once every 24 hours",
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonColor: "#1A5C38",
+    }).then(({ isConfirmed }) => {
+      if (isConfirmed) {
+        handleUpdateProfileAPICall(updateProfileData);
+      }
+    });
+  };
+
   return (
     <div className="space-y-4 md:px-8 py-4 xl:pr-12">
       <h1 className="text-2xl font-bold text-primary">User Profile</h1>
@@ -127,20 +179,6 @@ export default function UserProfilePage() {
               ]}
               value={updateProfileData.pvcStatus}
               placeholder="Update your PVC Status"
-            />
-            <p className="text-primary font-semibold mt-1">
-              Set the status of your PVC. This status can only be changed once
-              every 24 hours
-            </p>
-          </div>
-          <div className="col-span-4 sm:col-span-3 md:col-span-3 2xl:col-span-2">
-            <InputGroup
-              label="Voter Registration Number"
-              name="vin"
-              onChange={handleChange}
-              placeholder="Change your VIN"
-              type="text"
-              value={updateProfileData.vin || ""}
             />
           </div>
           <div className="md:col-start-1 col-span-4 md:col-span-2">
@@ -178,17 +216,41 @@ export default function UserProfilePage() {
               label="Date of Birth"
               name="dateOfBirth"
               onChange={handleChange}
+              disabled
               placeholder="Change your date of birth"
               type="date"
               value={formatToInputDate(updateProfileData.dateOfBirth)}
             />
           </div>
           <div className="col-span-4 ml-auto">
-            <Button type="submit">Update Profile</Button>
+            <Button disabled={isFormUnchanged} type="submit">
+              Update Profile
+            </Button>
           </div>
         </form>
       </section>
       <hr className="text-gray-600 font-semibold my-6" />
+      <section>
+        <h2 className="text-xl font-semibold text-primary mb-3">
+          Voter's Identification
+        </h2>
+        <form className="grid grid-cols-4 items-end" onSubmit={handleSubmitVIN}>
+          <div className="col-span-4 sm:col-span-3 md:col-span-2">
+            <InputGroup
+              name="vin"
+              label="Input your VIN"
+              placeholder="VIN here"
+              value={vin}
+              onChange={(_, val) => setVin(val)}
+            />
+          </div>
+          <div className="col-span-2 ml-auto">
+            <Button type="submit">Save VIN</Button>
+          </div>
+        </form>
+      </section>
+      <hr className="text-gray-600 font-semibold my-6" />
+
       <ChangePasswordSection />
     </div>
   );

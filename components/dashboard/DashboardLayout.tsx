@@ -2,14 +2,20 @@
 
 import { usePathname } from "next/navigation";
 import Logo from "../ui/Logo";
-import { UserCircle, Bell, Search, Navigation } from "lucide-react";
+import {
+  UserCircle,
+  Bell,
+  Search,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
 import * as Icons from "lucide-react";
 import Link from "next/link";
 import LogoutButton from "../ui/LogoutButton";
 import { useAuth } from "@/hooks/useAuth";
-import { TbNavigationDown, TbMenu } from "react-icons/tb";
 import Image from "next/image";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { TbNavigationDown } from "react-icons/tb";
 
 export type DashboardLink = {
   href: string;
@@ -32,14 +38,19 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-white text-white font-sans">
-      <DashboardSideBar links={links} role={role} navOpen={navOpen} />
+      <DashboardSideBar
+        links={links}
+        role={role}
+        navOpen={navOpen}
+        setNavOpen={setNavOpen}
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
         <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-green-900/30 bg-primary/80 backdrop-blur-sm sticky top-0 z-10">
-          <div className="hidden md:flex items-center text-primary">
-            <div className="relative hidden md:block">
+          <div className="items-center text-primary">
+            <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-primary" />
               <input
                 type="text"
@@ -48,11 +59,6 @@ export default function DashboardLayout({
               />
             </div>
           </div>
-          <TbMenu
-            size={20}
-            onClick={() => setNavOpen((prev) => !prev)}
-            className="block md:hidden hover:scale-105"
-          />
           <div className="flex items-center gap-4">
             <button className="relative p-2 text-green-100/70 hover:text-white transition-colors rounded-full hover:bg-green-900/20">
               <Bell className="w-5 h-5" />
@@ -86,10 +92,12 @@ const DashboardSideBar = ({
   links,
   role,
   navOpen,
+  setNavOpen,
 }: {
   role: "User" | "Volunteer" | "Admin";
   links: DashboardLink[];
   navOpen: Boolean;
+  setNavOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const pathname = usePathname();
 
@@ -97,23 +105,21 @@ const DashboardSideBar = ({
     <aside
       className={`${navOpen ? "w-38" : "w-13"} transition-width duration-200 ease-in md:w-64 bg-[#F9FDFA] border-r border-green-900/30 flex flex-col`}
     >
-      <div className="h-16 flex items-center border-b-gray-500 border-b">
+      <div className="h-16 flex items-center">
         <div className="mx-auto w-fit md:pr-6" style={{ color: "white" }}>
-          <Image
-            src={"/favicon.png"}
-            alt="Logo"
-            className="block md:hidden"
-            width={52}
-            height={52}
-          />
-          <div className="hidden md:block">
-            <Logo />
-          </div>
+          <Logo />
         </div>
       </div>
       <div className="flex-1 not-md:px-1.5 p-4 md:mt-4 pb-0 h-full flex flex-col">
-        <div className="flex items-center not-md:justify-center gap-2 text-xl md:text-lg md:border-b md:border-primary font-bold text-primary uppercase tracking-wider mb-4 px-1 md:px-4">
-          <TbNavigationDown className="size-6 md:size-4 text-primary" />
+        <div className="flex items-center justify-center gap-3 text-xl md:text-lg pb-1 border-b border-primary font-bold text-primary uppercase tracking-wider mb-4 px-1 md:px-4">
+          <button className="cursor-pointer md:hidden" onClick={() => setNavOpen((prev: boolean) => !prev)}>
+            {navOpen ? (
+              <PanelLeftClose size={24} />
+            ) : (
+              <PanelLeftOpen size={24} />
+            )}
+          </button>
+          <TbNavigationDown className="hidden md:block" />
           <p className={`${navOpen ? "block" : "hidden"} md:block`}>Menu</p>
         </div>
         <nav className="flex flex-col gap-2 mt-4 h-full">
