@@ -32,10 +32,10 @@ export default function Modal({
     position === "absolute" ? "absolute inset-0" : "fixed inset-0";
 
   const sizeClasses = {
-    sm: "w-[300px] max-w-sm",
-    md: "w-[500px] max-w-md",
-    lg: "w-[700px] max-w-lg",
-    xl: "w-[900px] max-w-xl",
+    sm: "w-full sm:max-w-sm",
+    md: "w-full sm:max-w-md",
+    lg: "w-full sm:max-w-lg",
+    xl: "w-full sm:max-w-xl",
   };
 
   return (
@@ -47,7 +47,7 @@ export default function Modal({
       />
 
       {/* Modal Content */}
-      <div className="absolute inset-0 flex items-center justify-center p-4">
+      <div className="absolute inset-0 flex items-center justify-center md:p-4 p-6 overflow-y-auto">
         <div
           className={`
             ${bg}
@@ -57,6 +57,7 @@ export default function Modal({
             rounded-lg
             shadow-2xl
             ${className}
+            max-h-[90vh] overflow-y-auto
           `}
           onClick={(e) => e.stopPropagation()}
         >
