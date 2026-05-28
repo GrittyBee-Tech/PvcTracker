@@ -77,7 +77,7 @@ export default function UserLayout({
     if (user.ninStatus !== "verified") {
       setIsModalOpen(true);
     }
-  }, [user]);
+  }, [user?.ninStatus]);
 
   return (
     <>
