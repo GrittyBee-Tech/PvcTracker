@@ -176,6 +176,11 @@ export default function VolunteerHeroPage() {
                   application can be submitted.
                 </p>
               </div>
+              <Link href="https://forms.gle/oGPC7ZYvyW2ZAsKM9" target="_blank">
+                <Button className="h-fit px-6 py-6 text-base">
+                  Start CVR Training
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

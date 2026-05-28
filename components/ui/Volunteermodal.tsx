@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { X } from "lucide-react";
 
-interface ReportModalProps {
+interface VolunteerModalProps {
   isOpen: boolean;
   position?: "fixed" | "absolute";
   title?: string;
@@ -14,7 +14,7 @@ interface ReportModalProps {
   bg?: string;
 }
 
-export default function ReportModal({
+export default function VolunteerModal({
   isOpen,
   position = "fixed",
   title,
@@ -23,10 +23,17 @@ export default function ReportModal({
   actions,
   closeButton = true,
   className = "",
-  size = "md",
+  size = "sm",
   bg = "bg-white",
-}: ReportModalProps) {
+}: VolunteerModalProps) {
   if (!isOpen) return null;
+
+  const sizeClasses = {
+    sm: "w-full sm:max-w-sm",
+    md: "w-full sm:max-w-md",
+    lg: "w-full sm:max-w-lg",
+    xl: "w-full sm:max-w-xl",
+  };
 
   const wrapperClass =
     position === "absolute" ? "absolute inset-0" : "fixed inset-0";
@@ -40,16 +47,18 @@ export default function ReportModal({
       />
 
       {/* Modal Content */}
-      <div className="absolute inset-0 flex justify-center overflow-y-auto md:p-16 ">
+      <div className="absolute inset-0 flex items-center justify-center md:p-4 p-6 overflow-y-auto ">
         <div
           className={`
+            
             ${bg}
-     
-            w-9/12
+            ${sizeClasses[size]}
+            w-full
             border border-green-900/30
             rounded-lg
             shadow-2xl
             ${className}
+            max-h-[90vh] overflow-y-auto
           `}
           onClick={(e) => e.stopPropagation()}
         >

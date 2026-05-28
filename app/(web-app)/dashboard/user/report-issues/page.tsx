@@ -2,20 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import Modal from "@/components/ui/modal";
-import ReportModal from "@/components/ui/Reportmodal";
 
-export default function ReportIssuePage({
-  showModal = true,
-  modalTitle = "Report Issue",
-  modalContent = " Report any issues you encounter with the INEC registration or collection centre.",
-  onModalClose,
-}: {
-  showModal?: boolean;
-  modalTitle?: string;
-  modalContent?: React.ReactNode;
-  onModalClose?: () => void;
-}) {
+export default function ReportIssuePage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,16 +12,6 @@ export default function ReportIssuePage({
     phone: "",
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(showModal);
-
-  useEffect(() => {
-    setIsModalOpen(showModal);
-  }, [showModal]);
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    onModalClose?.();
-  };
   const [loading, setLoading] = useState(false);
 
   const handleChange = (

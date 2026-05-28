@@ -109,6 +109,13 @@ const DashboardSideBar = ({
         <div className="mx-auto w-fit md:pr-6" style={{ color: "white" }}>
           <Logo />
         </div>
+        <Image
+          src="/favicon.png"
+          alt="PVC WAKA Logo"
+          width={50}
+          height={50}
+          className=" md:hidden w-14 h-14 mx-auto"
+        />
       </div>
       <div className="flex-1 not-md:px-1.5 p-4 md:mt-4 pb-0 h-full flex flex-col">
         <div className="flex items-center justify-center gap-3 text-xl md:text-lg pb-1 border-b border-primary font-bold text-primary uppercase tracking-wider mb-4 px-1 md:px-4">

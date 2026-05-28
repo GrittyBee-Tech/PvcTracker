@@ -1,10 +1,34 @@
 "use client";
-import { useState } from "react";
-import { ImagePlus } from "lucide-react";
+import { useEffect, useState } from "react";
 import InputGroup from "@/components/ui/InputGroup";
 import { FaUserTie } from "react-icons/fa";
+import VolunteerModal from "@/components/ui/Volunteermodal";
+import { SpinnerLoader } from "@/components/ui/Loader";
+import { useAuth } from "@/hooks/useAuth";
+import { TbLockSquareRoundedFilled } from "react-icons/tb";
 
-export default function VolunteerPage() {
+export default function VolunteerPage({
+  showModal = true,
+  modalTitle = "Ensure Your VIN is updated",
+  modalContent = " To become a volunteer, you need to have your VIN updated in your profile. Please update your VIN to proceed with the volunteer application.",
+  onModalClose,
+}: {
+  showModal?: boolean;
+  modalTitle?: string;
+  modalContent?: React.ReactNode;
+  onModalClose?: () => void;
+}) {
+  const { user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(showModal);
+
+  useEffect(() => {
+    setIsModalOpen(showModal);
+  }, [showModal]);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    onModalClose?.();
+  };
   const handleChange = (field: string, value: string) => {
     console.log(field, value);
   };
@@ -18,6 +42,14 @@ export default function VolunteerPage() {
       console.log("Selected passport:", selectedFile);
     }
   };
+  useEffect(() => {
+    if (!user) return;
+
+    // open modal if NIN not verified
+    if (user.vin !== "verified") {
+      setIsModalOpen(true);
+    }
+  }, [user?.vin]);
 
   return (
     <div className="space-y-4 md:px-8 py-4 xl:pr-12">
@@ -112,6 +144,29 @@ export default function VolunteerPage() {
           </div>
         </div>
       </form>
+      {isModalOpen && (
+        <div className="fixed top-0 right-0 bottom-0 z-50 left-12 md:left-64">
+          <VolunteerModal
+            isOpen={isModalOpen}
+            position="absolute"
+            title={modalTitle}
+            onClose={handleCloseModal}
+            closeButton={false}
+            actions={<></>}
+          >
+            <div className="space-y-4">
+              <div className=" grid grid-flow-col w-max items-center gap-2 font-bold font-space-grotesk text-primary">
+                <p className="text-primary text-lg">
+                  {" "}
+                  You are almost there, {user?.firstName}!
+                </p>
+                <TbLockSquareRoundedFilled className="text-4xl" />
+              </div>
+              <p className="text-primary font-dm-sans ">{modalContent}</p>
+            </div>
+          </VolunteerModal>
+        </div>
+      )}
     </div>
   );
 }
