@@ -7,6 +7,7 @@ interface InputGroupProps<T extends string> {
   placeholder: string;
   labelClassName?: string;
   inputClassName?: string;
+  disabled?: Boolean;
 }
 
 const InputGroup = <T extends string>({
@@ -18,6 +19,7 @@ const InputGroup = <T extends string>({
   onChange,
   labelClassName,
   inputClassName = "text-black border-primary/50",
+  disabled = false,
 }: InputGroupProps<T>) => {
   return (
     <div>
