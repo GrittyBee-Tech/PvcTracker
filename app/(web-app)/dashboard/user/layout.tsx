@@ -95,14 +95,14 @@ export default function UserLayout({
               <>
                 <button
                   onClick={handleCloseModal}
-                  className="px-4 py-2 font-bold rounded bg-primary border border-green-700 text-green-200"
+                  className="md:px-6 md:py-2 py-2  px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60"
                 >
                   Close
                 </button>
                 <button
                   // onClick={handleVerify}
                   disabled={isVerifying}
-                  className="px-4  md:text-lg text-sm font-bold py-3 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
+                  className="md:px-6 md:py-2 py-2  px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60"
                 >
                   {isVerifying ? (
                     <SpinnerLoader text="Processing..." />
