@@ -2,11 +2,11 @@
 
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import InputGroup from "@/components/ui/InputGroup";
+import { SpinnerLoader } from "@/components/ui/Loader";
 import Modal from "@/components/ui/modal";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { SpinnerLoader } from "@/components/ui/Loader";
 
 const links = [
   { href: "/dashboard/user", label: "Dashboard", icon: "LayoutDashboard" },
@@ -39,12 +39,22 @@ export default function UserLayout({
   const [nin, setNin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [ninError, setNinError] = useState<string | null>(null);
+  // const isBlocked = user?.ninStatus !== "verified";
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isAuthenticated && !isLoading) {
       router.replace("/auth/login");
+    } else {
+      const destination =
+        user?.role === "volunteer"
+          ? "/dashboard/volunteer"
+          : user?.role === "admin"
+            ? "/dashboard/admin"
+            : "/dashboard/user";
+
+      router.replace(destination);
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     setIsModalOpen(showModal);
@@ -64,83 +74,69 @@ export default function UserLayout({
     }
   }, [user]);
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col min-h-screen items-center justify-center bg-white">
-        <SpinnerLoader size="size-20" border="border-6" />
-        <p className="text-slate-600 mt-4">Checking authentication</p>
-      </div>
-    );
-  }
-
-  if (isAuthenticated && user?.role === "user") {
-    return (
-      <>
-        <DashboardLayout links={links} role="User" children={children} />
-        {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
-        {isModalOpen && (
-          <div
-            className="fixed top-0 right-0 bottom-0 z-50"
-            style={{ left: "16rem" }}
+  return (
+    <>
+      <DashboardLayout links={links} role="User" children={children} />
+      {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
+      {isModalOpen && (
+        <div
+          className="fixed top-0 right-0 bottom-0 z-50"
+          style={{ left: "16rem" }}
+        >
+          <Modal
+            isOpen={isModalOpen}
+            position="absolute"
+            title={modalTitle}
+            onClose={handleCloseModal}
+            closeButton={false}
+            actions={
+              <>
+                <button
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 font-bold rounded bg-primary border border-green-700 text-green-200"
+                >
+                  Close
+                </button>
+                <button
+                  // onClick={handleVerify}
+                  disabled={isVerifying}
+                  className="px-4  font-bold py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
+                >
+                  {isVerifying ? (
+                    <SpinnerLoader text="Processing..." />
+                  ) : (
+                    "Pay ₦150 & Verify"
+                  )}
+                </button>
+              </>
+            }
           >
-            <Modal
-              isOpen={isModalOpen}
-              position="absolute"
-              title={modalTitle}
-              onClose={handleCloseModal}
-              closeButton={false}
-              actions={
-                <>
-                  <button
-                    onClick={handleCloseModal}
-                    className="px-4 py-2 font-bold rounded bg-primary border border-green-700 text-green-200"
-                  >
-                    Close
-                  </button>
-                  <button
-                    // onClick={handleVerify}
-                    disabled={isVerifying}
-                    className="px-4  font-bold py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
-                  >
-                    {isVerifying ? (
-                      <SpinnerLoader text="Processing..." />
-                    ) : (
-                      "Pay ₦150 & Verify"
-                    )}
-                  </button>
-                </>
-              }
-            >
-              <div className="space-y-4">
-                <p className="font-bold">
-                  Hello, {user?.lastName} {user?.firstName}
-                </p>
-                <p className="text-primary">{modalContent}</p>
-                <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
-                  <p className="font-semibold">Verification Fee</p>
-                  <p>₦150 will be charged for this NIN verification request.</p>
-                </div>
-                <p className="text-primary font-dm-sans -mt-3">
-                  Please enter your NIN and continue to pay the verification
-                  fee.
-                </p>
-                <InputGroup
-                  label="NIN"
-                  name="nin"
-                  onChange={(field, value) => setNin(value)}
-                  placeholder="Enter your NIN"
-                  type="text"
-                  value={nin}
-                />
-                {ninError && <p className="text-sm text-red-400">{ninError}</p>}
-                <p className="text-xs font-dm-sans text-muted-foreground"></p>
+            <div className="space-y-4">
+              <p className="font-bold">
+                Hello, {user?.lastName} {user?.firstName}
+              </p>
+              <p className="text-primary">{modalContent}</p>
+              <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
+                <p className="font-semibold">Verification Fee</p>
+                <p>₦150 will be charged for this NIN verification request.</p>
               </div>
-            </Modal>
-          </div>
-        )}
-      </>
-    );
-  }
-
-  return null;
+              <p className="text-primary font-dm-sans -mt-3">
+                Please enter your NIN and continue to pay the verification fee.
+              </p>
+              <InputGroup
+                label="NIN"
+                name="nin"
+                onChange={(field, value) => setNin(value)}
+                placeholder="Enter your NIN"
+                type="text"
+                value={nin}
+              />
+              {ninError && <p className="text-sm text-red-400">{ninError}</p>}
+              <p className="text-xs font-dm-sans text-muted-foreground"></p>
+            </div>
+          </Modal>
+        </div>
+      )}
+    </>
+  );
 }
