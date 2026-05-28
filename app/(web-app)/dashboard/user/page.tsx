@@ -165,22 +165,7 @@ export default function UserDashboardPage() {
         </div>
       </div>
       {/* Status Cards */}
-      <Card className="border-gray-400 shadow-md w-90">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-primary">
-            Registered VIN
-          </CardTitle>
-          <FaAddressCard className="w-5 h-5 text-primary" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-primary">
-            {user?.vin ? user.vin : "Pending VIN"}
-          </div>
-          {/* <p className="text-xs font-dm-sans text-muted-foreground mt-1">
-              You registered yourself on the platform.
-            </p> */}
-        </CardContent>
-      </Card>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-2">
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row  items-center justify-between space-y-0 pb-2">
@@ -238,6 +223,22 @@ export default function UserDashboardPage() {
       <div className="mt-8">
         <h2 className="text-xl font-semibold text-primary">Quick Actions</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-4">
+          <Card className="border-gray-400 shadow-md ">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-primary">
+                Registered VIN
+              </CardTitle>
+              <FaAddressCard className="w-5 h-5 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-primary">
+                {user?.vin ? user.vin : "Pending VIN"}
+              </div>
+              {/* <p className="text-xs font-dm-sans text-muted-foreground mt-1">
+              You registered yourself on the platform.
+            </p> */}
+            </CardContent>
+          </Card>
           <Card className="border-gray-400 shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base font-medium text-primary">
