@@ -129,7 +129,7 @@ const DashboardSideBar = ({
             {navOpen ? (
               <PanelLeftClose size={24} />
             ) : (
-              <PanelLeftOpen size={24} />
+              <PanelLeftOpen className="ml-3" size={36} />
             )}
           </button>
           <div className="grid grid-flow-col w-max gap-2 items-center md:-ml-28">
