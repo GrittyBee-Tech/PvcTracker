@@ -5,9 +5,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CheckCircle2, Clock, MapPin, User, Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
-import Modal from "@/components/ui/modal";
-import InputGroup from "@/components/ui/InputGroup";
-import { SpinnerLoader } from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import {
@@ -16,31 +13,17 @@ import {
   FaHourglassStart,
   FaLocationDot,
 } from "react-icons/fa6";
-import { FaUser, FaUserCheck, FaUserEdit, FaUserTimes } from "react-icons/fa";
+import {
+  FaAddressCard,
+  FaUser,
+  FaUserCheck,
+  FaUserEdit,
+  FaUserTimes,
+} from "react-icons/fa";
 
-export default function UserDashboardPage({
-  showModal = true,
-  modalTitle = "Verify Your Information",
-  modalContent = "To complete your profile setup kindly verify your NIN",
-  onModalClose,
-}: {
-  showModal?: boolean;
-  modalTitle?: string;
-  modalContent?: React.ReactNode;
-  onModalClose?: () => void;
-}) {
-  const [isModalOpen, setIsModalOpen] = useState(showModal);
+export default function UserDashboardPage() {
   const { user } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    setIsModalOpen(showModal);
-  }, [showModal]);
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    onModalClose?.();
-  };
 
   // const [profile, setProfile] = useState<UserProfile | null>(null);
   // const [loadingProfile, setLoadingProfile] = useState(true);
@@ -135,7 +118,7 @@ export default function UserDashboardPage({
   const ninDisplay = getNinStatusDisplay(user?.ninStatus);
   const pvcDisplay = getPvcStatusDisplay(user?.pvcStatus);
 
-  //handle payment with paystack inline js
+  //handle payment with paystack inline jsx
   // const handlePayment = () => {
   //   paystack.newTransaction({
   //     key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
@@ -181,9 +164,24 @@ export default function UserDashboardPage({
           </p>
         </div>
       </div>
-
       {/* Status Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-6">
+      <Card className="border-gray-400 shadow-md w-90">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-primary">
+            Registered VIN
+          </CardTitle>
+          <FaAddressCard className="w-5 h-5 text-primary" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-primary">
+            {user?.vin ? user.vin : "Pending VIN"}
+          </div>
+          {/* <p className="text-xs font-dm-sans text-muted-foreground mt-1">
+              You registered yourself on the platform.
+            </p> */}
+        </CardContent>
+      </Card>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-2">
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row  items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-primary">
@@ -227,7 +225,7 @@ export default function UserDashboardPage({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">
-              {/* {user?.registeredBy} */}
+              {user ? `${user.firstName} ${user.lastName}` : "N/A"}
             </div>
             <p className="text-xs font-dm-sans text-muted-foreground mt-1">
               You registered yourself on the platform.
@@ -269,7 +267,7 @@ export default function UserDashboardPage({
               <p className="text-sm text-muted-foreground mb-8">
                 Edit your personal details or PVC information.
               </p>
-              <Link href="/dashboard/user/profile" passHref>
+              <Link href="/dashboard/user/edit-profile" passHref>
                 <Button className="w-full bg-primary text-white">
                   Edit Profile
                 </Button>

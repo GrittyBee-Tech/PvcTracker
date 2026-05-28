@@ -53,7 +53,7 @@ export default function UserAuth({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace("/dashboard");
+      router.replace("/dashboard/user");
     }
   }, [pathname]);
 
