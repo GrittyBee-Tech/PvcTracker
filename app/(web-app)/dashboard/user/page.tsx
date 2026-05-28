@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import Modal from "@/components/ui/modal";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
+<<<<<<< HEAD
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import {
@@ -17,6 +18,24 @@ import {
   FaLocationDot,
 } from "react-icons/fa6";
 import { FaUser, FaUserCheck, FaUserEdit, FaUserTimes } from "react-icons/fa";
+=======
+import { authClient } from "@/lib/auth-client";
+import { useAuth } from "@/hooks/useAuth";
+
+interface UserProfile {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: "user" | "admin" | "volunteer";
+  phoneNumber?: string;
+  nin?: string;
+  ninVerified: boolean;
+  isEmailVerified: boolean;
+}
+
+// import PaystackPop from "@paystack/inline-js";
+>>>>>>> 1b71e4d (fixes)
 
 export default function UserDashboardPage({
   showModal = true,
@@ -42,6 +61,7 @@ export default function UserDashboardPage({
     onModalClose?.();
   };
 
+<<<<<<< HEAD
   // const [profile, setProfile] = useState<UserProfile | null>(null);
   // const [loadingProfile, setLoadingProfile] = useState(true);
   // const [profileError, setProfileError] = useState<string | null>(null);
@@ -51,6 +71,10 @@ export default function UserDashboardPage({
 
     setNin(user.nin);
   }, [user]);
+=======
+  const { user } = useAuth();
+  console.log(user);
+>>>>>>> 1b71e4d (fixes)
 
   // const paystack = new PaystackPop();
   const [nin, setNin] = useState("");
@@ -132,8 +156,13 @@ export default function UserDashboardPage({
     }
   };
 
+<<<<<<< HEAD
   const ninDisplay = getNinStatusDisplay(user?.ninStatus);
   const pvcDisplay = getPvcStatusDisplay(user?.pvcStatus);
+=======
+  // const ninDisplay = getNinStatusDisplay(user.ninStatus);
+  // const pvcDisplay = getPvcStatusDisplay(user.pvcStatus);
+>>>>>>> 1b71e4d (fixes)
 
   //handle payment with paystack inline js
   // const handlePayment = () => {
@@ -168,6 +197,7 @@ export default function UserDashboardPage({
     <div className="relative space-y-8">
       <div className="flex items-center justify-between">
         <div>
+<<<<<<< HEAD
           <div className="grid grid-flow-col items-center w-max gap-2">
             <h1 className="text-3xl font-space-grotesk font-bold text-primary">
               Welcome, {user?.lastName} {user?.firstName}
@@ -176,6 +206,12 @@ export default function UserDashboardPage({
           </div>
 
           <p className="text-muted-foreground mt-3 font-dm-sans">
+=======
+          <h1 className="text-3xl font-space-grotesk font-bold text-primary">
+            Welcome, {user?.firstName}!
+          </h1>
+          <p className="text-muted-foreground mt-1 font-dm-sans">
+>>>>>>> 1b71e4d (fixes)
             Here's a quick overview of your PVC WAKA journey and important
             actions.
           </p>
@@ -183,8 +219,13 @@ export default function UserDashboardPage({
       </div>
 
       {/* Status Cards */}
+<<<<<<< HEAD
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-6">
         <Card className="border-gray-400 shadow-md">
+=======
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-10">
+        {/* <Card className="border-gray-400 shadow-md">
+>>>>>>> 1b71e4d (fixes)
           <CardHeader className="flex flex-row  items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-primary">
               NIN Verification
@@ -201,21 +242,21 @@ export default function UserDashboardPage({
               {ninDisplay.description}
             </p>
           </CardContent>
-        </Card>
+        </Card> */}
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-space-grotesk font-medium text-primary">
               PVC Collection
             </CardTitle>
-            {pvcDisplay.icon}
+            {/* {pvcDisplay.icon} */}
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${pvcDisplay.colorClass}`}>
+            {/* <div className={`text-2xl font-bold ${pvcDisplay.colorClass}`}>
               {pvcDisplay.text}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {pvcDisplay.description}
-            </p>
+            </p> */}
           </CardContent>
         </Card>
         <Card className="border-gray-400 shadow-md">
@@ -226,9 +267,15 @@ export default function UserDashboardPage({
             <FaUser className="w-5 h-5 text-primary" />
           </CardHeader>
           <CardContent>
+<<<<<<< HEAD
             <div className="text-2xl font-bold text-primary">
               {/* {user?.registeredBy} */}
             </div>
+=======
+            {/* <div className="text-2xl font-bold text-primary">
+              {user.registeredBy}
+            </div> */}
+>>>>>>> 1b71e4d (fixes)
             <p className="text-xs font-dm-sans text-muted-foreground mt-1">
               You registered yourself on the platform.
             </p>
