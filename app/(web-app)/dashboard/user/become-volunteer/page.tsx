@@ -1,14 +1,117 @@
-import React from "react";
-import page from "../page";
+"use client";
+import { useState } from "react";
+import { ImagePlus } from "lucide-react";
+import InputGroup from "@/components/ui/InputGroup";
+import { FaUserTie } from "react-icons/fa";
 
 export default function VolunteerPage() {
+  const handleChange = (field: string, value: string) => {
+    console.log(field, value);
+  };
+
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      console.log("Selected passport:", selectedFile);
+    }
+  };
+
   return (
     <div className="space-y-4 md:px-8 py-4 xl:pr-12">
-      <h1 className="text-primary  font-bold text-2xl">Become a Volunteer</h1>
+      <h1 className="text-primary font-bold text-2xl">Become a Volunteer</h1>
+
       <p className="text-primary mt-4 text-lg">
         Join our team of volunteers and make a difference in your community!
       </p>
+
       <hr className="text-gray-600 font-semibold my-6" />
+
+      <form className="w-full items-center gap-6 mt-4">
+        <div>
+          <div className="grid h-20 w-20 justify-center mx-auto items-center rounded-full border border-dotted border-green-900/30 bg-green-50 cursor-pointer">
+            <FaUserTie className="h-10 w-10 text-primary " />
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </div>
+          <div>
+            <p className="text-sm text-center text-primary font-medium">
+              Click to upload passport photo
+            </p>
+
+            <p className="text-xs text-center text-muted-foreground mt-1">
+              PNG, JPG up to 2MB
+            </p>
+          </div>
+        </div>
+
+        {file && (
+          <p className="text-xs text-green-500 mt-2">Selected: {file.name}</p>
+        )}
+
+        <div className="grid grid-cols-4 gap-6 mb-6">
+          <div className="col-span-4 sm:col-span-3 md:col-span-3 2xl:col-span-2">
+            <InputGroup
+              label="Voter Registration Number"
+              name="vin"
+              onChange={handleChange}
+              placeholder="Enter your VIN"
+              type="text"
+              value=""
+            />
+          </div>
+
+          <div className="md:col-start-1 col-span-4 md:col-span-2">
+            <InputGroup
+              label="Next of Kin Name"
+              name="firstName"
+              onChange={handleChange}
+              placeholder="Enter next of kin name"
+              type="text"
+              value=""
+            />
+          </div>
+
+          <div className="col-span-4 md:col-span-2">
+            <InputGroup
+              label="Address of Next of Kin"
+              name="lastName"
+              onChange={handleChange}
+              placeholder="Enter address of next of kin"
+              type="text"
+              value=""
+            />
+          </div>
+
+          <div className="col-span-4 md:col-span-2">
+            <InputGroup
+              label="Phone Number (eg. 23480....)"
+              name="phoneNumber"
+              onChange={handleChange}
+              placeholder="Enter phone number"
+              type="text"
+              value=""
+            />
+          </div>
+
+          <div className="col-span-4 md:col-span-2">
+            <InputGroup
+              label="Date of Birth"
+              name="dateOfBirth"
+              onChange={handleChange}
+              placeholder="Select date of birth"
+              type="date"
+              value=""
+            />
+          </div>
+        </div>
+      </form>
     </div>
   );
 }
