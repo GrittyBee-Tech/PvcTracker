@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import Modal from "@/components/ui/modal";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import {
   FaHandDots,
@@ -16,22 +17,6 @@ import {
   FaLocationDot,
 } from "react-icons/fa6";
 import { FaUser, FaUserCheck, FaUserEdit, FaUserTimes } from "react-icons/fa";
-import { authClient } from "@/lib/auth-client";
-import { useAuth } from "@/hooks/useAuth";
-
-interface UserProfile {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: "user" | "admin" | "volunteer";
-  phoneNumber?: string;
-  nin?: string;
-  ninVerified: boolean;
-  isEmailVerified: boolean;
-}
-
-// import PaystackPop from "@paystack/inline-js";
 
 export default function UserDashboardPage({
   showModal = true,
@@ -198,8 +183,8 @@ export default function UserDashboardPage({
       </div>
 
       {/* Status Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-10">
-        {/* <Card className="border-gray-400 shadow-md">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-6">
+        <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row  items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-primary">
               NIN Verification
@@ -216,21 +201,21 @@ export default function UserDashboardPage({
               {ninDisplay.description}
             </p>
           </CardContent>
-        </Card> */}
+        </Card>
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-space-grotesk font-medium text-primary">
               PVC Collection
             </CardTitle>
-            {/* {pvcDisplay.icon} */}
+            {pvcDisplay.icon}
           </CardHeader>
           <CardContent>
-            {/* <div className={`text-2xl font-bold ${pvcDisplay.colorClass}`}>
+            <div className={`text-2xl font-bold ${pvcDisplay.colorClass}`}>
               {pvcDisplay.text}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {pvcDisplay.description}
-            </p> */}
+            </p>
           </CardContent>
         </Card>
         <Card className="border-gray-400 shadow-md">
@@ -241,9 +226,9 @@ export default function UserDashboardPage({
             <FaUser className="w-5 h-5 text-primary" />
           </CardHeader>
           <CardContent>
-            {/* <div className="text-2xl font-bold text-primary">
-              {user.registeredBy}
-            </div> */}
+            <div className="text-2xl font-bold text-primary">
+              {/* {user?.registeredBy} */}
+            </div>
             <p className="text-xs font-dm-sans text-muted-foreground mt-1">
               You registered yourself on the platform.
             </p>
