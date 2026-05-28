@@ -12,6 +12,11 @@ const links = [
   { href: "/dashboard/user", label: "Dashboard", icon: "LayoutDashboard" },
   { href: "/dashboard/user/edit-profile", label: "Edit Profile", icon: "User" },
   { href: "/dashboard/user/find-centre", label: "Find Centre", icon: "MapPin" },
+  {
+    href: "/dashboard/user/become-volunteer",
+    label: "Volunteer",
+    icon: "HeartHandshake",
+  },
 
   {
     href: "/dashboard/user/report-issues",
@@ -79,10 +84,7 @@ export default function UserLayout({
       <DashboardLayout links={links} role="User" children={children} />
       {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
       {isModalOpen && (
-        <div
-          className="fixed top-0 right-0 bottom-0 z-50"
-          style={{ left: "16rem" }}
-        >
+        <div className="fixed top-0 right-0 bottom-0 z-50 left-12 md:left-64">
           <Modal
             isOpen={isModalOpen}
             position="absolute"
@@ -100,12 +102,12 @@ export default function UserLayout({
                 <button
                   // onClick={handleVerify}
                   disabled={isVerifying}
-                  className="px-4  font-bold py-2 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
+                  className="px-4  md:text-lg text-sm font-bold py-3 rounded bg-primary text-white disabled:opacity-60 flex items-center gap-2"
                 >
                   {isVerifying ? (
                     <SpinnerLoader text="Processing..." />
                   ) : (
-                    "Pay ₦150 & Verify"
+                    "Verify"
                   )}
                 </button>
               </>
