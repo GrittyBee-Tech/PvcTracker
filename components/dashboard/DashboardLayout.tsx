@@ -106,7 +106,10 @@ const DashboardSideBar = ({
       className={`${navOpen ? "w-38" : "w-13"} transition-width duration-200 ease-in md:w-64 bg-[#F9FDFA] border-r border-green-900/30 flex flex-col`}
     >
       <div className="h-16 flex items-center">
-        <div className="mx-auto w-fit md:pr-6" style={{ color: "white" }}>
+        <div
+          className="mx-auto md:block hidden w-fit md:pr-6"
+          style={{ color: "white" }}
+        >
           <Logo />
         </div>
         <Image
@@ -119,15 +122,20 @@ const DashboardSideBar = ({
       </div>
       <div className="flex-1 not-md:px-1.5 p-4 md:mt-4 pb-0 h-full flex flex-col">
         <div className="flex items-center justify-center gap-3 text-xl md:text-lg pb-1 border-b border-primary font-bold text-primary uppercase tracking-wider mb-4 px-1 md:px-4">
-          <button className="cursor-pointer md:hidden" onClick={() => setNavOpen((prev: boolean) => !prev)}>
+          <button
+            className="cursor-pointer md:hidden"
+            onClick={() => setNavOpen((prev: boolean) => !prev)}
+          >
             {navOpen ? (
               <PanelLeftClose size={24} />
             ) : (
               <PanelLeftOpen size={24} />
             )}
           </button>
-          <TbNavigationDown className="hidden md:block" />
-          <p className={`${navOpen ? "block" : "hidden"} md:block`}>Menu</p>
+          <div className="grid grid-flow-col w-max gap-2 items-center md:-ml-28">
+            <TbNavigationDown className="hidden md:block" />
+            <p className={`${navOpen ? "block" : "hidden"} md:block`}>Menu</p>
+          </div>
         </div>
         <nav className="flex flex-col gap-2 mt-4 h-full">
           {links.map((link) => {
