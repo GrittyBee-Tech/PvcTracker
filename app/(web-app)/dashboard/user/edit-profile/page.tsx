@@ -166,10 +166,10 @@ export default function UserProfilePage() {
           Personal Information
         </h2>
         <form
-          className="w-full grid grid-cols-4 gap-6 mt-4"
+          className="w-full grid grid-cols-4  items-center gap-6 mt-4"
           onSubmit={handleUpdateProfile}
         >
-          <div className="col-span-4 sm:col-span-3 md:col-span-3 2xl:col-span-2">
+          <div className="w-full col-span-4 md:col-span-2">
             <Select
               label="PVC Collection Status"
               name="pvcStatus"
@@ -180,6 +180,17 @@ export default function UserProfilePage() {
               ]}
               value={updateProfileData.pvcStatus}
               placeholder="Update your PVC Status"
+            />
+          </div>
+          <div className="col-span-4 md:col-span-2 -mt-1">
+            <InputGroup
+              label="VIN"
+              name={"vin" as any}
+              onChange={handleChange}
+              disabled={!!user?.vin}
+              placeholder="Change your VIN"
+              type="text"
+              value={user?.vin || ""}
             />
           </div>
           <div className="md:col-start-1 col-span-4 md:col-span-2">
@@ -217,7 +228,7 @@ export default function UserProfilePage() {
               label="Date of Birth"
               name="dateOfBirth"
               onChange={handleChange}
-              disabled
+              disabled={!!updateProfileData.dateOfBirth}
               placeholder="Change your date of birth"
               type="date"
               value={formatToInputDate(updateProfileData.dateOfBirth)}

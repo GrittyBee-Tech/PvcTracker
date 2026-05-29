@@ -47,7 +47,7 @@ const Select = <T extends string>({
           </option>
         )}
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option className="" key={option.value} value={option.value}>
             {option.name}
           </option>
         ))}

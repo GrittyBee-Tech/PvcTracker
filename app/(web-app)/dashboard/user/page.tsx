@@ -234,9 +234,10 @@ export default function UserDashboardPage() {
               <div className="text-2xl font-bold text-primary">
                 {user?.vin ? user.vin : "Pending VIN"}
               </div>
-              {/* <p className="text-xs font-dm-sans text-muted-foreground mt-1">
-              You registered yourself on the platform.
-            </p> */}
+              <p className="text-sm text-muted-foreground mt-5">
+                Yes, it's Sensitive. safe like a bank reference, not like a
+                username.
+              </p>
             </CardContent>
           </Card>
           <Card className="border-gray-400 shadow-md">
