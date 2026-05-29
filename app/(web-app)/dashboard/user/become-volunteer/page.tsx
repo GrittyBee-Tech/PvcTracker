@@ -32,46 +32,81 @@ export default function VolunteerPage({
     setIsModalOpen(false);
     onModalClose?.();
   };
-  const handleChange = (field: string, value: string) => {
-    console.log(field, value);
+
+  const [form, setForm] = useState({
+    vin: "",
+    cvrTraining: "",
+    maritalStatus: "",
+    stateOfResidence: "",
+    homeAddress: "",
+    nextOfKinName: "",
+    nextOfKinRelationship: "",
+    nextOfKinState: "",
+    nextOfKinAddress: "",
+    nextOfKinPhone: "",
+  });
+
+  const handleChange = (name: string, value: string) => {
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const [file, setFile] = useState<File | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      console.log("Selected passport:", selectedFile);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    if (file) {
+      formData.append("passportPhoto", file);
     }
+
+    const res = await fetch("/api/volunteer/apply", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    console.log(data);
   };
+
   useEffect(() => {
     if (!user) return;
 
     setIsModalOpen(!user.vin);
   }, [user?.vin]);
   return (
-    <div className="space-y-4 md:px-8 py-10 xl:pr-12">
+    <div className="space-y-4 md:px-8 py-5 xl:pr-12">
       <h1 className="text-primary font-bold text-2xl">Become a Volunteer</h1>
 
-      <p className="text-primary mt-2 text-lg">
+      <p className="text-primary -mt-3  text-lg">
         Join our team of volunteers and make a difference in your community!
       </p>
 
       <hr className="text-gray-600 font-semibold my-6" />
 
-      <form
-        className="w-full items-center gap-6 mt-4"
-        onSubmit={(e) => e.preventDefault()}
-      >
+      <form className="w-full items-center gap-6 " onSubmit={handleSubmit}>
         <div>
-          <div className="grid h-20 w-20 justify-center mx-auto items-center rounded-full border border-dotted border-green-900/30 bg-green-50 cursor-pointer">
+          <div className="grid h-20 w-20 justify-center mx-auto  items-center rounded-full border border-dotted border-green-900/30 bg-green-50 cursor-pointer">
             <FaUserTie className="h-10 w-10 text-primary " />
             <input
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={handleFileChange}
+              onChange={(e) => {
+                const selectedFile = e.target.files?.[0];
+                if (selectedFile) {
+                  setFile(selectedFile);
+                }
+              }}
             />
           </div>
           <div>
@@ -89,7 +124,7 @@ export default function VolunteerPage({
           <p className="text-xs text-green-500 mt-2">Selected: {file.name}</p>
         )}
 
-        <div className="grid grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-4 gap-6 ">
           <div className="w-full col-span-4 md:col-span-2">
             <InputGroup
               label="Voter Registration Number"
@@ -97,19 +132,19 @@ export default function VolunteerPage({
               onChange={handleChange}
               placeholder="Enter your VIN"
               type="text"
-              value=""
+              value={form.vin}
             />
           </div>
           <div className="w-full col-span-4 md:col-span-2">
             <Select
               label="Completed CVR Training"
-              name="stateOfResidence"
+              name="cvrTraining"
               onChange={handleChange}
               options={[
                 { name: "Yes", value: "yes" },
                 { name: "No", value: "no" },
               ]}
-              value=""
+              value={form.cvrTraining}
               placeholder="Update your Completed CVR Training status"
             />
           </div>
@@ -122,7 +157,7 @@ export default function VolunteerPage({
                 { name: "Single", value: "single" },
                 { name: "Married", value: "married" },
               ]}
-              value=""
+              value={form.maritalStatus}
               placeholder="Update your Marital Status"
             />
           </div>
@@ -138,7 +173,7 @@ export default function VolunteerPage({
                 { name: "Rivers", value: "rivers" },
                 { name: "FCT", value: "fct" },
               ]}
-              value=""
+              value={form.stateOfResidence}
               placeholder="Update your State of Residence"
             />
           </div>
@@ -146,28 +181,28 @@ export default function VolunteerPage({
           <div className="md:col-start-1 col-span-4 md:col-span-2">
             <InputGroup
               label="Next of Kin Name"
-              name="firstName"
+              name="nextOfKinName"
               onChange={handleChange}
               placeholder="Enter next of kin name"
               type="text"
-              value=""
+              value={form.nextOfKinName}
             />
           </div>
 
           <div className="col-span-4 md:col-span-2">
             <InputGroup
               label="Address of Next of Kin"
-              name="lastName"
+              name="nextOfKinAddress"
               onChange={handleChange}
               placeholder="Enter address of next of kin"
               type="text"
-              value=""
+              value={form.nextOfKinAddress}
             />
           </div>
           <div className="w-full col-span-4 md:col-span-2">
             <Select
               label="Relationship with Next of Kin"
-              name="stateOfResidence"
+              name="nextOfKinRelationship"
               onChange={handleChange}
               options={[
                 { name: "Parent", value: "parent" },
@@ -175,14 +210,14 @@ export default function VolunteerPage({
                 { name: "Spouse", value: "spouse" },
                 { name: "Friend", value: "friend" },
               ]}
-              value=""
+              value={form.nextOfKinRelationship}
               placeholder="Update your Relationship with Next of Kin"
             />
           </div>
           <div className="w-full col-span-4 md:col-span-2">
             <Select
               label="State of Residence of Next of Kin"
-              name="stateOfResidence"
+              name="nextOfKinState"
               onChange={handleChange}
               options={[
                 { name: "Abia", value: "abia" },
@@ -190,29 +225,29 @@ export default function VolunteerPage({
                 { name: "Rivers", value: "rivers" },
                 { name: "FCT", value: "fct" },
               ]}
-              value=""
+              value={form.nextOfKinState}
               placeholder="Update State of Residence of Next of Kin"
             />
           </div>
           <div className=" md:col-start-1 col-span-4 md:col-span-2">
             <InputGroup
               label="Home address"
-              name="lastName"
+              name="homeAddress"
               onChange={handleChange}
               placeholder="Enter your home address"
               type="text"
-              value=""
+              value={form.homeAddress}
             />
           </div>
 
           <div className="col-span-4 md:col-span-2">
             <InputGroup
               label=" Next of Kin Phone Number (eg. 23480....)"
-              name="phoneNumber"
+              name="nextOfKinPhone"
               onChange={handleChange}
               placeholder="Enter phone number"
               type="text"
-              value=""
+              value={form.nextOfKinPhone}
             />
           </div>
         </div>
