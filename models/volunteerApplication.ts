@@ -54,7 +54,7 @@ const VolunteerSchema: Schema<IVolunteer> = new Schema(
 
     passportPhotoUrl: {
       type: String,
-      required: true,
+      required: false,
     },
 
     stateOfResidence: {

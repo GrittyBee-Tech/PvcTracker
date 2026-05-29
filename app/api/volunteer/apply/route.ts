@@ -39,6 +39,13 @@ export const POST = withDb(async (request: Request) => {
       address: formData.get("nextOfKinAddress") as string,
       phone: formData.get("nextOfKinPhone") as string,
     };
+    console.log({
+     userId,
+     stateOfResidence,
+     homeAddress,
+     maritalStatus,
+    nextOfKin,
+});
 
     const file = formData.get("passportPhoto") as File;
 
@@ -69,10 +76,14 @@ export const POST = withDb(async (request: Request) => {
       { status: 201 }
     );
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Failed to submit volunteer application" },
-      { status: 500 }
-    );
-  }
+  console.error("FULL ERROR:", error);
+
+  return NextResponse.json(
+    {
+      error: "Failed to submit volunteer application",
+      details: error instanceof Error ? error.message : error,
+    },
+    { status: 500 }
+  );
+}
 });

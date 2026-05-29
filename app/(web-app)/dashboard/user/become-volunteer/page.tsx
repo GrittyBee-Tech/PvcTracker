@@ -60,10 +60,20 @@ export default function VolunteerPage({
 
     const formData = new FormData();
 
+    const userId = (user as { id?: string | number })?.id;
+    if (!userId) {
+      console.error("Missing user ID");
+      return;
+    }
+
+    formData.append("userId", String(userId));
+
+    // ✅ append form fields
     Object.entries(form).forEach(([key, value]) => {
       formData.append(key, value);
     });
 
+    // ✅ append file
     if (file) {
       formData.append("passportPhoto", file);
     }
@@ -125,7 +135,7 @@ export default function VolunteerPage({
         )}
 
         <div className="grid grid-cols-4 gap-6 ">
-          <div className="w-full col-span-4 md:col-span-2">
+          {/* <div className="w-full col-span-4 md:col-span-2">
             <InputGroup
               label="Voter Registration Number"
               name="vin"
@@ -134,8 +144,8 @@ export default function VolunteerPage({
               type="text"
               value={form.vin}
             />
-          </div>
-          <div className="w-full col-span-4 md:col-span-2">
+          </div> */}
+          {/* <div className="w-full col-span-4 md:col-span-2">
             <Select
               label="Completed CVR Training"
               name="cvrTraining"
@@ -147,7 +157,7 @@ export default function VolunteerPage({
               value={form.cvrTraining}
               placeholder="Update your Completed CVR Training status"
             />
-          </div>
+          </div> */}
           <div className="w-full col-span-4 md:col-span-2">
             <Select
               label="Marital Status"
