@@ -110,6 +110,7 @@ export default function VolunteerPage({
       alert("Please upload a passport photo before submitting.");
       return;
     }
+    console.log("PhotoUrl before submit:", PhotoUrl); // <-- Cloudinary URL should be here
     formData.append("PhotoUrl", PhotoUrl);
 
     const res = await fetch("/api/volunteer/apply", {
