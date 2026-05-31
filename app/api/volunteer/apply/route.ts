@@ -47,21 +47,20 @@ export const POST = withDb(async (request: Request) => {
     nextOfKin,
 });
 
-    const file = formData.get("passportPhoto") as File;
 
-    if (!userId || !stateOfResidence || !homeAddress) {
+    const PhotoUrl = formData.get("PhotoUrl") as string;
+
+    console.log({ userId, stateOfResidence, homeAddress, maritalStatus, PhotoUrl });
+    if (!userId || !stateOfResidence || !homeAddress || !maritalStatus || !PhotoUrl) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    // TODO: upload file to storage
-    const passportPhotoUrl = file ? "UPLOADED_URL_HERE" : "";
-
     const volunteerApplication = await createVolunteerApplication({
       userId,
-      passportPhotoUrl,
+      PhotoUrl,
       stateOfResidence,
       homeAddress,
       maritalStatus,

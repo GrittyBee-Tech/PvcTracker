@@ -23,6 +23,9 @@ export default function VolunteerPage({
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(showModal);
   const [terms, setTerms] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [PhotoUrl, setPhotoUrl] = useState<string>("");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   useEffect(() => {
     setIsModalOpen(showModal);
@@ -55,6 +58,35 @@ export default function VolunteerPage({
 
   const [file, setFile] = useState<File | null>(null);
 
+  // Custom Cloudinary upload handler
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingPhoto(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append(
+      "upload_preset",
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
+    );
+
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+      const data = await res.json();
+      setPhotoUrl(data.secure_url);
+    } catch (err) {
+      alert("Failed to upload image");
+    } finally {
+      setIsUploadingPhoto(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -73,10 +105,12 @@ export default function VolunteerPage({
       formData.append(key, value);
     });
 
-    // ✅ append file
-    if (file) {
-      formData.append("passportPhoto", file);
+    // ✅ always append PhotoUrl (Cloudinary URL string)
+    if (!PhotoUrl) {
+      alert("Please upload a passport photo before submitting.");
+      return;
     }
+    formData.append("PhotoUrl", PhotoUrl);
 
     const res = await fetch("/api/volunteer/apply", {
       method: "POST",
@@ -103,36 +137,50 @@ export default function VolunteerPage({
 
       <hr className="text-gray-600 font-semibold my-6" />
 
-      <form className="w-full items-center gap-6 " onSubmit={handleSubmit}>
+      <form className="w-full items-center gap-6" onSubmit={handleSubmit}>
         <div>
-          <div className="grid h-20 w-20 justify-center mx-auto  items-center rounded-full border border-dotted border-green-900/30 bg-green-50 cursor-pointer">
-            <FaUserTie className="h-10 w-10 text-primary " />
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const selectedFile = e.target.files?.[0];
-                if (selectedFile) {
-                  setFile(selectedFile);
-                }
-              }}
-            />
+          <input
+            id="passport-photo-input"
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={handlePhotoChange}
+          />
+          <div
+            className="grid h-20 w-20 justify-center mx-auto items-center rounded-full border border-dotted border-green-900/30 bg-green-50 cursor-pointer"
+            onClick={() =>
+              document.getElementById("passport-photo-input")?.click()
+            }
+          >
+            {PhotoUrl ? (
+              <img
+                src={PhotoUrl}
+                alt="Passport preview"
+                className="w-20 h-20 rounded-full object-cover"
+              />
+            ) : (
+              <FaUserTie className="h-10 w-10 text-primary" />
+            )}
           </div>
           <div>
-            <p className="text-sm text-center text-primary font-medium">
+            <p
+              className="text-sm text-center text-primary font-medium cursor-pointer"
+              onClick={() =>
+                document.getElementById("passport-photo-input")?.click()
+              }
+            >
               Click to upload passport photo
             </p>
-
             <p className="text-xs text-center text-muted-foreground mt-1">
               PNG, JPG up to 2MB
             </p>
+            {isUploadingPhoto && (
+              <p className="text-xs text-center text-blue-500 mt-1">
+                Uploading...
+              </p>
+            )}
           </div>
         </div>
-
-        {file && (
-          <p className="text-xs text-green-500 mt-2">Selected: {file.name}</p>
-        )}
 
         <div className="grid grid-cols-4 gap-6 ">
           {/* <div className="w-full col-span-4 md:col-span-2">
@@ -250,7 +298,7 @@ export default function VolunteerPage({
             />
           </div>
 
-          <div className="col-span-4 md:col-span-2">
+          <div className="col-span-4 md:col-span-2 mb-2">
             <InputGroup
               label=" Next of Kin Phone Number (eg. 23480....)"
               name="nextOfKinPhone"
