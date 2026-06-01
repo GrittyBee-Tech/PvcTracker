@@ -1,6 +1,6 @@
 export type VolunteerApplicationInput = {
   userId: mongoose.Types.ObjectId;
-  passportPhotoUrl: string;
+  PhotoUrl: string;
   stateOfResidence: string;
   homeAddress: string;
   maritalStatus: "single" | "married" | "divorced" | "widowed";
@@ -24,8 +24,7 @@ export interface INextOfKin {
 }
 export interface IVolunteer extends Document {
   userId: mongoose.Types.ObjectId;
-
-  passportPhotoUrl?: string;
+  PhotoUrl?: string;
   stateOfResidence: string;
   homeAddress: string;
   maritalStatus: "single" | "married" | "divorced" | "widowed";
@@ -52,9 +51,9 @@ const VolunteerSchema: Schema<IVolunteer> = new Schema(
       unique: true,
     },
 
-    passportPhotoUrl: {
+    PhotoUrl: {
       type: String,
-      required: false,
+      required: true,
     },
 
     stateOfResidence: {

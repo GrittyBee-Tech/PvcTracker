@@ -112,7 +112,7 @@ export default function UserDashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-2">
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row  items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-primary">
+            <CardTitle className="text-base font-medium text-primary">
               NIN Verification
             </CardTitle>
             {ninDisplay.icon}
@@ -130,7 +130,7 @@ export default function UserDashboardPage() {
         </Card>
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-space-grotesk font-medium text-primary">
+            <CardTitle className="text-base  font-medium text-primary">
               PVC Collection
             </CardTitle>
             {pvcDisplay.icon}
@@ -146,7 +146,7 @@ export default function UserDashboardPage() {
         </Card>
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-primary">
+            <CardTitle className="text-base font-medium text-primary">
               Registered By
             </CardTitle>
             <FaUser className="w-5 h-5 text-primary" />
@@ -167,7 +167,7 @@ export default function UserDashboardPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-4">
           <Card className="border-gray-400 shadow-md ">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-primary">
+              <CardTitle className="text-base font-medium text-primary">
                 Registered VIN
               </CardTitle>
               <FaAddressCard className="w-5 h-5 text-primary" />

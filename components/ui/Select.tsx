@@ -13,6 +13,7 @@ interface SelectProps<T extends string> {
   placeholder?: string;
   labelClassName?: string;
   selectClassName?: string;
+  disabled?: boolean;
 }
 
 // ✅ Pass the generic parameter down into the functional component definition
@@ -25,6 +26,7 @@ const Select = <T extends string>({
   placeholder,
   labelClassName,
   selectClassName,
+  disabled = false,
 }: SelectProps<T>) => {
   return (
     <div className="w-full">
@@ -37,6 +39,7 @@ const Select = <T extends string>({
       <select
         id={name}
         value={value}
+        disabled={disabled}
         // ✅ TypeScript now guarantees that 'name' matches your strict type T
         onChange={(e) => onChange(name, e.target.value)}
         className={`w-full mt-1.5 p-2.5 text-sm border outline-none rounded-lg text-primary border-zinc-700 bg-white focus:border-green-500 ${selectClassName}`}
