@@ -5,6 +5,7 @@ interface CheckboxProps {
   name?: string;
   id?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 const Checkbox = ({
@@ -14,6 +15,7 @@ const Checkbox = ({
   name,
   id = "checkbox",
   className,
+  disabled = false,
 }: CheckboxProps) => {
   return (
     <div className={`flex items-center gap-2 ${className}`}>

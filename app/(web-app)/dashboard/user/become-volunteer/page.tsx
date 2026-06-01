@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import InputGroup from "@/components/ui/InputGroup";
 import { FaUserTie } from "react-icons/fa";
 import VolunteerModal from "@/components/ui/Volunteermodal";
@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { TbLockSquareRoundedFilled } from "react-icons/tb";
 import Select from "@/components/ui/Select";
 import Checkbox from "@/components/ui/checkbox";
+import { set } from "mongoose";
 
 export default function VolunteerPage({
   showModal = true,
@@ -26,6 +27,7 @@ export default function VolunteerPage({
   const [isUploading, setIsUploading] = useState(false);
   const [PhotoUrl, setPhotoUrl] = useState<string>("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [disableSubmit, setDisableSubmit] = useState(false);
 
   useEffect(() => {
     setIsModalOpen(showModal);
@@ -37,8 +39,8 @@ export default function VolunteerPage({
   };
 
   const [form, setForm] = useState({
-    vin: "",
-    cvrTraining: "",
+    // vin: "",
+    // cvrTraining: "",
     maritalStatus: "",
     stateOfResidence: "",
     homeAddress: "",
@@ -92,14 +94,6 @@ export default function VolunteerPage({
 
     const formData = new FormData();
 
-    const userId = (user as { id?: string | number })?.id;
-    if (!userId) {
-      console.error("Missing user ID");
-      return;
-    }
-
-    formData.append("userId", String(userId));
-
     // ✅ append form fields
     Object.entries(form).forEach(([key, value]) => {
       formData.append(key, value);
@@ -128,6 +122,38 @@ export default function VolunteerPage({
 
     setIsModalOpen(!user.vin);
   }, [user?.vin]);
+
+  useEffect(() => {
+    const handleFetchApplication = async () => {
+      try {
+        const res = await fetch("/api/volunteer/apply", {
+          method: "GET",
+        });
+        const data = await res.json();
+
+        setForm({
+          maritalStatus: data.application.maritalStatus,
+          stateOfResidence: data.application.stateOfResidence,
+          homeAddress: data.application.homeAddress,
+          nextOfKinName: data.application.nextOfKin.name,
+          nextOfKinRelationship: data.application.nextOfKin.relationship,
+          nextOfKinState: data.application.nextOfKin.state,
+          nextOfKinAddress: data.application.nextOfKin.address,
+          nextOfKinPhone: data.application.nextOfKin.phone,
+        });
+        setPhotoUrl(data.application.PhotoUrl);
+        setDisableSubmit(true);
+        setTerms(true);
+
+        console.log("Volunteer application data:", data);
+      } catch (error) {
+        console.error("Error fetching volunteer application:", error);
+      }
+    };
+
+    handleFetchApplication();
+  }, []);
+
   return (
     <div className="space-y-4 md:px-8 py-5 xl:pr-12">
       <h1 className="text-primary font-bold text-2xl">Become a Volunteer</h1>
@@ -141,6 +167,7 @@ export default function VolunteerPage({
       <form className="w-full items-center gap-6" onSubmit={handleSubmit}>
         <div>
           <input
+            disabled={disableSubmit}
             id="passport-photo-input"
             type="file"
             accept="image/*"
@@ -209,6 +236,7 @@ export default function VolunteerPage({
           </div> */}
           <div className="w-full col-span-4 md:col-span-2">
             <Select
+              disabled={disableSubmit}
               label="Marital Status"
               name="maritalStatus"
               onChange={handleChange}
@@ -223,6 +251,7 @@ export default function VolunteerPage({
 
           <div className="w-full col-span-4 md:col-span-2">
             <Select
+              disabled
               label="State of Residence"
               name="stateOfResidence"
               onChange={handleChange}
@@ -239,6 +268,7 @@ export default function VolunteerPage({
 
           <div className="md:col-start-1 col-span-4 md:col-span-2">
             <InputGroup
+              disabled={disableSubmit}
               label="Next of Kin Name"
               name="nextOfKinName"
               onChange={handleChange}
@@ -250,6 +280,7 @@ export default function VolunteerPage({
 
           <div className="col-span-4 md:col-span-2">
             <InputGroup
+              disabled
               label="Address of Next of Kin"
               name="nextOfKinAddress"
               onChange={handleChange}
@@ -260,6 +291,7 @@ export default function VolunteerPage({
           </div>
           <div className="w-full col-span-4 md:col-span-2">
             <Select
+              disabled={disableSubmit}
               label="Relationship with Next of Kin"
               name="nextOfKinRelationship"
               onChange={handleChange}
@@ -275,6 +307,7 @@ export default function VolunteerPage({
           </div>
           <div className="w-full col-span-4 md:col-span-2">
             <Select
+              disabled={disableSubmit}
               label="State of Residence of Next of Kin"
               name="nextOfKinState"
               onChange={handleChange}
@@ -290,6 +323,7 @@ export default function VolunteerPage({
           </div>
           <div className=" md:col-start-1 col-span-4 md:col-span-2">
             <InputGroup
+              disabled={disableSubmit}
               label="Home address"
               name="homeAddress"
               onChange={handleChange}
@@ -301,6 +335,7 @@ export default function VolunteerPage({
 
           <div className="col-span-4 md:col-span-2 mb-2">
             <InputGroup
+              disabled={disableSubmit}
               label=" Next of Kin Phone Number (eg. 23480....)"
               name="nextOfKinPhone"
               onChange={handleChange}
@@ -323,6 +358,7 @@ export default function VolunteerPage({
           }
         />
         <button
+          // disabled={disableSubmit}
           type="submit"
           className="bg-primary w-full text-white py-2 px-4 mt-4 rounded-md hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed font-semibold transition cursor-pointer"
         >

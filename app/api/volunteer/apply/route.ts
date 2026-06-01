@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { withDb } from "@/lib/withDb";
 import { createVolunteerApplication } from "@/services/volunteerService";
 import { Types } from "mongoose";
+import { auth } from "@/lib/auth";
+import VolunteerModel from "@/models/volunteerApplication";
 
 
 
@@ -9,15 +11,8 @@ export const POST = withDb(async (request: Request) => {
   try {
     const formData = await request.formData();
 
-   const userIdString = formData.get("userId") as string;
-   if (!userIdString || !Types.ObjectId.isValid(userIdString)) {
-     return NextResponse.json(
-       { error: "Invalid or missing userId" },
-       { status: 400 }
-     );
-   }
-   const userId = new Types.ObjectId(userIdString);
-
+    const session = await auth.api.getSession(request);
+    const userId = new Types.ObjectId(session?.user.id as string);
     const stateOfResidence = formData.get("stateOfResidence") as string;
     const homeAddress = formData.get("homeAddress") as string;
     const maritalStatus = formData.get("maritalStatus") as
@@ -85,4 +80,23 @@ export const POST = withDb(async (request: Request) => {
     { status: 500 }
   );
 }
+});
+
+
+export const GET = withDb(async (request: Request) => {
+  try {
+    const session = await auth.api.getSession(request);
+    const userId = new Types.ObjectId(session?.user.id as string);
+    const Application = await VolunteerModel.findOne({
+      userId,
+    });
+    return NextResponse.json({ message: "Volunteer application fetched successfully", application: Application   });
+    
+  } catch (error) {
+    console.error("Error in GET /api/volunteer/apply:", error);
+    return NextResponse.json(
+      { error: "Failed to handle GET request" },
+      { status: 500 }
+    );
+  }
 });
