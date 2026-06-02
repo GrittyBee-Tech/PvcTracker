@@ -11,12 +11,12 @@ type Ward = {
   longitude: number;
 };
 
-type Lga = {
+export type Lga = {
   name: string;
   wards: Ward[];
 };
 
-type StateOption = {
+export type StateOption = {
   name: string;
   value: string;
 };

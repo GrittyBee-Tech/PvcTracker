@@ -34,7 +34,7 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url, token }, request) => {
       void sendWelcomeEmail(user.email, user.name, url);
     },
-  sendOnSignIn: true,
+    sendOnSignIn: true,
   },
   user: {
     additionalFields: {
@@ -79,6 +79,21 @@ export const auth = betterAuth({
       pvcStatus: {
         type: "string",
         defaultValue: "not_collected",
+      },
+      stateOfOrigin: {
+        type: "string",
+        input: true,
+        required: false,
+      },
+      lgaOfOrigin: {
+        type: "string",
+        input: true,
+        required: false,
+      },
+      homeAddress: {
+        type: "string",
+        input: true,
+        required: false,
       },
       createdAt: {
         type: "date",

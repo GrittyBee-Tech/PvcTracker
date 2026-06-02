@@ -13,6 +13,9 @@ export interface UserType {
   vin?: string; // Voter Identification Number
   ninStatus: "pending" | "rejected" | "verified";
   pvcStatus: "collected" | "not_collected";
+  stateOfOrigin: string;
+  lgaOfOrigin: string;
+  homeAddress: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -52,6 +55,18 @@ const UserSchema: Schema<IUser> = new Schema(
       type: Date,
       default: Date.now,
       required: true,
+    },
+    stateOfOrigin: {
+      type: String,
+      required: false,
+    },
+    lgaOfOrigin: {
+      type: String,
+      required: false,
+    },
+    homeAddress: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true },
