@@ -5,9 +5,11 @@ import { FaUserTie } from "react-icons/fa";
 import VolunteerModal from "@/components/ui/Volunteermodal";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import { TbLockSquareRoundedFilled } from "react-icons/tb";
 import Select from "@/components/ui/Select";
 import Checkbox from "@/components/ui/checkbox";
+import { StateOption } from "../find-centre/FindCentreClient";
 import Swal from "sweetalert2";
 
 export default function VolunteerPage({
@@ -22,7 +24,9 @@ export default function VolunteerPage({
   onModalClose?: () => void;
 }) {
   const { user } = useAuth();
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(showModal);
+  const [states, setStates] = useState<StateOption[]>([]);
   const [terms, setTerms] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [PhotoUrl, setPhotoUrl] = useState<string>("");
@@ -108,6 +112,23 @@ export default function VolunteerPage({
     }
   };
 
+  const stateOptions = states;
+
+  useEffect(() => {
+    const loadStates = async () => {
+      try {
+        const res = await fetch("/api/locations/states");
+        if (!res.ok) return;
+        const payload = await res.json();
+        setStates(payload?.data ?? []);
+      } catch (err) {
+        console.error("Failed to load states:", err);
+      }
+    };
+
+    loadStates();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -150,19 +171,28 @@ export default function VolunteerPage({
         timerProgressBar: true,
         showConfirmButton: false,
       });
-    } else {
-      Swal.fire({
-        icon: "success",
-        text: "Volunteer application submitted successfully!",
-        toast: true,
-        position: "top-end",
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false,
-      });
+      return;
     }
-    const data = await res.json();
 
+    // success: show confirmation then refresh to load saved inputs
+    const successAlert = await Swal.fire({
+      icon: "success",
+      title: "Application submitted",
+      toast: true,
+      position: "top-end",
+      text: "Volunteer application submitted successfully!",
+      timer: 2000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    });
+
+    if (successAlert.isConfirmed) {
+      setDisableSubmit(true);
+      setTerms(true);
+      router.refresh();
+    }
+
+    const data = await res.json();
     console.log(data);
   };
 
@@ -300,16 +330,11 @@ export default function VolunteerPage({
 
           <div className="w-full col-span-4 md:col-span-2">
             <Select
-              disabled
+              disabled={disableSubmit}
               label="State of Residence"
               name="stateOfResidence"
               onChange={handleChange}
-              options={[
-                { name: "Abia", value: "abia" },
-                { name: "Lagos", value: "lagos" },
-                { name: "Rivers", value: "rivers" },
-                { name: "FCT", value: "fct" },
-              ]}
+              options={stateOptions}
               value={form.stateOfResidence}
               placeholder="Update your State of Residence"
             />
@@ -329,7 +354,7 @@ export default function VolunteerPage({
 
           <div className="col-span-4 md:col-span-2">
             <InputGroup
-              disabled
+              disabled={disableSubmit}
               label="Address of Next of Kin"
               name="nextOfKinAddress"
               onChange={handleChange}
@@ -360,12 +385,7 @@ export default function VolunteerPage({
               label="State of Residence of Next of Kin"
               name="nextOfKinState"
               onChange={handleChange}
-              options={[
-                { name: "Abia", value: "abia" },
-                { name: "Lagos", value: "lagos" },
-                { name: "Rivers", value: "rivers" },
-                { name: "FCT", value: "fct" },
-              ]}
+              options={stateOptions}
               value={form.nextOfKinState}
               placeholder="Update State of Residence of Next of Kin"
             />
@@ -407,13 +427,37 @@ export default function VolunteerPage({
             </>
           }
         />
-        <button
-          disabled={disableSubmit}
-          type="submit"
-          className="bg-primary w-full text-white py-2 px-4 mt-4 rounded-md hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed font-semibold transition cursor-pointer"
-        >
-          Submit Application
-        </button>
+        {disableSubmit ? (
+          <button
+            type="button"
+            onClick={async () => {
+              const result = await Swal.fire({
+                icon: "info",
+                title: "Application already submitted",
+                text: "You have already submitted an application.",
+                toast: true,
+                position: "top-end",
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+              });
+
+              if (result.isConfirmed) {
+                router.refresh();
+              }
+            }}
+            className="bg-primary w-full text-white py-2 px-4 mt-4 rounded-md hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed font-semibold transition cursor-pointer"
+          >
+            Submit Application
+          </button>
+        ) : (
+          <button
+            type="submit"
+            className="bg-primary w-full text-white py-2 px-4 mt-4 rounded-md hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed font-semibold transition cursor-pointer"
+          >
+            Submit Application
+          </button>
+        )}
       </form>
       {isModalOpen && (
         <div className="fixed top-0 right-0 bottom-0 z-50 left-12 md:left-64">
