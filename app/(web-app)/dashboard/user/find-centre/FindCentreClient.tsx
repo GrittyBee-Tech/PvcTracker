@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Select from "@/components/ui/Select";
 import { SpinnerLoader } from "@/components/ui/Loader";
-import FindCentreWithMap from "./FindCentreWithMap";
 
 type Ward = {
   name: string;
@@ -204,7 +203,7 @@ export default function FindCentreClient() {
         </div>
       ) : null}
 
-      <div className="flex items-center gap-3">
+      {/* <div className="flex items-center gap-3">
         <div className="inline-flex overflow-hidden rounded-full border bg-white">
           <button
             className={`px-3 py-2 text-sm ${viewMode === "list" ? "bg-primary text-white" : "text-primary"}`}
@@ -253,7 +252,7 @@ export default function FindCentreClient() {
             "Find wards around my location"
           )}
         </button>
-      </div>
+      </div> */}
 
       <div className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm">
         {loadingStates || loadingLgas ? (
@@ -262,18 +261,14 @@ export default function FindCentreClient() {
               text={loadingStates ? "Loading states..." : "Loading LGAs..."}
             />
           </div>
-        ) : viewMode === "map" ? (
-          <FindCentreWithMap
-            wards={nearbyWards ?? wards}
-            userLocation={userLocation}
-            highlight={nearbyWards ?? undefined}
-          />
         ) : (
+          // ) : viewMode === "map" ? (
           //   <FindCentreWithMap
           //     wards={nearbyWards ?? wards}
           //     userLocation={userLocation}
           //     highlight={nearbyWards ?? undefined}
           //   />
+          // ) :
           <div>
             <div className="mb-4 flex items-start justify-between">
               <div>
