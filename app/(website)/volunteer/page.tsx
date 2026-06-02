@@ -165,15 +165,15 @@ export default function VolunteerHeroPage() {
 
                 <p className="mt-2 text-md text-primary font-dm-sans leading-relaxed">
                   The Continuous Voter Registration (CVR) training is a short
-                  online training coordinated by Abenol Foundation on Google
-                  Meet. It covers how to correctly guide people through voter
-                  registration, how to use the Volunteer Dashboard, and INEC's
-                  guidelines for PVC collection.
+                  online training coordinated by ABENOL Foundation. It covers
+                  how to correctly guide people through voter registration, how
+                  to use the volunteer dashboard, and INEC's guidelines for PVC
+                  collection.
                 </p>
 
                 <p className="mt-4 text-lg text-primary font-dm-sans leading-relaxed">
                   You must complete this training before your volunteer
-                  application can be submitted.
+                  application is approved.
                 </p>
               </div>
               <Link href="https://forms.gle/oGPC7ZYvyW2ZAsKM9" target="_blank">
