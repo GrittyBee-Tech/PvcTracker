@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import InputGroup from "@/components/ui/InputGroup";
 import { FaUserTie } from "react-icons/fa";
 import VolunteerModal from "@/components/ui/Volunteermodal";
@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { TbLockSquareRoundedFilled } from "react-icons/tb";
 import Select from "@/components/ui/Select";
 import Checkbox from "@/components/ui/checkbox";
-import { set } from "mongoose";
+import Swal from "sweetalert2";
 
 export default function VolunteerPage({
   showModal = true,
@@ -56,8 +56,19 @@ export default function VolunteerPage({
       ...prev,
       [name]: value,
     }));
+    if (
+      name === "maritalStatus" ||
+      name === "stateOfResidence" ||
+      name === "nextOfKinRelationship" ||
+      name === "nextOfKinState" ||
+      name === "homeAddress" ||
+      name === "nextOfKinName" ||
+      name === "nextOfKinAddress" ||
+      name === "nextOfKinPhone"
+    )
+      setDisableSubmit(false);
   };
-
+  //file
   const [file, setFile] = useState<File | null>(null);
 
   // Custom Cloudinary upload handler
@@ -83,7 +94,15 @@ export default function VolunteerPage({
       const data = await res.json();
       setPhotoUrl(data.secure_url);
     } catch (err) {
-      alert("Failed to upload image");
+      Swal.fire({
+        icon: "error",
+        text: "Failed to upload image",
+        toast: true,
+        position: "top-end",
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
     } finally {
       setIsUploadingPhoto(false);
     }
@@ -101,7 +120,15 @@ export default function VolunteerPage({
 
     // ✅ always append PhotoUrl (Cloudinary URL string)
     if (!PhotoUrl) {
-      alert("Please upload a passport photo before submitting.");
+      Swal.fire({
+        icon: "error",
+        text: "Please upload a passport photo before submitting.",
+        toast: true,
+        position: "top-end",
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
       return;
     }
     console.log("PhotoUrl before submit:", PhotoUrl); // <-- Cloudinary URL should be here
@@ -112,6 +139,28 @@ export default function VolunteerPage({
       body: formData,
     });
 
+    if (!res.ok) {
+      const errorData = await res.json();
+      Swal.fire({
+        icon: "error",
+        text: errorData.error || "Failed to submit application",
+        toast: true,
+        position: "top-end",
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+    } else {
+      Swal.fire({
+        icon: "success",
+        text: "Volunteer application submitted successfully!",
+        toast: true,
+        position: "top-end",
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+    }
     const data = await res.json();
 
     console.log(data);
@@ -346,6 +395,7 @@ export default function VolunteerPage({
           </div>
         </div>
         <Checkbox
+          disabled={disableSubmit}
           checked={terms}
           onChange={setTerms}
           label={
@@ -358,7 +408,7 @@ export default function VolunteerPage({
           }
         />
         <button
-          // disabled={disableSubmit}
+          disabled={disableSubmit}
           type="submit"
           className="bg-primary w-full text-white py-2 px-4 mt-4 rounded-md hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed font-semibold transition cursor-pointer"
         >
