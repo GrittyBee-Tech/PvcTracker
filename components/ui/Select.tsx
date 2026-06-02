@@ -1,3 +1,5 @@
+import { ScrollableSelect } from "./scrollable-select";
+
 interface SelectOption {
   name: string;
   value: string;
@@ -36,25 +38,16 @@ const Select = <T extends string>({
       >
         {label}
       </label>
-      <select
+      <ScrollableSelect
+        selectClassName={selectClassName}
+        name={name}
+        onValueChange={(val) => onChange(name, val)}
+        options={options}
         id={name}
         value={value}
         disabled={disabled}
-        // ✅ TypeScript now guarantees that 'name' matches your strict type T
-        onChange={(e) => onChange(name, e.target.value)}
-        className={`w-full mt-1.5 p-2.5 text-sm border outline-none rounded-lg text-primary border-zinc-700 bg-white focus:border-green-500 ${selectClassName}`}
-      >
-        {placeholder && (
-          <option value="" disabled>
-            {placeholder}
-          </option>
-        )}
-        {options.map((option) => (
-          <option className="" key={option.value} value={option.value}>
-            {option.name}
-          </option>
-        ))}
-      </select>
+        placeholder={placeholder}
+      />
     </div>
   );
 };

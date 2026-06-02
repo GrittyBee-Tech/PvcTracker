@@ -120,7 +120,7 @@ export default function Register() {
       return;
     }
 
-    const { data, error } = await authClient.signUp.email(
+    await authClient.signUp.email(
       {
         ...signupDetails,
         role: "user",
@@ -129,10 +129,11 @@ export default function Register() {
         callbackURL: "/dashboard/user",
       },
       {
-        onRequest: (ctx) => {
+        onRequest: () => {
           setStatus("loading");
         },
         onSuccess: (ctx) => {
+          console.log(ctx.data);
           setStatus("success");
           Swal.fire({
             icon: "success",
@@ -141,7 +142,7 @@ export default function Register() {
           });
         },
         onError: (ctx) => {
-          console.log(ctx.error);
+          console.error(ctx.error);
           Swal.fire({
             icon: "error",
             title: "Error",
@@ -152,12 +153,10 @@ export default function Register() {
             timerProgressBar: true,
             showConfirmButton: false,
           });
-          setStatus("error")
+          setStatus("error");
         },
       },
     );
-
-    console.log({ data, error });
   };
 
   return (
@@ -224,10 +223,10 @@ export default function Register() {
 
         <div>
           <InputGroup
-            label="Phone Number"
+            label="Phone Number (234 format)"
             name="phoneNumber"
             onChange={handleChange}
-            placeholder="Enter your Phone Number"
+            placeholder="eg. 2348012345678"
             type="tel"
             value={signupDetails.phoneNumber}
           />
