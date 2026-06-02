@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import ChangePasswordSection from "./ChangePassword";
 import Swal from "sweetalert2";
 import { formatToInputDate } from "@/lib/utils";
+import { StateOption } from "../find-centre/FindCentreClient";
 
 type UpdateProfileFormType = {
   pvcStatus: "collected" | "not_collected";
@@ -15,6 +16,9 @@ type UpdateProfileFormType = {
   lastName: string;
   dateOfBirth: Date;
   phoneNumber: string;
+  stateOfOrigin: string;
+  lgaOfOrigin: string;
+  homeAddress: string;
 };
 
 export default function UserProfilePage() {
@@ -26,7 +30,17 @@ export default function UserProfilePage() {
       lastName: "",
       dateOfBirth: new Date(),
       phoneNumber: "",
+      stateOfOrigin: "",
+      lgaOfOrigin: "",
+      homeAddress: "",
     });
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingLgas, setLoadingLgas] = useState(false);
+  const [states, setStates] = useState<StateOption[]>([]);
+  const [lgas, setLgas] = useState<{ name: string }[]>([]);
+
+  const [error, setError] = useState<string | null>(null);
+
   const [vin, setVin] = useState("");
   const [status, setStatus] = useState<
     "idle" | "error" | "loading" | "success"
@@ -39,6 +53,9 @@ export default function UserProfilePage() {
       pvcStatus: user?.pvcStatus || "not_collected",
       dateOfBirth: new Date(user?.dateOfBirth || ""),
       phoneNumber: user?.phoneNumber || "",
+      stateOfOrigin: user?.stateOfOrigin || "",
+      lgaOfOrigin: user?.lgaOfOrigin || "",
+      homeAddress: user?.homeAddress || "",
     }),
     [user],
   );
@@ -154,6 +171,65 @@ export default function UserProfilePage() {
     });
   };
 
+  useEffect(() => {
+    async function loadStates() {
+      setLoadingStates(true);
+      try {
+        const response = await fetch("/api/locations/states");
+        if (!response.ok) {
+          const err = await response.json().catch(() => null);
+          throw new Error(err?.error || "Failed to load states");
+        }
+
+        const payload = await response.json();
+        setStates(payload?.data ?? []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load states");
+      } finally {
+        setLoadingStates(false);
+      }
+    }
+
+    loadStates();
+  }, []);
+
+  useEffect(() => {
+    if (!updateProfileData.stateOfOrigin) {
+      setLgas([]);
+      return;
+    }
+
+    async function loadLgas() {
+      setLoadingLgas(true);
+      setError(null);
+      setLgas([]);
+
+      try {
+        const response = await fetch(
+          `/api/locations/lgas?state=${encodeURIComponent(updateProfileData.stateOfOrigin)}`,
+        );
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => null);
+          throw new Error(err?.error || "Failed to load LGAs");
+        }
+
+        const payload = await response.json();
+
+        setLgas(payload?.data ?? []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load LGAs");
+      } finally {
+        setLoadingLgas(false);
+      }
+    }
+
+    loadLgas();
+  }, [updateProfileData.stateOfOrigin]);
+
+  const stateOptions = states;
+  const lgaOptions = lgas.map((lga) => ({ name: lga.name, value: lga.name }));
+
   return (
     <div className="space-y-4 md:px-8 py-4 xl:pr-12">
       <h1 className="text-2xl font-bold text-primary">User Profile</h1>
@@ -234,6 +310,46 @@ export default function UserProfilePage() {
               value={formatToInputDate(updateProfileData.dateOfBirth)}
             />
           </div>
+          <div className="col-span-4 md:col-span-2">
+            <Select
+              name="stateOfOrigin"
+              label="State of Origin"
+              options={stateOptions}
+              value={updateProfileData.stateOfOrigin}
+              onChange={handleChange}
+              placeholder={
+                loadingStates ? "Loading states..." : "Select a state"
+              }
+            />
+          </div>
+          <div className="col-span-4 md:col-span-2">
+            <Select
+              name="lgaOfOrigin"
+              label="Local Government Area of Origin"
+              options={lgaOptions}
+              value={updateProfileData.lgaOfOrigin}
+              onChange={handleChange}
+              placeholder={
+                updateProfileData?.lgaOfOrigin
+                  ? "Select an LGA"
+                  : "Select a state first"
+              }
+              selectClassName={
+                !updateProfileData.stateOfOrigin ? "opacity-60" : ""
+              }
+            />
+          </div>
+          <div className="col-span-4">
+            <InputGroup
+              label="Home Address"
+              name="homeAddress"
+              onChange={handleChange}
+              placeholder="Change your home address"
+              type="text"
+              value={updateProfileData.homeAddress}
+            />
+          </div>
+
           <div className="col-span-4 ml-auto">
             <Button disabled={isFormUnchanged} type="submit">
               Update Profile
