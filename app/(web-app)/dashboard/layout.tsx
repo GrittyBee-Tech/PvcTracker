@@ -1,5 +1,6 @@
 "use client";
 
+import { SpinnerLoader } from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -26,11 +27,12 @@ export default function DashboardAuthLayout({
       router.replace(destination);
     }
   }, [isAuthenticated, router]);
-  console.log(user?.firstName);
+
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
-        <p className="text-sm text-slate-500">Checking authentication…</p>
+      <div className="flex flex-col min-h-screen items-center justify-center bg-white">
+        <SpinnerLoader border="border-7" size="size-20" />
+        <p className="text-xl text-slate-700 mt-6">Checking authentication…</p>
       </div>
     );
   }

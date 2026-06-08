@@ -211,14 +211,14 @@ export default function VolunteerPage({
         const data = await res.json();
 
         setForm({
-          maritalStatus: data.application.maritalStatus,
-          stateOfResidence: data.application.stateOfResidence,
-          homeAddress: data.application.homeAddress,
-          nextOfKinName: data.application.nextOfKin.name,
-          nextOfKinRelationship: data.application.nextOfKin.relationship,
-          nextOfKinState: data.application.nextOfKin.state,
-          nextOfKinAddress: data.application.nextOfKin.address,
-          nextOfKinPhone: data.application.nextOfKin.phone,
+          maritalStatus: data.application?.maritalStatus,
+          stateOfResidence: data.application?.stateOfResidence,
+          homeAddress: data.application?.homeAddress,
+          nextOfKinName: data.application?.nextOfKin.name,
+          nextOfKinRelationship: data.application?.nextOfKin?.relationship,
+          nextOfKinState: data.application?.nextOfKin?.state,
+          nextOfKinAddress: data.application?.nextOfKin?.address,
+          nextOfKinPhone: data.application?.nextOfKin?.phone,
         });
         setPhotoUrl(data.application.PhotoUrl);
         setDisableSubmit(true);
