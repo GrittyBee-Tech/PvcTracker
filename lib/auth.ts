@@ -2,7 +2,10 @@ import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MONGODB_URI } from "./db";
-import { sendWelcomeEmail } from "@/services/emailService";
+import {
+  sendPasswordResetEmail,
+  sendWelcomeEmail,
+} from "@/services/emailService";
 import { nextCookies } from "better-auth/next-js";
 import {
   APIError,
@@ -29,6 +32,10 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     autoSignIn: false,
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      void sendPasswordResetEmail(user.email, user.name, url);
+    },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {

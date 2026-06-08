@@ -39,7 +39,7 @@ export default function Modal({
   };
 
   return (
-    <div className={`${wrapperClass} z-50`}>
+    <div className={`${wrapperClass} z-50 mb-0`}>
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"

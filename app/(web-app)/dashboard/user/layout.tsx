@@ -44,22 +44,6 @@ export default function UserLayout({
   const [nin, setNin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [ninError, setNinError] = useState<string | null>(null);
-  // const isBlocked = user?.ninStatus !== "verified";
-
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      router.replace("/auth/login");
-    } else {
-      const destination =
-        user?.role === "volunteer"
-          ? "/dashboard/volunteer"
-          : user?.role === "admin"
-            ? "/dashboard/admin"
-            : "/dashboard/user";
-
-      router.replace(destination);
-    }
-  }, [isAuthenticated, router]);
 
   useEffect(() => {
     setIsModalOpen(showModal);
