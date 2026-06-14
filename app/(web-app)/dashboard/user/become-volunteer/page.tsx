@@ -151,6 +151,19 @@ export default function VolunteerPage({
         showConfirmButton: false,
       });
       return;
+
+      // if (!terms) {
+      //   Swal.fire({
+      //     icon: "error",
+      //     title: "Terms not accepted",
+      //     text: "You must agree to the terms and conditions to continue.",
+      //     toast: true,
+      //     position: "top-end",
+      //     timer: 2000,
+      //     showConfirmButton: false,
+      //   });
+      //   return;
+      // }
     }
     console.log("PhotoUrl before submit:", PhotoUrl); // <-- Cloudinary URL should be here
     formData.append("PhotoUrl", PhotoUrl);
@@ -421,7 +434,11 @@ export default function VolunteerPage({
           label={
             <>
               I agree to the{" "}
-              <a href="#" className="text-green-500 hover:underline">
+              <a
+                href="/PVC WAKA VOLUNTEER T & C.pdf"
+                target="_blank"
+                className="text-green-500 hover:underline"
+              >
                 terms and conditions
               </a>
             </>

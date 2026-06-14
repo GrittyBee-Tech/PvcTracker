@@ -11,7 +11,7 @@ export default function AuthErrorPage({
   searchParams?: SearchParams;
 }) {
   const err = searchParams?.error;
-  const callback = searchParams?.callbackUrl;
+  // const callback = searchParams?.callbackUrl;
 
   // Map auth error codes to friendly destinations
   switch (err) {
