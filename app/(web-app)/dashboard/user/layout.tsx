@@ -1,13 +1,11 @@
 "use client";
 // eslint-disable @typescript-eslint/no-unused-vars
-
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import Modal from "@/components/ui/modal";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const links = [
   { href: "/dashboard/user", label: "Dashboard", icon: "LayoutDashboard" },
@@ -27,42 +25,21 @@ const links = [
 ];
 
 export default function UserLayout({
-  showModal = true,
-  modalTitle = "Verify Your Information",
-  modalContent = "To complete your profile setup kindly verify your NIN",
-  onModalClose,
   children,
 }: {
-  showModal?: boolean;
-  modalTitle?: string;
-  modalContent?: React.ReactNode;
-  onModalClose?: () => void;
   children: React.ReactNode;
 }) {
-  const router = useRouter();
-  const { isAuthenticated, user, isLoading } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(showModal);
+  const { user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(
+    user?.ninStatus !== "verified",
+  );
   const [nin, setNin] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [ninError, setNinError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setIsModalOpen(showModal);
-  }, [showModal]);
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    onModalClose?.();
   };
-
-  useEffect(() => {
-    if (!user) return;
-
-    // open modal if NIN not verified
-    if (user.ninStatus !== "verified") {
-      setIsModalOpen(true);
-    }
-  }, [user?.ninStatus]);
 
   return (
     <>
@@ -74,7 +51,7 @@ export default function UserLayout({
             <Modal
               isOpen={isModalOpen}
               position="absolute"
-              title={modalTitle}
+              title="Verify Your Information"
               onClose={handleCloseModal}
               closeButton={false}
               actions={
@@ -103,7 +80,9 @@ export default function UserLayout({
                 <p className="font-bold">
                   Hello, {user?.lastName} {user?.firstName}
                 </p>
-                <p className="text-primary">{modalContent}</p>
+                <p className="text-primary">
+                  To complete your profile setup kindly verify your NIN
+                </p>
                 <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
                   <p className="font-semibold">Verification Fee</p>
                   <p>₦150 will be charged for this NIN verification request.</p>

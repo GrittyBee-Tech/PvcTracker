@@ -19,17 +19,13 @@ export default function UserDashboard({
   verifyEndpoint?: string;
   onModalClose?: () => void;
 }) {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(showModal);
+  const [isModalOpen, setIsModalOpen] = useState(showModal);
   const [nin, setNin] = useState("");
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [verified, setVerified] = useState(false);
-
-  useEffect(() => {
-    setIsModalOpen(showModal);
-  }, [showModal]);
 
   const handleCloseModal = () => {
     // Prevent closing if not verified to keep the modal blocking.

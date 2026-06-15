@@ -20,22 +20,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { isAuthenticated, isLoading, user } = useAuth();
-
-  useEffect(() => {
-    if (isAuthenticated && user?.role !== "admin") {
-      router.replace("/dashboard/user");
-    }
-  }, [router, isAuthenticated, user]);
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col min-h-screen items-center justify-center bg-white">
-        <SpinnerLoader size="size-20" border="border-6" />
-        <p className="text-slate-600 mt-4">Checking authentication</p>
-      </div>
-    );
-  }
+  const { isAuthenticated, user } = useAuth();
 
   if (isAuthenticated && user?.role === "admin") {
     return (

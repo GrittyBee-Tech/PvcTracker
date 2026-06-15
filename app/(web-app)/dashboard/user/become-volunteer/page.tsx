@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import InputGroup from "@/components/ui/InputGroup";
 import { FaUserTie } from "react-icons/fa";
 import VolunteerModal from "@/components/ui/Volunteermodal";
-import { SpinnerLoader } from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { TbLockSquareRoundedFilled } from "react-icons/tb";
@@ -12,20 +11,10 @@ import Checkbox from "@/components/ui/checkbox";
 import { StateOption } from "../find-centre/FindCentreClient";
 import Swal from "sweetalert2";
 
-export default function VolunteerPage({
-  showModal = true,
-  modalTitle = "Ensure Your VIN is updated",
-  modalContent = " To become a volunteer, you need to have your VIN updated in your profile. Please update your VIN to proceed with the volunteer application.",
-  onModalClose,
-}: {
-  showModal?: boolean;
-  modalTitle?: string;
-  modalContent?: React.ReactNode;
-  onModalClose?: () => void;
-}) {
+export default function VolunteerPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(showModal);
+  const [isModalOpen, setIsModalOpen] = useState(!user?.vin);
   const [states, setStates] = useState<StateOption[]>([]);
   const [terms, setTerms] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -33,13 +22,8 @@ export default function VolunteerPage({
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState(false);
 
-  useEffect(() => {
-    setIsModalOpen(showModal);
-  }, [showModal]);
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    onModalClose?.();
   };
 
   const [form, setForm] = useState({
@@ -72,7 +56,6 @@ export default function VolunteerPage({
     )
       setDisableSubmit(false);
   };
-  //file
   const [file, setFile] = useState<File | null>(null);
 
   // Custom Cloudinary upload handler
@@ -208,12 +191,6 @@ export default function VolunteerPage({
     const data = await res.json();
     console.log(data);
   };
-
-  useEffect(() => {
-    if (!user) return;
-
-    setIsModalOpen(!user.vin);
-  }, [user?.vin]);
 
   useEffect(() => {
     const handleFetchApplication = async () => {
@@ -481,7 +458,7 @@ export default function VolunteerPage({
           <VolunteerModal
             isOpen={isModalOpen}
             position="absolute"
-            title={modalTitle}
+            title="Ensure Your VIN is updated"
             onClose={handleCloseModal}
             closeButton={false}
             actions={<></>}
@@ -494,7 +471,11 @@ export default function VolunteerPage({
                 </p>
                 <TbLockSquareRoundedFilled className="text-4xl" />
               </div>
-              <p className="text-primary font-dm-sans ">{modalContent}</p>
+              <p className="text-primary font-dm-sans">
+                To become a volunteer, you need to have your VIN updated in your
+                profile. Please update your VIN to proceed with the volunteer
+                application.
+              </p>
             </div>
           </VolunteerModal>
         </div>

@@ -32,13 +32,13 @@ export default function FindCentreClient() {
   const [loadingLgas, setLoadingLgas] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [viewMode, setViewMode] = useState<"list" | "map">("list");
-  const [userLocation, setUserLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  // const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  // const [userLocation, setUserLocation] = useState<{
+  //   lat: number;
+  //   lng: number;
+  // } | null>(null);
   const [nearbyWards, setNearbyWards] = useState<Ward[] | null>(null);
-  const [findingNearby, setFindingNearby] = useState(false);
+  // const [findingNearby, setFindingNearby] = useState(false);
 
   useEffect(() => {
     async function loadStates() {
@@ -139,41 +139,41 @@ export default function FindCentreClient() {
     return R * c;
   }
 
-  const handleFindNearby = () => {
-    if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.");
-      return;
-    }
+  // cox
+  //   if (!navigator.geolocation) {
+  //     setError("Geolocation is not supported by your browser.");
+  //     return;
+  //   }
 
-    setFindingNearby(true);
-    setError(null);
-    setNearbyWards(null);
+  //   // setFindingNearby(true);
+  //   setError(null);
+  //   setNearbyWards(null);
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setUserLocation({ lat: latitude, lng: longitude });
+  //   navigator.geolocation.getCurrentPosition(
+  //     (pos) => {
+  //       const { latitude, longitude } = pos.coords;
+  //       setUserLocation({ lat: latitude, lng: longitude });
 
-        // default radius 10 km
-        const radiusKm = 10;
-        const found = wards.filter((w) => {
-          return (
-            haversineDistance(latitude, longitude, w.latitude, w.longitude) <=
-            radiusKm
-          );
-        });
+  //       // default radius 10 km
+  //       const radiusKm = 10;
+  //       const found = wards.filter((w) => {
+  //         return (
+  //           haversineDistance(latitude, longitude, w.latitude, w.longitude) <=
+  //           radiusKm
+  //         );
+  //       });
 
-        setNearbyWards(found);
-        setViewMode("map");
-        setFindingNearby(false);
-      },
-      (err) => {
-        setError(err.message || "Failed to get location");
-        setFindingNearby(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
-  };
+  //       setNearbyWards(found);
+  //       // setViewMode("map");
+  //       // setFindingNearby(false);
+  //     },
+  //     (err) => {
+  //       setError(err.message || "Failed to get location");
+  //       // setFindingNearby(false);
+  //     },
+  //     { enableHighAccuracy: true, timeout: 10000 },
+  //   );
+  // };
 
   return (
     <div className="space-y-6">

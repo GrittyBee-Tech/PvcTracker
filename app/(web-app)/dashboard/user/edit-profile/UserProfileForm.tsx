@@ -331,7 +331,7 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
 
       <section>
         <h2 className="text-xl font-semibold text-primary mb-3">
-          Voter's Identification
+          Voter&apos;s Identification
         </h2>
         <form
           className="grid grid-cols-4 items-end gap-4"
