@@ -2,13 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-  BadgeCheck,
-  GraduationCap,
-  ShieldCheck,
-  Users,
-  ArrowRight,
-} from "lucide-react";
+import { BadgeCheck, GraduationCap, ShieldCheck, Users } from "lucide-react";
 
 const eligibilityCards = [
   {
@@ -167,8 +161,8 @@ export default function VolunteerHeroPage() {
                   The Continuous Voter Registration (CVR) training is a short
                   online training coordinated by ABENOL Foundation. It covers
                   how to correctly guide people through voter registration, how
-                  to use the volunteer dashboard, and INEC's guidelines for PVC
-                  collection.
+                  to use the volunteer dashboard, and INEC&pos;s guidelines for
+                  PVC collection.
                 </p>
 
                 <p className="mt-4 text-lg text-primary font-dm-sans leading-relaxed">

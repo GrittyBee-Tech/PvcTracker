@@ -55,7 +55,7 @@ export default function UserAuth({ children }: { children: React.ReactNode }) {
     if (isAuthenticated) {
       router.replace("/dashboard/user");
     }
-  }, [pathname]);
+  }, [pathname, isAuthenticated, router]);
 
   return (
     <Suspense fallback={<SpinnerLoader />}>

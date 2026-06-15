@@ -1,4 +1,5 @@
 // better-auth.d.ts
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { auth } from "@/lib/auth";
 import { IUser } from "./models/users";
 

@@ -1,5 +1,4 @@
-import React from "react";
-import { FaBowlingBall } from "react-icons/fa";
+
 
 const About = () => {
   return (
@@ -37,7 +36,7 @@ const About = () => {
                 The Goal
               </p>
               <p className="text-md font-dm-sans text-[#0A140F] leading-8">
-                To mobilize at least 500 "Waka Ambassadors" and reach over 1
+                To mobilize at least 500 &quot;Waka Ambassadors&quot; and reach over 1
                 million people through digital and physical advocacy campaigns.
                 This is double what we achieved in 2022, when we helped over 1
                 million Nigerians with their CVR (Continuous Voter Registration)

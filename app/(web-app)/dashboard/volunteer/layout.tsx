@@ -36,7 +36,9 @@ export default function VolunteerLayout({
 
   if (isAuthenticated && user?.role === "volunteer") {
     return (
-      <DashboardLayout links={links} role="Volunteer" children={children} />
+      <DashboardLayout links={links} role="Volunteer">
+        {children}
+      </DashboardLayout>
     );
   }
 

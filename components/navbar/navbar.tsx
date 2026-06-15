@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { IoFootstepsSharp } from "react-icons/io5";
+import { useState } from "react";
 import Logo from "../ui/Logo";
 import { GiHamburgerMenu } from "react-icons/gi";
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  // const [isScrolled, setIsScrolled] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleMoblileMenuToggle = () => {
@@ -15,11 +14,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav
-        className={` grid grid-flow-col p-6 lg:px-20 border-b border-border bg-[#F9FDFA] items-center justify-between py-3 fixed top-0 w-full ${
-          isScrolled ? "backdrop-blur-sm" : ""
-        }`}
-      >
+      <nav className="grid grid-flow-col p-6 lg:px-20 border-b border-border bg-[#F9FDFA] items-center justify-between py-3 fixed top-0 w-full">
         <Logo />
 
         <div className=" grid grid-flow-col ">
