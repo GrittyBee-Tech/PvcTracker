@@ -6,7 +6,6 @@ import { UserCircle, Bell, Search } from "lucide-react";
 import { useState, useEffect, ReactNode } from "react";
 
 export default function UserDashboard({
-  children,
   showModal = true,
   modalTitle = "Verify Your Information",
   modalContent = "Please complete your profile setup before continuing.",
@@ -20,7 +19,7 @@ export default function UserDashboard({
   verifyEndpoint?: string;
   onModalClose?: () => void;
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(showModal);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(showModal);
   const [nin, setNin] = useState("");
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
