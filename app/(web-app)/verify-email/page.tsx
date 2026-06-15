@@ -3,7 +3,6 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import Swal from "sweetalert2";
-import { AuthClientError } from "../auth/login/ForgotPassword";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -41,11 +40,13 @@ function VerifyEmailContent() {
         setTimeout(() => {
           router.push("/auth/login");
         }, 3000);
-      } catch (err: AuthClientError) {
+      } catch (err: unknown) {
         setStatus("error");
-        setMessage(
-          err?.message || "A network error occurred. Please try again.",
-        );
+        if (err instanceof Error) {
+          setMessage(err.message);
+        } else {
+          setMessage("A network error occurred. Please try again.");
+        }
       }
     };
 

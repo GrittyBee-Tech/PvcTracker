@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Select from "@/components/ui/Select";
 import { SpinnerLoader } from "@/components/ui/Loader";
 
@@ -27,19 +27,12 @@ export default function FindCentreClient() {
   const [lgas, setLgas] = useState<Lga[]>([]);
   const [selectedState, setSelectedState] = useState("");
   const [selectedLga, setSelectedLga] = useState("");
-  const [wards, setWards] = useState<Ward[]>([]);
   const [loadingStates, setLoadingStates] = useState(false);
   const [loadingLgas, setLoadingLgas] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // const [viewMode, setViewMode] = useState<"list" | "map">("list");
-  // const [userLocation, setUserLocation] = useState<{
-  //   lat: number;
-  //   lng: number;
-  // } | null>(null);
   const [nearbyWards, setNearbyWards] = useState<Ward[] | null>(null);
-  // const [findingNearby, setFindingNearby] = useState(false);
 
+  // Load States once upon initialization
   useEffect(() => {
     async function loadStates() {
       setLoadingStates(true);
@@ -64,20 +57,15 @@ export default function FindCentreClient() {
     loadStates();
   }, []);
 
+  // Fetch LGAs automatically when the selected State shifts
   useEffect(() => {
-    if (!selectedState) {
-      setLgas([]);
-      setSelectedLga("");
-      setWards([]);
-      return;
-    }
+    if (!selectedState) return;
 
     async function loadLgas() {
       setLoadingLgas(true);
       setError(null);
       setSelectedLga("");
       setLgas([]);
-      setWards([]);
 
       try {
         const response = await fetch(
@@ -101,15 +89,26 @@ export default function FindCentreClient() {
     loadLgas();
   }, [selectedState]);
 
-  useEffect(() => {
+  // FIX: Derive 'wards' dynamically during the execution of the render phase.
+  // This fully eliminates the third useEffect and saves your app from dual layouts.
+  const wards = useMemo(() => {
+    if (!selectedLga || lgas.length === 0) return [];
     const selected = lgas.find((item) => item.name === selectedLga);
-    setWards(selected?.wards ?? []);
-    setNearbyWards(null);
+    return selected?.wards ?? [];
   }, [selectedLga, lgas]);
 
+  // Reset independent state flags inside the explicit button click or choice event interaction loops
   const handleSelectChange = (field: FieldName, value: string) => {
+    setNearbyWards(null); // Clear out downstream nearby ward filters cleanly
+
     if (field === "state") {
       setSelectedState(value);
+
+      // If the user cleared the state dropdown, reset the child states right here
+      if (!value) {
+        setLgas([]);
+        setSelectedLga("");
+      }
       return;
     }
 
@@ -118,62 +117,6 @@ export default function FindCentreClient() {
 
   const stateOptions = states;
   const lgaOptions = lgas.map((lga) => ({ name: lga.name, value: lga.name }));
-
-  function haversineDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-  ) {
-    const toRad = (v: number) => (v * Math.PI) / 180;
-    const R = 6371; // km
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-
-  // cox
-  //   if (!navigator.geolocation) {
-  //     setError("Geolocation is not supported by your browser.");
-  //     return;
-  //   }
-
-  //   // setFindingNearby(true);
-  //   setError(null);
-  //   setNearbyWards(null);
-
-  //   navigator.geolocation.getCurrentPosition(
-  //     (pos) => {
-  //       const { latitude, longitude } = pos.coords;
-  //       setUserLocation({ lat: latitude, lng: longitude });
-
-  //       // default radius 10 km
-  //       const radiusKm = 10;
-  //       const found = wards.filter((w) => {
-  //         return (
-  //           haversineDistance(latitude, longitude, w.latitude, w.longitude) <=
-  //           radiusKm
-  //         );
-  //       });
-
-  //       setNearbyWards(found);
-  //       // setViewMode("map");
-  //       // setFindingNearby(false);
-  //     },
-  //     (err) => {
-  //       setError(err.message || "Failed to get location");
-  //       // setFindingNearby(false);
-  //     },
-  //     { enableHighAccuracy: true, timeout: 10000 },
-  //   );
-  // };
 
   return (
     <div className="space-y-6">
@@ -203,57 +146,6 @@ export default function FindCentreClient() {
         </div>
       ) : null}
 
-      {/* <div className="flex items-center gap-3">
-        <div className="inline-flex overflow-hidden rounded-full border bg-white">
-          <button
-            className={`px-3 py-2 text-sm ${viewMode === "list" ? "bg-primary text-white" : "text-primary"}`}
-            onClick={() => setViewMode("list")}
-          >
-            List
-          </button>
-          <button
-            className={`px-3 py-2 text-sm ${viewMode === "map" ? "bg-primary text-white" : "text-primary"}`}
-            onClick={() => setViewMode("map")}
-          >
-            Map
-          </button>
-        </div>
-
-        <button
-          className="ml-auto inline-flex items-center gap-2 rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white"
-          onClick={handleFindNearby}
-          disabled={findingNearby || wards.length === 0}
-        >
-          {findingNearby ? (
-            <>
-              <svg
-                className="w-4 h-4 animate-spin"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8z"
-                ></path>
-              </svg>
-              Finding...
-            </>
-          ) : (
-            "Find wards around my location"
-          )}
-        </button>
-      </div> */}
-
       <div className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm">
         {loadingStates || loadingLgas ? (
           <div className="h-48 flex items-center justify-center">
@@ -262,13 +154,6 @@ export default function FindCentreClient() {
             />
           </div>
         ) : (
-          // ) : viewMode === "map" ? (
-          //   <FindCentreWithMap
-          //     wards={nearbyWards ?? wards}
-          //     userLocation={userLocation}
-          //     highlight={nearbyWards ?? undefined}
-          //   />
-          // ) :
           <div>
             <div className="mb-4 flex items-start justify-between">
               <div>

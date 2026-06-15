@@ -1,5 +1,5 @@
 "use client";
-// eslint-disable @typescript-eslint/no-unused-vars
+
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
@@ -34,7 +34,9 @@ export default function UserLayout({
     user?.ninStatus !== "verified",
   );
   const [nin, setNin] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isVerifying, setIsVerifying] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ninError, setNinError] = useState<string | null>(null);
 
   const handleCloseModal = () => {

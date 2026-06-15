@@ -74,6 +74,9 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
       ...prev,
       [field]: value,
     }));
+    if (field === "stateOfOrigin" && !value) {
+      setLgas([]);
+    }
   };
 
   const handleUpdateProfileAPICall = async (data: UpdateProfileFormType) => {
@@ -158,11 +161,6 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
 
   // Synchronize LGAs when state selection alters
   useEffect(() => {
-    if (!updateProfileData.stateOfOrigin) {
-      setLgas([]);
-      return;
-    }
-
     async function loadLgas() {
       setLoadingLgas(true);
       setError(null);
