@@ -4,6 +4,10 @@
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 
+export type AuthClientError = NonNullable<
+  Awaited<ReturnType<typeof authClient.requestPasswordReset>>["error"]
+>;
+
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<{
@@ -33,8 +37,8 @@ export function ForgotPasswordForm() {
         });
       }
       setEmail("");
-    } catch (err: any) {
-      setStatus({ type: "error", message: err.message });
+    } catch (err: AuthClientError) {
+      setStatus({ type: "error", message: err?.message });
     }
   };
 

@@ -10,7 +10,6 @@ export default function ResetPasswordForm() {
   const router = useRouter();
 
   const token = searchParams.get("token");
-  // const userId = searchParams.get("userId");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -43,16 +42,18 @@ export default function ResetPasswordForm() {
     setStatus({ loading: true, error: "", success: false });
 
     try {
-      const { data, error } = await authClient.resetPassword({
+      await authClient.resetPassword({
         newPassword: password,
         token,
       });
 
       setStatus({ loading: false, error: "", success: true });
-      setTimeout(() => router.push("/auth/login"), 3000);
-    } catch (err: any) {
-      console.error("password-chaneg-error", err);
-      setStatus({ loading: false, error: err.message, success: false });
+      setTimeout(() => router.push("/auth/login"), 2000);
+    } catch (err: unknown) {
+      console.error("password-change-error", err);
+      if (err instanceof Error) {
+        setStatus({ loading: false, error: err.message, success: false });
+      }
     }
   };
 

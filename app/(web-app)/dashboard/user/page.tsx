@@ -3,12 +3,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { CheckCircle2, Clock, MapPin, User, Pencil } from "lucide-react";
-import { useState, useEffect } from "react";
+import { CheckCircle2, Clock } from "lucide-react";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
 import {
-  FaHandDots,
   FaHandsClapping,
   FaHourglassStart,
   FaLocationDot,
@@ -23,17 +21,11 @@ import {
 
 export default function UserDashboardPage() {
   const { user } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!user) return;
-
-    setNin(user.nin);
-  }, [user]);
 
   // const paystack = new PaystackPop();
-  const [nin, setNin] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isVerifying, setIsVerifying] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ninError, setNinError] = useState<string | null>(null);
 
   const getNinStatusDisplay = (status?: string) => {
@@ -103,7 +95,7 @@ export default function UserDashboardPage() {
           </div>
 
           <p className="text-muted-foreground mt-3 font-dm-sans">
-            Here's a quick overview of your PVC WAKA journey and important
+            Here&apos;s a quick overview of your PVC WAKA journey and important
             actions.
           </p>
         </div>
@@ -177,7 +169,7 @@ export default function UserDashboardPage() {
                 {user?.vin ? user.vin : "Pending VIN"}
               </div>
               <p className="text-sm text-muted-foreground mt-5">
-                Yes, it's Sensitive. safe like a bank reference, not like a
+                Yes, it&apos;s Sensitive. safe like a bank reference, not like a
                 username.
               </p>
             </CardContent>

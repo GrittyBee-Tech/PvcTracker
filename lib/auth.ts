@@ -33,12 +33,12 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     autoSignIn: false,
     revokeSessionsOnPasswordReset: true,
-    sendResetPassword: async ({ user, url, token }, request) => {
+    sendResetPassword: async ({ user, url }) => {
       void sendPasswordResetEmail(user.email, user.name, url);
     },
   },
   emailVerification: {
-    sendVerificationEmail: async ({ user, url, token }, request) => {
+    sendVerificationEmail: async ({ user, url }) => {
       void sendWelcomeEmail(user.email, user.name, url);
     },
     sendOnSignIn: true,

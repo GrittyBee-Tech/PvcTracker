@@ -135,7 +135,7 @@ const ChangePasswordSection = () => {
       </p>
       <form
         className="grid grid-cols-4 gap-6 mt-4"
-        onSubmit={handleChangePassword as any}
+        onSubmit={handleChangePassword}
       >
         <div className="col-span-4 md:col-span-2">
           <InputGroup

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import InputGroup from "@/components/ui/InputGroup";
 import { FaUserTie } from "react-icons/fa";
 import VolunteerModal from "@/components/ui/Volunteermodal";
-import { SpinnerLoader } from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { TbLockSquareRoundedFilled } from "react-icons/tb";
@@ -11,35 +10,22 @@ import Select from "@/components/ui/Select";
 import Checkbox from "@/components/ui/checkbox";
 import { StateOption } from "../find-centre/FindCentreClient";
 import Swal from "sweetalert2";
+import Image from "next/image";
 
-export default function VolunteerPage({
-  showModal = true,
-  modalTitle = "Ensure Your VIN is updated",
-  modalContent = " To become a volunteer, you need to have your VIN updated in your profile. Please update your VIN to proceed with the volunteer application.",
-  onModalClose,
-}: {
-  showModal?: boolean;
-  modalTitle?: string;
-  modalContent?: React.ReactNode;
-  onModalClose?: () => void;
-}) {
+export default function VolunteerPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(showModal);
+  const [isModalOpen, setIsModalOpen] = useState(!user?.vin);
   const [states, setStates] = useState<StateOption[]>([]);
   const [terms, setTerms] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isUploading, setIsUploading] = useState(false);
   const [PhotoUrl, setPhotoUrl] = useState<string>("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState(false);
 
-  useEffect(() => {
-    setIsModalOpen(showModal);
-  }, [showModal]);
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    onModalClose?.();
   };
 
   const [form, setForm] = useState({
@@ -72,7 +58,8 @@ export default function VolunteerPage({
     )
       setDisableSubmit(false);
   };
-  //file
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [file, setFile] = useState<File | null>(null);
 
   // Custom Cloudinary upload handler
@@ -97,10 +84,10 @@ export default function VolunteerPage({
       );
       const data = await res.json();
       setPhotoUrl(data.secure_url);
-    } catch (err) {
+    } catch (err: unknown) {
       Swal.fire({
         icon: "error",
-        text: "Failed to upload image",
+        text: err instanceof Error ? err?.message : "Failed to upload image",
         toast: true,
         position: "top-end",
         timer: 2000,
@@ -151,6 +138,19 @@ export default function VolunteerPage({
         showConfirmButton: false,
       });
       return;
+
+      // if (!terms) {
+      //   Swal.fire({
+      //     icon: "error",
+      //     title: "Terms not accepted",
+      //     text: "You must agree to the terms and conditions to continue.",
+      //     toast: true,
+      //     position: "top-end",
+      //     timer: 2000,
+      //     showConfirmButton: false,
+      //   });
+      //   return;
+      // }
     }
     console.log("PhotoUrl before submit:", PhotoUrl); // <-- Cloudinary URL should be here
     formData.append("PhotoUrl", PhotoUrl);
@@ -195,12 +195,6 @@ export default function VolunteerPage({
     const data = await res.json();
     console.log(data);
   };
-
-  useEffect(() => {
-    if (!user) return;
-
-    setIsModalOpen(!user.vin);
-  }, [user?.vin]);
 
   useEffect(() => {
     const handleFetchApplication = async () => {
@@ -260,8 +254,10 @@ export default function VolunteerPage({
             }
           >
             {PhotoUrl ? (
-              <img
+              <Image
                 src={PhotoUrl}
+                width={80}
+                height={80}
                 alt="Passport preview"
                 className="w-20 h-20 rounded-full object-cover"
               />
@@ -421,7 +417,11 @@ export default function VolunteerPage({
           label={
             <>
               I agree to the{" "}
-              <a href="#" className="text-green-500 hover:underline">
+              <a
+                href="/PVC WAKA VOLUNTEER T & C.pdf"
+                target="_blank"
+                className="text-green-500 hover:underline"
+              >
                 terms and conditions
               </a>
             </>
@@ -464,7 +464,7 @@ export default function VolunteerPage({
           <VolunteerModal
             isOpen={isModalOpen}
             position="absolute"
-            title={modalTitle}
+            title="Ensure Your VIN is updated"
             onClose={handleCloseModal}
             closeButton={false}
             actions={<></>}
@@ -477,7 +477,11 @@ export default function VolunteerPage({
                 </p>
                 <TbLockSquareRoundedFilled className="text-4xl" />
               </div>
-              <p className="text-primary font-dm-sans ">{modalContent}</p>
+              <p className="text-primary font-dm-sans">
+                To become a volunteer, you need to have your VIN updated in your
+                profile. Please update your VIN to proceed with the volunteer
+                application.
+              </p>
             </div>
           </VolunteerModal>
         </div>

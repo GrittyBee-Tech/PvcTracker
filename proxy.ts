@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const authPages = ["/auth/login", "/auth/register", "/verify-email"];
-const protectedPaths = ["/dashboard"];
-
-function getDashboardDestination(role?: string) {
-  if (role === "admin") return "/dashboard/admin";
-  if (role === "volunteer") return "/dashboard/volunteer";
-  return "/dashboard/user";
-}
-
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 

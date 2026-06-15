@@ -1,24 +1,22 @@
 "use client";
 
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
-import Swal from 'sweetalert2';
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import Swal from "sweetalert2";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
 
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [message, setMessage] = useState('Verifying your account...');
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    token ? "loading" : "error",
+  );
+  const [message, setMessage] = useState(
+    token ? "Verifying your account..." : "No verification token provided.",
+  );
 
   useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setMessage('No verification token provided.');
-      return;
-    }
-
     // Automatically trigger backend verification endpoint on mount
     const triggerVerification = async () => {
       try {
@@ -26,26 +24,29 @@ function VerifyEmailContent() {
         const data = await res.json();
 
         if (!res.ok) {
-          setStatus('error');
-          setMessage(data.error || 'Verification failed.');
+          setStatus("error");
+          setMessage(data.error || "Verification failed.");
           return;
         }
 
-        setStatus('success');
+        setStatus("success");
         Swal.fire({
           icon: "success",
           title: "Email Verified!",
-          text: 'Your email has been successfully verified! Redirecting to login...'
-        })
-        
+          text: "Your email has been successfully verified! Redirecting to login...",
+        });
+
         // Auto-redirect to login after 3 seconds
         setTimeout(() => {
-          router.push('/auth/login');
+          router.push("/auth/login");
         }, 3000);
-        
-      } catch (err) {
-        setStatus('error');
-        setMessage('A network error occurred. Please try again.');
+      } catch (err: unknown) {
+        setStatus("error");
+        if (err instanceof Error) {
+          setMessage(err.message);
+        } else {
+          setMessage("A network error occurred. Please try again.");
+        }
       }
     };
 
@@ -55,25 +56,29 @@ function VerifyEmailContent() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-accent/40 to-background text-white p-6">
       <div className="max-w-md w-full bg-zinc-700 border border-zinc-500 p-8 rounded-lg text-center space-y-4">
-        <h1 className="text-2xl font-bold tracking-tight">Account Verification</h1>
-        
-        {status === 'loading' && (
-          <div className="text-amber-500 animate-pulse font-medium">{message}</div>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Account Verification
+        </h1>
+
+        {status === "loading" && (
+          <div className="text-amber-500 animate-pulse font-medium">
+            {message}
+          </div>
         )}
 
-        {status === 'success' && (
+        {status === "success" && (
           <div className="text-green-400 font-medium bg-green-950/40 p-4 rounded border border-green-800">
             {message}
           </div>
         )}
 
-        {status === 'error' && (
+        {status === "error" && (
           <div className="space-y-4">
             <div className="text-red-400 font-medium bg-red-950/40 p-4 rounded border border-red-800">
               {message}
             </div>
-            <button 
-              onClick={() => router.push('/register')}
+            <button
+              onClick={() => router.push("/register")}
               className="px-4 py-2 bg-amber-500 text-zinc-950 font-bold rounded hover:bg-amber-600 transition-colors text-sm"
             >
               Back to Registration
@@ -88,11 +93,13 @@ function VerifyEmailContent() {
 // Main page wrapper satisfying Next.js build compilation rules
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#10200e] text-white">
-        <p>Loading application contexts...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#10200e] text-white">
+          <p>Loading application contexts...</p>
+        </div>
+      }
+    >
       <VerifyEmailContent />
     </Suspense>
   );

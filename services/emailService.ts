@@ -5,7 +5,15 @@ import React from "react";
 import "server-only";
 import { ResetPasswordEmail } from "@/emails/ResetPasswordEmail";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResendInstance() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      'Missing API key. Pass it to the constructor `new Resend("re_123")` or set RESEND_API_KEY.',
+    );
+  }
+  return new Resend(apiKey);
+}
 
 export async function sendWelcomeEmail(
   email: string,
@@ -13,6 +21,7 @@ export async function sendWelcomeEmail(
   verificationUrl: string,
 ) {
   try {
+    const resend = getResendInstance();
     const { data, error } = await resend.emails.send({
       from: "PVC WAKA <onboarding@pvc-waka.izzyman.space>",
       to: [email],
@@ -39,6 +48,7 @@ export async function sendPasswordResetEmail(
   resetUrl: string,
 ) {
   try {
+    const resend = getResendInstance();
     const { data, error } = await resend.emails.send({
       from: "PVC WAKA <onboarding@pvc-waka.izzyman.space>",
       to: [email],

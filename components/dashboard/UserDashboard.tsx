@@ -3,10 +3,9 @@ import Logo from "../ui/Logo";
 import Modal from "../ui/modal";
 import InputGroup from "../ui/InputGroup";
 import { UserCircle, Bell, Search } from "lucide-react";
-import { useState, useEffect, ReactNode } from "react";
+import { useState, ReactNode } from "react";
 
 export default function UserDashboard({
-  children,
   showModal = true,
   modalTitle = "Verify Your Information",
   modalContent = "Please complete your profile setup before continuing.",
@@ -27,10 +26,6 @@ export default function UserDashboard({
   >("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [verified, setVerified] = useState(false);
-
-  useEffect(() => {
-    setIsModalOpen(showModal);
-  }, [showModal]);
 
   const handleCloseModal = () => {
     // Prevent closing if not verified to keep the modal blocking.
@@ -72,9 +67,13 @@ export default function UserDashboard({
         setStatus("error");
         setErrorMsg(data?.message || "NIN could not be verified");
       }
-    } catch (err: any) {
-      setStatus("error");
-      setErrorMsg(err?.message || "Verification failed");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorMsg(err.message);
+      } else {
+        // Fallback for edge cases where something weird was thrown
+        setErrorMsg("An unexpected verification error occurred");
+      }
     }
   };
 

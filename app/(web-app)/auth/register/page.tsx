@@ -7,6 +7,7 @@ import Select from "@/components/ui/Select";
 import Swal from "sweetalert2";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import { authClient } from "@/lib/auth-client";
+import Checkbox from "@/components/ui/checkbox";
 
 interface ValidationErrorDetail {
   field: string;
@@ -14,6 +15,8 @@ interface ValidationErrorDetail {
 }
 
 export default function Register() {
+  const [terms, setTerms] = useState(false);
+  const [disableSubmit, setDisableSubmit] = useState(false);
   const [signupDetails, setSignupDetails] = useState({
     firstName: "",
     lastName: "",
@@ -99,6 +102,7 @@ export default function Register() {
     }
 
     setFieldErrors(errors);
+    if (errors?.length > 0) setDisableSubmit(true);
     return errors.length === 0;
   };
 
@@ -119,7 +123,18 @@ export default function Register() {
       });
       return;
     }
-
+    if (!terms) {
+      Swal.fire({
+        icon: "error",
+        title: "Terms not accepted",
+        text: "You must agree to the terms and conditions to continue.",
+        toast: true,
+        position: "top-end",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return;
+    }
     await authClient.signUp.email(
       {
         ...signupDetails,
@@ -169,146 +184,167 @@ export default function Register() {
           Join the movement and register for your Permanent Voter Card.
         </p>
       </header>
-      <form
-        className="sm:grid not-sm:space-y-5 sm:grid-cols-2 gap-x-4 gap-y-5"
-        onSubmit={handleSubmit}
-      >
-        <div>
-          <InputGroup
-            label="First Name"
-            name="firstName"
-            onChange={handleChange}
-            placeholder="Enter your first name"
-            type="text"
-            value={signupDetails.firstName}
-          />
-          {getFieldError("firstName") && (
-            <p className="text-red-400 text-xs mt-1">
-              {getFieldError("firstName")}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <InputGroup
-            label="Last Name"
-            name="lastName"
-            onChange={handleChange}
-            placeholder="Enter your last name"
-            type="text"
-            value={signupDetails.lastName}
-          />
-          {getFieldError("lastName") && (
-            <p className="text-red-400 text-xs mt-1">
-              {getFieldError("lastName")}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <InputGroup
-            label="Email Address"
-            name="email"
-            onChange={handleChange}
-            placeholder="Enter your email address"
-            type="email"
-            value={signupDetails.email}
-          />
-          {getFieldError("email") && (
-            <p className="text-red-400 text-xs mt-1">
-              {getFieldError("email")}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <InputGroup
-            label="Phone Number (234 format)"
-            name="phoneNumber"
-            onChange={handleChange}
-            placeholder="eg. 2348012345678"
-            type="tel"
-            value={signupDetails.phoneNumber}
-          />
-          {getFieldError("phoneNumber") && (
-            <p className="text-red-400 text-xs mt-1">
-              {getFieldError("phoneNumber")}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <InputGroup
-            label="National Identification Number (NIN)"
-            name="nin"
-            onChange={handleChange}
-            placeholder="Enter your NIN"
-            type="text"
-            value={signupDetails.nin}
-          />
-          {getFieldError("nin") && (
-            <p className="text-red-400 text-xs mt-1">{getFieldError("nin")}</p>
-          )}
-        </div>
-
-        <div>
-          <InputGroup
-            label="Date of Birth"
-            name="dateOfBirth"
-            onChange={handleChange}
-            placeholder="Date of Birth"
-            type="date"
-            value={signupDetails.dateOfBirth}
-          />
-          {getFieldError("dateOfBirth") && (
-            <p className="text-red-400 text-xs mt-1">
-              {getFieldError("dateOfBirth")}
-            </p>
-          )}
-        </div>
-        <Select
-          label="Gender"
-          name="gender"
-          onChange={handleChange}
-          options={[
-            { name: "Male", value: "male" },
-            { name: "Female", value: "female" },
-          ]}
-          value={signupDetails.gender}
-          placeholder="Gender"
-        />
-
-        <div>
-          <div className="relative">
+      <form className="" onSubmit={handleSubmit}>
+        <div className="sm:grid not-sm:space-y-5 sm:grid-cols-2 gap-x-4 gap-y-5">
+          <div>
             <InputGroup
-              label="Password"
-              name="password"
+              label="First Name"
+              name="firstName"
               onChange={handleChange}
-              placeholder={showPassword ? "Enter password" : "*********"}
-              type={showPassword ? "text" : "password"}
-              value={signupDetails.password}
+              placeholder="Enter your first name"
+              type="text"
+              value={signupDetails.firstName}
             />
-            {showPassword ? (
-              <EyeOff
-                className="text-primary absolute right-4 bottom-2"
-                onClick={() => setShowPassword(false)}
-              />
-            ) : (
-              <Eye
-                className="text-primary absolute right-4 bottom-2"
-                onClick={() => setShowPassword(true)}
-              />
+            {getFieldError("firstName") && (
+              <p className="text-red-400 text-xs mt-1">
+                {getFieldError("firstName")}
+              </p>
             )}
           </div>
-          {getFieldError("password") && (
-            <p className="text-red-400 text-xs mt-1">
-              {getFieldError("password")}
-            </p>
-          )}
+
+          <div>
+            <InputGroup
+              label="Last Name"
+              name="lastName"
+              onChange={handleChange}
+              placeholder="Enter your last name"
+              type="text"
+              value={signupDetails.lastName}
+            />
+            {getFieldError("lastName") && (
+              <p className="text-red-400 text-xs mt-1">
+                {getFieldError("lastName")}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <InputGroup
+              label="Email Address"
+              name="email"
+              onChange={handleChange}
+              placeholder="Enter your email address"
+              type="email"
+              value={signupDetails.email}
+            />
+            {getFieldError("email") && (
+              <p className="text-red-400 text-xs mt-1">
+                {getFieldError("email")}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <InputGroup
+              label="Phone Number (234 format)"
+              name="phoneNumber"
+              onChange={handleChange}
+              placeholder="eg. 2348012345678"
+              type="tel"
+              value={signupDetails.phoneNumber}
+            />
+            {getFieldError("phoneNumber") && (
+              <p className="text-red-400 text-xs mt-1">
+                {getFieldError("phoneNumber")}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <InputGroup
+              label="National Identification Number (NIN)"
+              name="nin"
+              onChange={handleChange}
+              placeholder="Enter your NIN"
+              type="text"
+              value={signupDetails.nin}
+            />
+            {getFieldError("nin") && (
+              <p className="text-red-400 text-xs mt-1">
+                {getFieldError("nin")}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <InputGroup
+              label="Date of Birth"
+              name="dateOfBirth"
+              onChange={handleChange}
+              placeholder="Date of Birth"
+              type="date"
+              value={signupDetails.dateOfBirth}
+            />
+            {getFieldError("dateOfBirth") && (
+              <p className="text-red-400 text-xs mt-1">
+                {getFieldError("dateOfBirth")}
+              </p>
+            )}
+          </div>
+          <Select
+            label="Gender"
+            name="gender"
+            onChange={handleChange}
+            options={[
+              { name: "Male", value: "male" },
+              { name: "Female", value: "female" },
+            ]}
+            value={signupDetails.gender}
+            placeholder="Gender"
+          />
+
+          <div>
+            <div className="relative">
+              <InputGroup
+                label="Password"
+                name="password"
+                onChange={handleChange}
+                placeholder={showPassword ? "Enter password" : "*********"}
+                type={showPassword ? "text" : "password"}
+                value={signupDetails.password}
+              />
+              {showPassword ? (
+                <EyeOff
+                  className="text-primary absolute right-4 bottom-2"
+                  onClick={() => setShowPassword(false)}
+                />
+              ) : (
+                <Eye
+                  className="text-primary absolute right-4 bottom-2"
+                  onClick={() => setShowPassword(true)}
+                />
+              )}
+            </div>
+            {getFieldError("password") && (
+              <p className="text-red-400 text-xs mt-1">
+                {getFieldError("password")}
+              </p>
+            )}
+          </div>
         </div>
-        <div className="col-span-2 flex">
+        <div className=" grid items-center pt-4">
+          <Checkbox
+            disabled={disableSubmit}
+            checked={terms}
+            onChange={setTerms}
+            label={
+              <p className="">
+                I agree to the{" "}
+                <a
+                  href="/PVC WAKA USER T & C.pdf"
+                  target="_blank"
+                  className="text-green-500 hover:underline"
+                >
+                  terms and conditions
+                </a>
+              </p>
+            }
+          />
+        </div>
+
+        <div className="col-span-2 flex pt-3">
           <button
-            disabled={status === "loading"}
+            disabled={status === "loading" || !terms}
             className={`bg-primary text-white font-bold font-dm-sans py-3 rounded-lg mt-4 w-5/6 sm:w-1/2 mx-auto transition-colors disabled:opacity-70 flex justify-center items-center gap-2 ${status === "loading" ? "cursor-not-allowed" : "cursor-pointer"}`}
           >
             {status === "loading" ? (

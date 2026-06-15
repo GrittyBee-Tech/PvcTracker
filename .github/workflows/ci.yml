@@ -31,3 +31,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}

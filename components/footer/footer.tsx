@@ -1,5 +1,3 @@
-import React from "react";
-import { IoFootstepsSharp } from "react-icons/io5";
 import Logo from "../ui/Logo";
 
 const Footer = () => {

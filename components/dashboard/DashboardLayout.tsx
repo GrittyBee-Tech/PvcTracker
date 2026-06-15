@@ -96,7 +96,7 @@ const DashboardSideBar = ({
 }: {
   role: "User" | "Volunteer" | "Admin";
   links: DashboardLink[];
-  navOpen: Boolean;
+  navOpen: boolean;
   setNavOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
   const pathname = usePathname();

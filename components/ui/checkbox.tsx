@@ -18,17 +18,18 @@ const Checkbox = ({
   disabled = false,
 }: CheckboxProps) => {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-start gap-2 ${className}`}>
       <input
         type="checkbox"
         id={id}
         name={name}
         checked={checked}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
         className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
       />
 
-      <label htmlFor={id} className="text-sm text-primary">
+      <label htmlFor={id} className=" w-full text-sm text-primary">
         {label}
       </label>
     </div>
