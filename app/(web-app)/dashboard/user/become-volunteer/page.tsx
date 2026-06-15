@@ -10,6 +10,7 @@ import Select from "@/components/ui/Select";
 import Checkbox from "@/components/ui/checkbox";
 import { StateOption } from "../find-centre/FindCentreClient";
 import Swal from "sweetalert2";
+import Image from "next/image";
 
 export default function VolunteerPage() {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ export default function VolunteerPage() {
   const [isModalOpen, setIsModalOpen] = useState(!user?.vin);
   const [states, setStates] = useState<StateOption[]>([]);
   const [terms, setTerms] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isUploading, setIsUploading] = useState(false);
   const [PhotoUrl, setPhotoUrl] = useState<string>("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
@@ -56,6 +58,8 @@ export default function VolunteerPage() {
     )
       setDisableSubmit(false);
   };
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [file, setFile] = useState<File | null>(null);
 
   // Custom Cloudinary upload handler
@@ -80,10 +84,10 @@ export default function VolunteerPage() {
       );
       const data = await res.json();
       setPhotoUrl(data.secure_url);
-    } catch (err) {
+    } catch (err: unknown) {
       Swal.fire({
         icon: "error",
-        text: "Failed to upload image",
+        text: err instanceof Error ? err?.message : "Failed to upload image",
         toast: true,
         position: "top-end",
         timer: 2000,
@@ -250,8 +254,10 @@ export default function VolunteerPage() {
             }
           >
             {PhotoUrl ? (
-              <img
+              <Image
                 src={PhotoUrl}
+                width={80}
+                height={80}
                 alt="Passport preview"
                 className="w-20 h-20 rounded-full object-cover"
               />

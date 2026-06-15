@@ -4,14 +4,12 @@
 import { authClient } from "@/lib/auth-client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { AuthClientError } from "../login/ForgotPassword";
 
 export default function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const token = searchParams.get("token");
-  // const userId = searchParams.get("userId");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -51,9 +49,11 @@ export default function ResetPasswordForm() {
 
       setStatus({ loading: false, error: "", success: true });
       setTimeout(() => router.push("/auth/login"), 2000);
-    } catch (err: AuthClientError) {
+    } catch (err: unknown) {
       console.error("password-change-error", err);
-      setStatus({ loading: false, error: err.message, success: false });
+      if (err instanceof Error) {
+        setStatus({ loading: false, error: err.message, success: false });
+      }
     }
   };
 
