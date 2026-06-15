@@ -4,6 +4,7 @@
 import { authClient } from "@/lib/auth-client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { AuthClientError } from "../login/ForgotPassword";
 
 export default function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -43,15 +44,15 @@ export default function ResetPasswordForm() {
     setStatus({ loading: true, error: "", success: false });
 
     try {
-      const { data, error } = await authClient.resetPassword({
+      await authClient.resetPassword({
         newPassword: password,
         token,
       });
 
       setStatus({ loading: false, error: "", success: true });
-      setTimeout(() => router.push("/auth/login"), 3000);
-    } catch (err: any) {
-      console.error("password-chaneg-error", err);
+      setTimeout(() => router.push("/auth/login"), 2000);
+    } catch (err: AuthClientError) {
+      console.error("password-change-error", err);
       setStatus({ loading: false, error: err.message, success: false });
     }
   };

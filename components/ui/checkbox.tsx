@@ -24,6 +24,7 @@ const Checkbox = ({
         id={id}
         name={name}
         checked={checked}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
         className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
       />

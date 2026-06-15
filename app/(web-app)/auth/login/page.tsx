@@ -59,10 +59,10 @@ export default function Login() {
         callbackURL,
       },
       {
-        onRequest: (ctx) => {
+        onRequest: () => {
           setIsLoading(true);
         },
-        onSuccess: (ctx) => {
+        onSuccess: () => {
           Swal.fire({
             title: "Login successful!",
             icon: "success",

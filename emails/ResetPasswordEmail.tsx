@@ -11,7 +11,6 @@ import {
   Hr,
   Tailwind,
 } from "@react-email/components";
-import * as React from "react";
 
 interface ResetPasswordEmailProps {
   firstName: string;
@@ -58,15 +57,15 @@ export const ResetPasswordEmail = ({
             </Section>
 
             <Text className="text-gray-700 leading-6">
-              If you didn't request a password reset, you can safely ignore this
-              email. Your current password remains entirely secure.
+              If you didn&apos;t request a password reset, you can safely ignore
+              this email. Your current password remains entirely secure.
             </Text>
 
             <Hr className="border border-solid border-gray-200 my-7 mx-0 w-full" />
 
             <Text className="text-gray-500 text-sm leading-4">
-              If you're having trouble clicking the password reset button, copy
-              and paste the URL below into your web browser:
+              If you&apos;re having trouble clicking the password reset button,
+              copy and paste the URL below into your web browser:
             </Text>
 
             <Text className="text-primary text-sm leading-4 break-all">

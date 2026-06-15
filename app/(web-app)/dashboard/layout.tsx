@@ -26,7 +26,7 @@ export default function DashboardAuthLayout({
 
       router.replace(destination);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, isLoading, user?.role]);
 
   if (isLoading) {
     return (

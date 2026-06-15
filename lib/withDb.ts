@@ -1,9 +1,9 @@
-
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 
 type NextHandler = (
   request: Request,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: any,
 ) => Promise<Response> | Response;
 

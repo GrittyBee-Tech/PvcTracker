@@ -2,10 +2,10 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { LogOut, Users } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export default function LogoutButton({ navOpen }: { navOpen: Boolean }) {
+export default function LogoutButton({ navOpen }: { navOpen: boolean }) {
   const router = useRouter();
   const handleLogout = async () => {
     await authClient.signOut({

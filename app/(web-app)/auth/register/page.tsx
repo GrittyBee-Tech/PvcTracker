@@ -102,6 +102,7 @@ export default function Register() {
     }
 
     setFieldErrors(errors);
+    if (errors?.length > 0) setDisableSubmit(true);
     return errors.length === 0;
   };
 
