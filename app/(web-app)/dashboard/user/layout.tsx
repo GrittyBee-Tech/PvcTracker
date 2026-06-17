@@ -40,28 +40,46 @@ export default function UserLayout({
   const [isVerifying, setIsVerifying] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ninError, setNinError] = useState<string | null>(null);
+  const [isOpeningPayment, setIsOpeningPayment] = useState(false);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
   const handleVerify = async () => {
     setIsVerifying(true);
+    setIsOpeningPayment(true);
+
     const res = await fetch("/api/user/nin-payment", {
       method: "POST",
     });
+
     const data = await res.json();
 
-    console.log(data);
-    if (res.ok) {
-      const popup = new PaystackPop();
-      popup.resumeTransaction(data.access_code);
-    } else {
+    if (!res.ok) {
+      setIsVerifying(false);
+      setIsOpeningPayment(true);
       showToast("error", "Failed to initialize NIN payment. Please try again.");
+      return;
     }
+    await new Promise((r) => setTimeout(r, 100));
+    const popup = new PaystackPop();
+
+    popup.resumeTransaction(data.access_code, {
+      onSuccess: () => {
+        setIsOpeningPayment(false);
+        setIsModalOpen(false);
+      },
+      onCancel: () => {
+        setIsOpeningPayment(false);
+        setIsModalOpen(true);
+      },
+    });
+
+    // close modal ONLY after Paystack has been triggered
+    setIsModalOpen(false);
+    setIsOpeningPayment(true);
     setIsVerifying(false);
   };
-
   return (
     <>
       <DashboardLayout links={links} role="User">
@@ -77,12 +95,12 @@ export default function UserLayout({
               closeButton={false}
               actions={
                 <>
-                  <button
+                  {/* <button
                     onClick={handleCloseModal}
                     className="md:px-6 md:py-2 py-2  px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60"
                   >
                     Close
-                  </button>
+                  </button> */}
                   <button
                     onClick={handleVerify}
                     disabled={isVerifying}
@@ -124,6 +142,9 @@ export default function UserLayout({
                 <p className="text-xs font-dm-sans text-muted-foreground"></p>
               </div>
             </Modal>
+            {isOpeningPayment && (
+              <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" />
+            )}
           </div>
         )}
       </DashboardLayout>
