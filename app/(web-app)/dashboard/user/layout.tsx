@@ -6,6 +6,8 @@ import { SpinnerLoader } from "@/components/ui/Loader";
 import Modal from "@/components/ui/modal";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
+import PaystackPop from "@paystack/inline-js";
+import { showToast } from "@/utils/constants/toast";
 
 const links = [
   { href: "/dashboard/user", label: "Dashboard", icon: "LayoutDashboard" },
@@ -33,7 +35,7 @@ export default function UserLayout({
   const [isModalOpen, setIsModalOpen] = useState(
     user?.ninStatus !== "verified",
   );
-  const [nin, setNin] = useState("");
+  const [nin, setNin] = useState(user?.nin || "");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isVerifying, setIsVerifying] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -41,6 +43,23 @@ export default function UserLayout({
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleVerify = async () => {
+    setIsVerifying(true);
+    const res = await fetch("/api/user/nin-payment", {
+      method: "POST",
+    });
+    const data = await res.json();
+
+    console.log(data);
+    if (res.ok) {
+      const popup = new PaystackPop();
+      popup.resumeTransaction(data.access_code);
+    } else {
+      showToast("error", "Failed to initialize NIN payment. Please try again.");
+    }
+    setIsVerifying(false);
   };
 
   return (
@@ -65,14 +84,14 @@ export default function UserLayout({
                     Close
                   </button>
                   <button
-                    // onClick={handleVerify}
+                    onClick={handleVerify}
                     disabled={isVerifying}
                     className="md:px-6 md:py-2 py-2  px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60"
                   >
                     {isVerifying ? (
                       <SpinnerLoader text="Processing..." />
                     ) : (
-                      "Verify"
+                      "Pay and Verify"
                     )}
                   </button>
                 </>
