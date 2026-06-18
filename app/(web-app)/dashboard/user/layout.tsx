@@ -54,7 +54,7 @@ export default function UserLayout({
       return;
     }
     setIsModalOpen(false);
-    router.push(`/dashboard/user/paystack?nin=${nin}`);
+    router.push(`/dashboard/user/verify-nin?nin=${nin}`);
   };
 
   useEffect(() => {
