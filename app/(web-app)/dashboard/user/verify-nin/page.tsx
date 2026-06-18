@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PaystackPop from "@paystack/inline-js";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { IoFootstepsSharp } from "react-icons/io5";
 import { useAuth } from "@/hooks/useAuth";
 
