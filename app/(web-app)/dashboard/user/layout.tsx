@@ -41,7 +41,6 @@ export default function UserLayout({
   const [isVerifying, setIsVerifying] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ninError, setNinError] = useState<string | null>(null);
-  const [isOpeningPayment, setIsOpeningPayment] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -60,6 +59,7 @@ export default function UserLayout({
 
   useEffect(() => {
     if (searchParams.get("reopenModal") === "1") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsModalOpen(true);
     }
   }, [searchParams]);
@@ -119,9 +119,6 @@ export default function UserLayout({
                 <p className="text-xs font-dm-sans text-muted-foreground"></p>
               </div>
             </Modal>
-            {isOpeningPayment && (
-              <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" />
-            )}
           </div>
         )}
       </DashboardLayout>

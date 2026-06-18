@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import PaystackPop from "@paystack/inline-js";
 import { useRouter, useSearchParams } from "next/navigation";
-import Logo from "@/components/ui/Logo";
 import { IoFootstepsSharp } from "react-icons/io5";
 
 export default function PayStack() {
@@ -20,7 +19,6 @@ export default function PayStack() {
           router.push("/dashboard/user");
           return;
         }
-
         const res = await fetch("/api/user/nin-payment", {
           method: "POST",
           headers: {
