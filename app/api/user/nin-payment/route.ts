@@ -43,6 +43,10 @@ export const POST = withDb(async (request: Request) => {
         email,
         amount: Number(LUMIID_VERIFICATION_AMOUNT),
         currency: "NGN",
+        metadata: {
+          userId: session?.user.id,
+          purpose: "id_verification",
+        },
       }),
     });
     const data = await res.json();
