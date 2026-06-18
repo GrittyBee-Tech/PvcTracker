@@ -4,17 +4,18 @@ import { useEffect, useState } from "react";
 import PaystackPop from "@paystack/inline-js";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IoFootstepsSharp } from "react-icons/io5";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function PayStack() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const searchParams = useSearchParams();
+
+  const { user } = useAuth();
+  const [nin, setNin] = useState(user?.nin || "");
 
   useEffect(() => {
     const startPayment = async () => {
       try {
-        const nin = searchParams.get("nin");
-
         if (!nin) {
           router.push("/dashboard/user");
           return;
@@ -47,17 +48,19 @@ export default function PayStack() {
     };
 
     startPayment();
-  }, [router, searchParams]);
+  }, [router]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       {loading && (
         <div className="grid mx-auto">
-          <div className="grid grid-flow-col gap-2 text-white animate-ping w-max text-pretty font-bold">
-            <h1 className="text-xl sm:text-2xl md:text-4xl">PVC WAKA</h1>
+          <div className="grid grid-flow-col gap-2 text-white w-max text-pretty font-bold">
+            <h1 className="text-xl sm:text-2xl md:text-7xl">PVC WAKA</h1>
             <IoFootstepsSharp className="text-xl sm:text-2xl md:text-3xl" />
           </div>
-          <p className="text-xl text-white mt-6">Opening payment...</p>
+          <p className="text-xl text-center animate-ping text-white mt-6">
+            Opening payment...
+          </p>
         </div>
       )}
     </div>
