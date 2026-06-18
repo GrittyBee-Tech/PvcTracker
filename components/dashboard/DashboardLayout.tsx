@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import { TbNavigationDown } from "react-icons/tb";
+import { IoFootstepsSharp } from "react-icons/io5";
 
 export type DashboardLink = {
   href: string;
@@ -110,7 +111,10 @@ const DashboardSideBar = ({
           className="mx-auto md:block hidden w-fit md:pr-6"
           style={{ color: "white" }}
         >
-          <Logo />
+          <div className="grid grid-flow-col gap-2 text-primary w-max text-pretty font-bold">
+            <h1 className="text-xl sm:text-2xl md:text-2xl">PVC WAKA</h1>
+            <IoFootstepsSharp className="text-xl sm:text-2xl md:text-3xl" />
+          </div>
         </div>
         <Image
           src="/favicon.png"
