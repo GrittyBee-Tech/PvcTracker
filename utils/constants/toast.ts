@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 export const showToast = (
-  icon: "success" | "error",
+  icon: "success" | "error" | "info" | "warning",
   text: string,
   timer: number = 2000,
 ) => {

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import TransactionModel from "@/models/transaction";
-import VerificationSessionModel from "@/models/verificationSession";
 
 // Type definitions for Paystack Webhook Payload
 interface PaystackEvent {

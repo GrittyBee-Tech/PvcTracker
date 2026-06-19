@@ -6,7 +6,7 @@ import { SpinnerLoader } from "@/components/ui/Loader";
 import Modal from "@/components/ui/modal";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { showToast } from "@/utils/constants/toast";
 
 const links = [
@@ -39,6 +39,7 @@ export default function UserLayout({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ninError, setNinError] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleVerify = () => {
     if (!nin.trim()) {
@@ -53,7 +54,7 @@ export default function UserLayout({
       <DashboardLayout links={links} role="User">
         {children}
         {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
-        {isUnverified && (
+        {isUnverified && pathname !== "/dashboard/user/verify-nin" && (
           <div className="fixed top-0 right-0 bottom-0 z-50 left-12 md:left-64">
             <Modal
               isOpen={isUnverified}

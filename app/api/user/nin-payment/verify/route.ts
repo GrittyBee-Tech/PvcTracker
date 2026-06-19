@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export const POST = withDb(async (request: Request) => {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
-    const reference = await request.json();
+    const { reference } = await request.json();
     const existingTransaction = await TransactionModel.findOne({
       reference,
       user_id: session?.user.id.toString(),
@@ -18,7 +18,6 @@ export const POST = withDb(async (request: Request) => {
       );
     }
     if (existingTransaction.status === "success") {
-      // Run the Lumiid verification process here
       return NextResponse.json(
         { message: "Payment verified for NIN verification." },
         { status: 200 },
