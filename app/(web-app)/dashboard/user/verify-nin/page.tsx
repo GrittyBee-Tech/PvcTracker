@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PaystackPop from "@paystack/inline-js";
 import { useRouter } from "next/navigation";
 import { IoFootstepsSharp } from "react-icons/io5";
 import { useAuth } from "@/hooks/useAuth";
+import { showToast } from "@/utils/constants/toast";
 
 export default function PayStack() {
   const [loading, setLoading] = useState(true);
@@ -12,8 +13,14 @@ export default function PayStack() {
 
   const { user } = useAuth();
   const [nin, setNin] = useState(user?.nin || "");
+  const isInitialized = useRef(false);
+
+  // 2. Prevent execution if the flag has already flipped to true
 
   useEffect(() => {
+    if (isInitialized.current) return;
+    isInitialized.current = true;
+
     const startPayment = async () => {
       try {
         if (!nin) {
@@ -25,30 +32,44 @@ export default function PayStack() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ nin }),
         });
-
         const data = await res.json();
+        setLoading(false);
+
+        if (data.status === "success") {
+          showToast("success", data.message);
+        } else if (data.status === "failed") {
+          showToast("error", data.message);
+        }
 
         const popup = new PaystackPop();
 
         popup.resumeTransaction(data.access_code, {
-          onSuccess: () => {
-            router.push("/payment/success");
+          onSuccess: async ({ reference }) => {
+            const res = await fetch("/api/user/nin-payment/verify", {
+              method: "POST",
+              body: JSON.stringify({ reference }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+              showToast("success", data.message);
+            }
           },
           onCancel: () => {
-            router.push("/dashboard/user?reopenModal=1");
+            router.push("/dashboard/user");
           },
         });
       } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+        console.error("Error verifying payment", error);
+        if (error instanceof Error) {
+          showToast("error", error?.message);
+        }
       }
     };
 
     startPayment();
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
