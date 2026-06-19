@@ -23,10 +23,6 @@ export default function PayStack() {
 
     const startPayment = async () => {
       try {
-        if (!nin) {
-          router.push("/dashboard/user");
-          return;
-        }
         const res = await fetch("/api/user/nin-payment", {
           method: "POST",
           headers: {
