@@ -19,20 +19,10 @@ interface PaystackEvent {
 // Simulated database & service functions - Replace with your actual ORM/Services
 async function alreadyProcessed(reference: string): Promise<boolean> {
   const existingTransaction = await TransactionModel.findOne({ reference });
-  // if
-  // if (existingTransaction && existingTransaction.user_id !==) {
-  if (existingTransaction && existingTransaction.status === "success") {
+  if (existingTransaction && existingTransaction.status !== "pending") {
     return true;
   }
   return false;
-}
-
-async function triggerIdVerificationService(userId: string): Promise<void> {
-  // Fire off your external NIN validation logic here
-
-  await VerificationSessionModel.create({
-    user_id: userId,
-  });
 }
 
 // 1. Signature Verification Helper (Acts as your localized middleware)
@@ -69,37 +59,48 @@ export async function POST(req: NextRequest) {
     // Parse payload after signature validation passes
     const event = JSON.parse(rawBody) as PaystackEvent;
 
-    if (event.event === "charge.success") {
-      const { reference, metadata } = event.data;
-      const transaction = await TransactionModel.find({ reference }).lean();
-      if (transaction && transaction?.user_id !== metadata.userId) {
+    const { reference, metadata } = event.data;
+    // findOne returns a single transaction document instead of an array
+    const transaction = await TransactionModel.findOne({ reference });
+    if (!transaction) {
+      return NextResponse.json(
+        { message: "Transaction not found" },
+        { status: 404 },
+      );
+    }
+    if (transaction.user_id !== metadata.userId) {
+      return NextResponse.json(
+        { message: "User ID mismatch" },
+        { status: 400 },
+      );
+    }
+
+    // Handle edge case where metadata might be missing or malformed
+    if (metadata?.purpose === "id_verification") {
+      const isDuplicate = await alreadyProcessed(reference);
+      if (isDuplicate) {
         return NextResponse.json(
-          { message: "User ID mismatch" },
-          { status: 400 },
+          { message: "Already processed" },
+          { status: 200 },
         );
       }
 
-      // Handle edge case where metadata might be missing or malformed
-      if (metadata?.purpose === "id_verification") {
-        const isDuplicate = await alreadyProcessed(reference);
-        if (isDuplicate) {
-          return NextResponse.json(
-            { message: "Already processed" },
-            { status: 200 },
-          );
-        }
+      if (event.event === "charge.success") {
+        // mark transaction as successful
+        transaction.status = "success";
 
-        //       await TransactionModel.updateOne(
-        //   {
-        //     user_id: ,
-        //     purpose: "NIN Verification",
-        //   },
-        //   {
-        //     status: "success",
-        //   },
-        // );
-        await triggerIdVerificationService(metadata.userId);
+        // Create a verification session for the user
+        // await VerificationSessionModel.create({
+        //   user_id: metadata.userId,
+        //   transaction_id: transaction._id.toString(),
+        //   status: "pending",
+        //   provider_response: event.data,
+        //   status_reason: "",
+        // });
+      } else if (event.event === "charge.failed") {
+        transaction.status = "failed";
       }
+      await transaction.save();
     }
 
     // Paystack requires a 200 OK within 2 seconds
