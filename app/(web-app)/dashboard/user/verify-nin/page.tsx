@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { IoFootstepsSharp } from "react-icons/io5";
 import { useAuth } from "@/hooks/useAuth";
 import { showToast } from "@/utils/constants/toast";
+
 import Modal from "@/components/ui/modal";
 
 export default function PayStack() {
@@ -13,10 +14,10 @@ export default function PayStack() {
   const router = useRouter();
 
   const { user } = useAuth();
+  const [verifyNin, setVerifyNin] = useState(false);
   const [nin, setNin] = useState(user?.nin || "");
   const isInitialized = useRef(false);
 
-  // 2. Prevent execution if the flag has already flipped to true
   useEffect(() => {
     if (isInitialized.current) return;
     isInitialized.current = true;
@@ -42,6 +43,7 @@ export default function PayStack() {
 
         popup.resumeTransaction(data.access_code, {
           onSuccess: async ({ reference }) => {
+            setVerifyNin(true);
             const res = await fetch("/api/user/nin-payment/verify", {
               method: "POST",
               body: JSON.stringify({ reference }),
@@ -68,7 +70,7 @@ export default function PayStack() {
   }, []);
 
   return (
-    <section>
+    <section className="-ml-6">
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="grid mx-auto">
@@ -82,35 +84,37 @@ export default function PayStack() {
           </div>
         </div>
       )}
-      <Modal
-        isOpen={true}
-        position="absolute"
-        title="Verify Your Information"
-        closeButton={false}
-        actions={
-          <>
-            <button className="md:px-6 md:py-2 py-2  px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60">
-              Verify nin
-            </button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <p className="font-bold">You are Almost there {user?.firstName}</p>
-          <p className="text-primary">
-            To complete your profile setup kindly verify your NIN
-          </p>
-          <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
-            <p className="font-semibold">Verification Fee has been Paid</p>
-            <p> Payment was Successful</p>
-          </div>
-          <p className="text-primary font-dm-sans -mt-3">
-            Kindly confirm your NIN.
-          </p>
+      {verifyNin && (
+        <Modal
+          isOpen={true}
+          position="absolute"
+          title="Verify Your Information"
+          closeButton={false}
+          actions={
+            <>
+              <button className="md:px-6 md:py-2 py-2  px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60">
+                Verify nin
+              </button>
+            </>
+          }
+        >
+          <div className="space-y-4">
+            <p className="font-bold">You are Almost there {user?.firstName}</p>
+            <p className="text-primary">
+              To complete your profile setup kindly verify your NIN
+            </p>
+            <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
+              <p className="font-semibold">Verification Fee has been Paid</p>
+              <p> Payment was Successful</p>
+            </div>
+            <p className="text-primary font-dm-sans -mt-3">
+              Kindly confirm your NIN.
+            </p>
 
-          <p className="text-xs font-dm-sans text-muted-foreground"></p>
-        </div>
-      </Modal>
+            <p className="text-xs font-dm-sans text-muted-foreground"></p>
+          </div>
+        </Modal>
+      )}
     </section>
   );
 }
