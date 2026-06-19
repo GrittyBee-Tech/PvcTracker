@@ -14,12 +14,14 @@ export const POST = withDb(async (request: Request) => {
       purpose: "NIN Verification",
     });
 
+    let initializeData;
+
     if (existingTransaction?.status === "success") {
-      // Run the Lumiid verification process here
       return NextResponse.json(
         {
           message: "Payment already completed for NIN verification.",
           access_code: existingTransaction.access_code,
+          status: "success",
         },
         { status: 200 },
       );
@@ -28,44 +30,55 @@ export const POST = withDb(async (request: Request) => {
         {
           message: "Payment is still pending for NIN verification.",
           access_code: existingTransaction.access_code,
+          status: "pending",
         },
         { status: 201 },
       );
-    }
-
-    const res = await fetch("https://api.paystack.co/transaction/initialize", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-      },
-      body: JSON.stringify({
-        email,
-        amount: Number(LUMIID_VERIFICATION_AMOUNT),
-        currency: "NGN",
-      }),
-    });
-    const data = await res.json();
-
-    if (data.status !== true) {
-      console.error("Paystack Initialization Error:", data);
-      return NextResponse.json(
-        { error: "Failed to initialize NIN payment" },
-        { status: 500 },
+    } else {
+      const res = await fetch(
+        "https://api.paystack.co/transaction/initialize",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+          },
+          body: JSON.stringify({
+            email,
+            amount: Number(LUMIID_VERIFICATION_AMOUNT),
+            currency: "NGN",
+            metadata: {
+              userId: session?.user.id,
+              purpose: "id_verification",
+            },
+          }),
+        },
       );
+      initializeData = await res.json();
+
+      if (initializeData.status !== true) {
+        console.error("Paystack Initialization Error:", initializeData);
+        return NextResponse.json(
+          { error: "Failed to initialize NIN payment" },
+          { status: 500 },
+        );
+      }
     }
 
     await TransactionModel.create({
       user_id: session?.user.id,
-      reference: data.data.reference,
-      access_code: data.data.access_code,
+      reference: initializeData.data.reference,
+      access_code: initializeData.data.access_code,
       purpose: "NIN Verification",
       amount: Number(LUMIID_VERIFICATION_AMOUNT),
       status: "pending",
     });
 
     return NextResponse.json(
-      { message: data.message, access_code: data.data.access_code },
+      {
+        message: initializeData.message,
+        access_code: initializeData.data.access_code,
+      },
       { status: 201 },
     );
   } catch (error) {
