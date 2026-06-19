@@ -37,7 +37,7 @@ export default function PayStack() {
             router.push("/payment/success");
           },
           onCancel: () => {
-            router.push("/dashboard/user?reopenModal=1");
+            router.push("/dashboard/user");
           },
         });
       } catch (error) {

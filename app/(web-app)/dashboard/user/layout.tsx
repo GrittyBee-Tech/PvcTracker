@@ -5,10 +5,9 @@ import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import Modal from "@/components/ui/modal";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/utils/constants/toast";
-import { useSearchParams } from "next/navigation";
 
 const links = [
   { href: "/dashboard/user", label: "Dashboard", icon: "LayoutDashboard" },
@@ -33,48 +32,33 @@ export default function UserLayout({
   children: React.ReactNode;
 }) {
   const { user } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(
-    user?.ninStatus !== "verified",
-  );
+  const isUnverified = user && user.ninStatus !== "verified";
   const [nin, setNin] = useState(user?.nin || "");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isVerifying, setIsVerifying] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ninError, setNinError] = useState<string | null>(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   const handleVerify = () => {
     if (!nin.trim()) {
       showToast("error", "Please enter your NIN");
       return;
     }
-    setIsModalOpen(false);
-    router.push(`/dashboard/user/verify-nin?nin=${nin}`);
+    router.push(`/dashboard/user/verify-nin`);
   };
 
-  useEffect(() => {
-    if (searchParams.get("reopenModal") === "1") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsModalOpen(true);
-    }
-  }, [searchParams]);
   return (
     <>
       <DashboardLayout links={links} role="User">
         {children}
         {/* Modal Overlay - NIN verification with fixed position excluding sidebar */}
-        {isModalOpen && (
+        {isUnverified && (
           <div className="fixed top-0 right-0 bottom-0 z-50 left-12 md:left-64">
             <Modal
-              isOpen={isModalOpen}
+              isOpen={isUnverified}
               position="absolute"
               title="Verify Your Information"
-              onClose={handleCloseModal}
               closeButton={false}
               actions={
                 <>
