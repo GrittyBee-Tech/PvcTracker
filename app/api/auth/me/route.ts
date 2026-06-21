@@ -9,7 +9,6 @@ export const GET = withDb(async (request: Request) => {
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   }
-
   const query = session.user.id
     ? { _id: session.user.id }
     : session.user.email
