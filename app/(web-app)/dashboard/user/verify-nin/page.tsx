@@ -24,6 +24,7 @@ export default function VerifyNin() {
 
   useEffect(() => {
     if (user?.nin) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       setNin(user.nin);
     }
   }, [user]);
