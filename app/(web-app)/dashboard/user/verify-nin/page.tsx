@@ -20,14 +20,7 @@ export default function VerifyNin() {
   const [verifyNin, setVerifyNin] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
-  const [nin, setNin] = useState("");
-
-  useEffect(() => {
-    if (user?.nin) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setNin(user.nin);
-    }
-  }, [user]);
+  const [nin, setNin] = useState(user?.nin || "");
 
   const verifyNinNumber = async () => {
     if (!nin.trim()) {
