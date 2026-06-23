@@ -7,7 +7,7 @@ export const GET = (request: Request) => {
 
   if (!stateName) {
     return NextResponse.json(
-      { error: "Missing state query parameter" },
+      // { error: "Missing state query parameter" },
       { status: 400 },
     );
   }
