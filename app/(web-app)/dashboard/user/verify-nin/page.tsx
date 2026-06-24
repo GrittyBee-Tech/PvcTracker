@@ -96,6 +96,12 @@ export default function VerifyNin() {
           return;
         }
 
+        if (data.status === "success") {
+          showToast("success", data.message);
+          setVerifyNin(true);
+          return;
+        }
+
         const popup = new PaystackPop();
 
         popup.resumeTransaction(data.access_code, {
