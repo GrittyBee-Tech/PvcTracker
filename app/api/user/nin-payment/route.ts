@@ -77,6 +77,7 @@ export const POST = withDb(async (request: Request) => {
     return NextResponse.json(
       {
         message: initializeData.message,
+        status: "pending",
         access_code: initializeData.data.access_code,
       },
       { status: 201 },
