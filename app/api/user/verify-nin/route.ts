@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { withDb } from "@/lib/withDb";
 import UserModel from "@/models/users";
+import VerificationSessionModel from "@/models/verificationSession";
 import { verifyNIN } from "@/services/ninService";
 
 export const POST = withDb(async (request: Request) => {
@@ -15,34 +16,60 @@ export const POST = withDb(async (request: Request) => {
         { status: 400 },
       );
     }
+    const activeSession = await VerificationSessionModel.findOne({
+      user_id: session?.user.id,
+      status: "pending",
+    });
 
-     const data = await verifyNIN(nin);
-    console.log(data);
-
-    if (!data.success) {
+    if (!activeSession) {
       return Response.json(
         {
           success: false,
-          message: data.message,
-          code: data.code,
+          message: "No active verification session found. Please pay first.",
         },
-        { status: 400 },
+        { status: 403 },
       );
     }
-    if(!data.summary.verified){
 
-       await UserModel.updateOne(
-      { _id: session?.user.id },
-      { ninStatus: "rejected" },
-    );
-    return Response.json(
-      {
-        success: false,
-        summary: { verified: false, verification_type: "NIN" },
-        data: { success: false, message: "Verification unsuccessful" },
-      },
-      { status: 200 },
-    );
+    // 2. Perform verification
+    const data = await verifyNIN(nin);
+    console.log(data);
+
+    // Only consume session if the API call was successful
+    // if (data.success) {
+      await VerificationSessionModel.updateOne(
+        { _id: activeSession._id },
+        {
+          status: data.summary.verified ? "verified" : "rejected",
+          provider_response: data,
+          status_reason: data.message || "",
+        },
+      );
+    // }
+
+    // if (!data.success) {
+    //   return Response.json(
+    //     {
+    //       success: false,
+    //       message: data.message,
+    //       code: data.code,
+    //     },
+    //     { status: 400 },
+    //   );
+    // }
+    if (!data.summary.verified) {
+      await UserModel.updateOne(
+        { _id: session?.user.id },
+        { ninStatus: "rejected" },
+      );
+      return Response.json(
+        {
+          success: false,
+          summary: { verified: false, verification_type: "NIN" },
+          data: { success: false, message: "Verification unsuccessful" },
+        },
+        { status: 200 },
+      );
     }
 
     await UserModel.updateOne(

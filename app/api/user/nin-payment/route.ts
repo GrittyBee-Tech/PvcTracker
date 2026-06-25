@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { withDb } from "@/lib/withDb";
 import TransactionModel from "@/models/transaction";
+import VerificationSessionModel from "@/models/verificationSession";
 import { NextResponse } from "next/server";
 
 export const POST = withDb(async (request: Request) => {
@@ -12,57 +13,69 @@ export const POST = withDb(async (request: Request) => {
     const existingTransaction = await TransactionModel.findOne({
       user_id: session?.user.id,
       purpose: "NIN Verification",
+      status: "success",
     });
 
-    let initializeData;
+    if (existingTransaction) {
+      const usedSession = await VerificationSessionModel.findOne({
+        transaction_id: existingTransaction._id.toString(),
+        status: { $in: ["verified", "rejected"] },
+      });
 
-    if (existingTransaction?.status === "success") {
+      if (!usedSession) {
+        return NextResponse.json(
+          {
+            message: "Payment already completed for NIN verification.",
+            access_code: existingTransaction.access_code,
+            payment_status: "success",
+          },
+          { status: 200 },
+        );
+      }
+    }
+
+    const pendingTransaction = await TransactionModel.findOne({
+      user_id: session?.user.id,
+      purpose: "NIN Verification",
+      status: "pending",
+    });
+
+    if (pendingTransaction) {
       return NextResponse.json(
         {
-          message: "Payment already completed for NIN verification.",
-          access_code: existingTransaction.access_code,
-          status: "success",
+          message: "Payment initialization resumed.",
+          access_code: pendingTransaction.access_code,
+          paymnt_status: "pending",
         },
         { status: 200 },
       );
-    } else if (existingTransaction?.status === "pending") {
-      return NextResponse.json(
-        {
-          message: "Payment is still pending for NIN verification.",
-          access_code: existingTransaction.access_code,
-          status: "pending",
-        },
-        { status: 201 },
-      );
-    } else {
-      const res = await fetch(
-        "https://api.paystack.co/transaction/initialize",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-          },
-          body: JSON.stringify({
-            email,
-            amount: Number(LUMIID_VERIFICATION_AMOUNT),
-            currency: "NGN",
-            metadata: {
-              userId: session?.user.id,
-              purpose: "id_verification",
-            },
-          }),
-        },
-      );
-      initializeData = await res.json();
+    }
 
-      if (initializeData.status !== true) {
-        console.error("Paystack Initialization Error:", initializeData);
-        return NextResponse.json(
-          { error: "Failed to initialize NIN payment" },
-          { status: 500 },
-        );
-      }
+    const res = await fetch("https://api.paystack.co/transaction/initialize", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+      },
+      body: JSON.stringify({
+        email,
+        amount: Number(LUMIID_VERIFICATION_AMOUNT),
+        currency: "NGN",
+        metadata: {
+          userId: session?.user.id,
+          purpose: "id_verification",
+        },
+      }),
+    });
+
+    const initializeData = await res.json();
+
+    if (initializeData.status !== true) {
+      console.error("Paystack Initialization Error:", initializeData);
+      return NextResponse.json(
+        { error: "Failed to initialize NIN payment" },
+        { status: 500 },
+      );
     }
 
     await TransactionModel.create({
@@ -77,7 +90,7 @@ export const POST = withDb(async (request: Request) => {
     return NextResponse.json(
       {
         message: initializeData.message,
-        status: "pending",
+        payment_status: "pending",
         access_code: initializeData.data.access_code,
       },
       { status: 201 },

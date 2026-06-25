@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { withDb } from "@/lib/withDb";
 import TransactionModel from "@/models/transaction";
+import VerificationSessionModel from "@/models/verificationSession";
 import { NextResponse } from "next/server";
 
 export const POST = withDb(async (request: Request) => {
@@ -13,7 +14,7 @@ export const POST = withDb(async (request: Request) => {
     });
     if (!existingTransaction) {
       return NextResponse.json(
-        { error: "Transaction not found" },
+        { error: "Transaction not found. Please pay first" },
         { status: 404 },
       );
     }
@@ -36,18 +37,24 @@ export const POST = withDb(async (request: Request) => {
       if (data.status === true && data.data.status === "success") {
         existingTransaction.status = "success";
         await existingTransaction.save();
-        // Run the Lumiid verification process here
+
+        await VerificationSessionModel.create({
+          user_id: session?.user.id,
+          transaction_id: existingTransaction._id.toString(),
+          status: "pending",
+        });
+
         return NextResponse.json(
           { message: "Payment verified successfully." },
           { status: 200 },
         );
+      } else {
+        return NextResponse.json(
+          { error: "Payment verification failed at provider" },
+          { status: 400 },
+        );
       }
     }
-
-    return NextResponse.json(
-      { message: "NIN payment verified successfully" },
-      { status: 200 },
-    );
   } catch (error) {
     console.error("Error verifying NIN payment", error);
     return NextResponse.json(

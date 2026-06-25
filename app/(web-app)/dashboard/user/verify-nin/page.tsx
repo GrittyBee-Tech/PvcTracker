@@ -48,14 +48,12 @@ export default function VerifyNin() {
         return;
       }
 
-      showToast("success", "NIN verified successfully. Redirecting");
       setVerifyNin(false);
+      showToast("success", "NIN verified successfully. Redirecting");
       router.push("/dashboard/user");
     } catch (error) {
       console.error(error);
       showToast("error", "Failed to verify NIN");
-    } finally {
-      setVerifying(false);
     }
   };
 
@@ -63,6 +61,7 @@ export default function VerifyNin() {
     if (isInitialized.current) return;
 
     isInitialized.current = true;
+    if (user?.ninStatus === "verified") return;
 
     const startPayment = async () => {
       try {
@@ -83,7 +82,7 @@ export default function VerifyNin() {
           return;
         }
 
-        if (data.status === "success") {
+        if (data.payment_status === "success") {
           showToast("success", data.message);
           setVerifyNin(true);
           return;
@@ -114,12 +113,11 @@ export default function VerifyNin() {
                 return;
               }
 
+              setVerifyNin(true);
               showToast(
                 "success",
                 verifyData.message || "Payment verified successfully",
               );
-
-              setVerifyNin(true);
             } catch (error) {
               console.error(error);
               showToast("error", "Unable to verify payment");
@@ -144,7 +142,8 @@ export default function VerifyNin() {
     };
 
     startPayment();
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="-ml-6">

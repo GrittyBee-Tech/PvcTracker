@@ -11,10 +11,8 @@ export async function verifyNIN(id_number: string) {
       body: JSON.stringify({ nin: id_number }),
     });
 
-    console.log("STATUS:", response.status);
-
     const data = await response.json();
-    console.log("BODY:", data);
+    console.info("BODY:", data);
     return data;
   } catch (error) {
     console.error("LUMIID FETCH ERROR:", error);
