@@ -86,7 +86,7 @@ export default function UserLayout({
                 </p>
                 <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
                   <p className="font-semibold">Verification Fee</p>
-                  <p>₦150 will be charged for this NIN verification request.</p>
+                  <p>₦200 will be charged for this NIN verification request.</p>
                 </div>
                 <p className="text-primary font-dm-sans -mt-3">
                   Please enter your NIN and continue to pay the verification

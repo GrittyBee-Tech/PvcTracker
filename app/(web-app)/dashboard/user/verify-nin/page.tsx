@@ -48,10 +48,8 @@ export default function VerifyNin() {
         return;
       }
 
-      console.log("Verified NIN Data:", data.data);
-
       showToast("success", "NIN verified successfully. Redirecting");
-
+      setVerifyNin(false);
       router.push("/dashboard/user");
     } catch (error) {
       console.error(error);
