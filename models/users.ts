@@ -16,11 +16,11 @@ export interface UserType {
   stateOfOrigin: string;
   lgaOfOrigin: string;
   homeAddress: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 export interface IUser extends UserType, Document {
   pvcStatusUpdatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const UserSchema: Schema<IUser> = new Schema(

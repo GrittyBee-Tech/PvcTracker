@@ -6,10 +6,10 @@ export default async function AdminPage() {
     const volunteers = await db.getVolunteers();
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 text-black">
             <div>
                 <h1 className="text-2xl font-bold">Overview</h1>
-                <p className="text-muted-foreground">
+                <p className="text-gray-600">
                     Welcome to the admin dashboard. Here is a summary of the platform.
                 </p>
             </div>
