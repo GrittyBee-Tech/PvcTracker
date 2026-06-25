@@ -37,7 +37,7 @@ export default function VerifyNin() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id_number: nin.trim(),
+          nin: nin.trim(),
         }),
       });
 
@@ -50,18 +50,7 @@ export default function VerifyNin() {
 
       console.log("Verified NIN Data:", data.data);
 
-      showToast("success", "NIN verified successfully");
-
-      // Optional:
-      // Save verification details to DB
-      //
-      // await fetch("/api/user/save-nin", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(data.data),
-      // });
+      showToast("success", "NIN verified successfully. Redirecting");
 
       router.push("/dashboard/user");
     } catch (error) {
