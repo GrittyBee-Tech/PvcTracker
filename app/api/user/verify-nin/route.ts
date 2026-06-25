@@ -31,12 +31,9 @@ export const POST = withDb(async (request: Request) => {
       );
     }
 
-    // 2. Perform verification
     const data = await verifyNIN(nin);
-    console.log(data);
 
-    // Only consume session if the API call was successful
-    // if (data.success) {
+    if (data.success) {
       await VerificationSessionModel.updateOne(
         { _id: activeSession._id },
         {
@@ -45,18 +42,19 @@ export const POST = withDb(async (request: Request) => {
           status_reason: data.message || "",
         },
       );
-    // }
+    }
 
-    // if (!data.success) {
-    //   return Response.json(
-    //     {
-    //       success: false,
-    //       message: data.message,
-    //       code: data.code,
-    //     },
-    //     { status: 400 },
-    //   );
-    // }
+    if (!data.success) {
+      return Response.json(
+        {
+          success: false,
+          message: data.message,
+          code: data.code,
+        },
+        { status: 400 },
+      );
+    }
+
     if (!data.summary.verified) {
       await UserModel.updateOne(
         { _id: session?.user.id },
