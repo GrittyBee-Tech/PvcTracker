@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface UserType {
+  id: string;
   email: string;
   firstName: string;
   lastName: string;

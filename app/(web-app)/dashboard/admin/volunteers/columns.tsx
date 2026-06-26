@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, ArrowUpDown } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -14,16 +14,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Modal from "@/components/ui/modal";
-import { Volunteer } from "@/lib/sample-db";
 import Swal from "sweetalert2";
+import Image from "next/image";
 
-const VolunteerActionsCell = ({ volunteer }: { volunteer: Volunteer }) => {
+const VolunteerActionsCell = ({
+  application,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  application: Record<string, any>;
+}) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isApproveOpen, setIsApproveOpen] = useState(false);
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [note, setNote] = useState("");
+  const user = application.userId;
 
-  const handleAction = (action: "Approve" | "Reject") => {
+  const handleAction = async (action: "Approve" | "Reject") => {
+    // In a real app, you would call an API here
     Swal.fire({
       icon: "success",
       position: "top",
@@ -51,45 +58,39 @@ const VolunteerActionsCell = ({ volunteer }: { volunteer: Volunteer }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
             onClick={() => {
-              navigator.clipboard.writeText(volunteer.id);
+              navigator.clipboard.writeText(application._id);
               Swal.fire({
                 icon: "success",
                 position: "top",
-                text: "Copied Successfully",
+                text: "ID Copied",
                 toast: true,
                 showConfirmButton: false,
                 padding: "10",
-                timer: 3000,
+                timer: 2000,
               });
             }}
           >
-            Copy volunteer ID
+            Copy application ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setIsProfileOpen(true)}>
-            View volunteer profile
+            View full application
           </DropdownMenuItem>
-          
-          {volunteer.status === "Pending" && (
+
+          {!application.isApproved && (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-green-600" onClick={() => setIsApproveOpen(true)}>
+              <DropdownMenuItem
+                className="text-green-600"
+                onClick={() => setIsApproveOpen(true)}
+              >
                 Approve application
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600" onClick={() => setIsRejectOpen(true)}>
+              <DropdownMenuItem
+                className="text-red-600"
+                onClick={() => setIsRejectOpen(true)}
+              >
                 Reject application
-              </DropdownMenuItem>
-            </>
-          )}
-
-          {volunteer.status === "Active" && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-yellow-600">
-                Revoke volunteer status
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">
-                Delete account
               </DropdownMenuItem>
             </>
           )}
@@ -100,56 +101,92 @@ const VolunteerActionsCell = ({ volunteer }: { volunteer: Volunteer }) => {
       <Modal
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
-        title="Volunteer Profile"
+        title="Volunteer Application Details"
         size="lg"
       >
         <div className="space-y-6 text-black">
-          <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+          <div className="flex items-center gap-4 border-b pb-4">
+            {application.PhotoUrl && (
+              <Image
+                src={application.PhotoUrl}
+                width={80}
+                height={80}
+                alt="Volunteer"
+                className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+              />
+            )}
             <div>
-              <p className="text-sm text-gray-500">First Name</p>
-              <p className="font-medium text-gray-900">{volunteer.firstName}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Last Name</p>
-              <p className="font-medium text-gray-900">{volunteer.lastName}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Phone Number</p>
-              <p className="font-medium text-gray-900">{volunteer.phoneNumber || "N/A"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Gender</p>
-              <p className="font-medium text-gray-900 capitalize">{volunteer.gender || "N/A"}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">State of Origin</p>
-              <p className="font-medium text-gray-900">{volunteer.stateOfOrigin}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">LGA of Origin</p>
-              <p className="font-medium text-gray-900">{volunteer.lgaOfOrigin}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Application Date</p>
-              <p className="font-medium text-gray-900">{volunteer.applicationDate}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Registered Users (Outreach)</p>
-              <p className="font-medium text-gray-900">{volunteer.registeredUsers}</p>
+              <h3 className="text-lg font-bold text-primary">
+                {user?.firstName} {user?.lastName}
+              </h3>
+              <p className="text-sm text-gray-500">{user?.email}</p>
+              <p className="text-sm text-gray-500">{user?.phoneNumber}</p>
             </div>
           </div>
-          
-          <div className="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+            <div>
+              <p className="text-sm text-gray-500">Marital Status</p>
+              <p className="font-medium capitalize">
+                {application.maritalStatus}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">State of Residence</p>
+              <p className="font-medium">{application.stateOfResidence}</p>
+            </div>
+            <div className="col-span-2">
+              <p className="text-sm text-gray-500">Home Address</p>
+              <p className="font-medium">{application.homeAddress}</p>
+            </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="text-sm font-bold text-primary mb-3 uppercase tracking-wider">
+              Next of Kin
+            </h4>
+            <div className="grid grid-cols-2 gap-y-4 gap-x-4">
+              <div>
+                <p className="text-sm text-gray-500">Name</p>
+                <p className="font-medium">{application.nextOfKin?.name}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Relationship</p>
+                <p className="font-medium capitalize">
+                  {application.nextOfKin?.relationship}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Phone</p>
+                <p className="font-medium">{application.nextOfKin?.phone}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">State</p>
+                <p className="font-medium">{application.nextOfKin?.state}</p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-sm text-gray-500">Address</p>
+                <p className="font-medium">{application.nextOfKin?.address}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t pt-4 flex justify-between items-center">
             <div>
               <p className="text-sm text-gray-500">Application Status</p>
-              <span className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                volunteer.status === "Active" ? "bg-green-100 text-green-800" :
-                volunteer.status === "Pending" ? "bg-yellow-100 text-yellow-800" :
-                "bg-red-100 text-red-800"
-              }`}>
-                {volunteer.status}
+              <span
+                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  application.isApproved
+                    ? "bg-green-100 text-green-800"
+                    : "bg-yellow-100 text-yellow-800"
+                }`}
+              >
+                {application.isApproved ? "Approved" : "Pending Review"}
               </span>
             </div>
+            <p className="text-xs text-gray-400">
+              Applied on: {new Date(application.createdAt).toLocaleDateString()}
+            </p>
           </div>
         </div>
       </Modal>
@@ -162,23 +199,30 @@ const VolunteerActionsCell = ({ volunteer }: { volunteer: Volunteer }) => {
         size="md"
         actions={
           <>
-            <Button variant="outline" onClick={() => setIsApproveOpen(false)}>Cancel</Button>
-            <Button className="bg-green-700 hover:bg-green-800 text-white" onClick={() => handleAction("Approve")}>Confirm Approval</Button>
+            <Button variant="outline" onClick={() => setIsApproveOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-green-700 hover:bg-green-800 text-white"
+              onClick={() => handleAction("Approve")}
+            >
+              Confirm Approval
+            </Button>
           </>
         }
       >
         <div className="space-y-4 text-black">
-          <p>Are you sure you want to approve <strong>{volunteer.firstName} {volunteer.lastName}</strong> as a volunteer?</p>
-          <div className="space-y-2">
-            <label htmlFor="approve-note" className="text-sm font-medium text-gray-700">Approval Note (Optional)</label>
-            <textarea
-              id="approve-note"
-              className="w-full min-h-[100px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="Add an internal note..."
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            />
-          </div>
+          <p>
+            Are you sure you want to approve{" "}
+            <strong>
+              {user?.firstName} {user?.lastName}
+            </strong>{" "}
+            as a volunteer?
+          </p>
+          <p className="text-sm text-gray-500">
+            This will grant them access to the volunteer dashboard and allow
+            them to register other users.
+          </p>
         </div>
       </Modal>
 
@@ -190,15 +234,33 @@ const VolunteerActionsCell = ({ volunteer }: { volunteer: Volunteer }) => {
         size="md"
         actions={
           <>
-            <Button variant="outline" onClick={() => setIsRejectOpen(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => handleAction("Reject")}>Confirm Rejection</Button>
+            <Button variant="outline" onClick={() => setIsRejectOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => handleAction("Reject")}
+            >
+              Confirm Rejection
+            </Button>
           </>
         }
       >
         <div className="space-y-4 text-black">
-          <p>Are you sure you want to reject <strong>{volunteer.firstName} {volunteer.lastName}</strong>'s volunteer application?</p>
+          <p>
+            Are you sure you want to reject{" "}
+            <strong>
+              {user?.firstName} {user?.lastName}
+            </strong>
+            &apos;s volunteer application?
+          </p>
           <div className="space-y-2">
-            <label htmlFor="reject-note" className="text-sm font-medium text-gray-700">Rejection Reason (Optional)</label>
+            <label
+              htmlFor="reject-note"
+              className="text-sm font-medium text-gray-700"
+            >
+              Rejection Reason (Optional)
+            </label>
             <textarea
               id="reject-note"
               className="w-full min-h-[100px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
@@ -213,14 +275,18 @@ const VolunteerActionsCell = ({ volunteer }: { volunteer: Volunteer }) => {
   );
 };
 
-export const columns: ColumnDef<Volunteer>[] = [
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const columns: ColumnDef<any>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <input
         type="checkbox"
         className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate" as any)}
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && ("indeterminate" as any))
+        }
         onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
         aria-label="Select all"
       />
@@ -238,52 +304,49 @@ export const columns: ColumnDef<Volunteer>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "firstName",
+    accessorKey: "userId.firstName",
     header: "First Name",
+    cell: ({ row }) => row.original.userId?.firstName,
   },
   {
-    accessorKey: "lastName",
+    accessorKey: "userId.lastName",
     header: "Last Name",
+    cell: ({ row }) => row.original.userId?.lastName,
   },
   {
-    accessorKey: "phoneNumber",
+    accessorKey: "userId.phoneNumber",
     header: "Phone",
+    cell: ({ row }) => row.original.userId?.phoneNumber,
   },
   {
-    accessorKey: "stateOfOrigin",
-    header: "State",
+    accessorKey: "stateOfResidence",
+    header: "Residence State",
   },
   {
-    accessorKey: "lgaOfOrigin",
-    header: "LGA",
-  },
-  {
-    accessorKey: "registeredUsers",
-    header: "Users Registered",
+    accessorKey: "isApproved",
+    header: "Status",
     cell: ({ row }) => {
-      return <div className="font-medium text-center">{row.getValue("registeredUsers")}</div>;
-    }
-  },
-  {
-    accessorKey: "status",
-    header: "Application Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      const statusStyles: Record<string, string> = {
-        Active: "bg-green-100 text-green-800",
-        Pending: "bg-yellow-100 text-yellow-800",
-        Rejected: "bg-red-100 text-red-800",
-      };
-      
+      const isApproved = row.getValue("isApproved") as boolean;
       return (
-        <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusStyles[status] || "bg-gray-100 text-gray-800"}`}>
-          {status}
+        <span
+          className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            isApproved
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {isApproved ? "Approved" : "Pending Review"}
         </span>
       );
-    }
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Applied On",
+    cell: ({ row }) => new Date(row.getValue("createdAt")).toLocaleDateString(),
   },
   {
     id: "actions",
-    cell: ({ row }) => <VolunteerActionsCell volunteer={row.original} />,
+    cell: ({ row }) => <VolunteerActionsCell application={row.original} />,
   },
 ];

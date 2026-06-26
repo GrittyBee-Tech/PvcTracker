@@ -14,10 +14,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Modal from "@/components/ui/modal";
-import { User } from "@/lib/sample-db";
 import Swal from "sweetalert2";
+import { UserType } from "@/models/users";
 
-const UserActionsCell = ({ user }: { user: User }) => {
+const ninStatusStyles: Record<string, string> = {
+  verified: "bg-green-100 text-green-800",
+  pending: "bg-yellow-100 text-yellow-800",
+  rejected: "bg-red-100 text-red-800",
+};
+
+const pvcStatusStyles: Record<string, string> = {
+  collected: "bg-green-100 text-green-800",
+  pending: "bg-yellow-100 text-yellow-800",
+  not_collected: "bg-red-100 text-red-800",
+};
+
+const UserActionsCell = ({ user }: { user: UserType }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
@@ -29,7 +41,10 @@ const UserActionsCell = ({ user }: { user: User }) => {
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent
+          className="shadow-md shadow-primary/50 border-0"
+          align="end"
+        >
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
             onClick={() => {
@@ -72,63 +87,94 @@ const UserActionsCell = ({ user }: { user: User }) => {
         <div className="space-y-6 text-black">
           <div className="grid grid-cols-2 gap-y-6 gap-x-4">
             <div>
-              <p className="text-sm text-gray-500">First Name</p>
-              <p className="font-medium text-gray-900">{user.firstName}</p>
+              <p className="text-gray-500">First Name</p>
+              <p className="font-medium text-gray-900 text-lg">
+                {user.firstName}
+              </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Last Name</p>
-              <p className="font-medium text-gray-900">{user.lastName}</p>
+              <p className="text-gray-500">Last Name</p>
+              <p className="font-medium text-gray-900 text-lg">
+                {user.lastName}
+              </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Phone Number</p>
-              <p className="font-medium text-gray-900">
+              <p className="text-gray-500">Phone Number</p>
+              <p className="font-medium text-gray-900 text-lg">
                 {user.phoneNumber || "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Gender</p>
-              <p className="font-medium text-gray-900 capitalize">
+              <p className="text-gray-500">Gender</p>
+              <p className="font-medium text-gray-900 text-lg capitalize">
                 {user.gender || "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">State of Origin</p>
-              <p className="font-medium text-gray-900">{user.stateOfOrigin}</p>
+              <p className="text-gray-500">State of Origin</p>
+              <p className="font-medium text-gray-900 text-lg">
+                {user.stateOfOrigin}
+              </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">LGA of Origin</p>
-              <p className="font-medium text-gray-900">{user.lgaOfOrigin}</p>
+              <p className="text-gray-500">LGA of Origin</p>
+              <p className="font-medium text-gray-900 text-lg">
+                {user.lgaOfOrigin}
+              </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">NIN</p>
-              <p className="font-medium text-gray-900">{user.nin || "N/A"}</p>
+              <p className="text-gray-500">NIN</p>
+              <p className="font-medium text-gray-900 text-lg">
+                {user.nin || "N/A"}
+              </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">VIN</p>
-              <p className="font-medium text-gray-900">{user.vin || "N/A"}</p>
+              <p className="text-gray-500">VIN</p>
+              <p className="font-medium text-gray-900 text-lg">
+                {user.vin || "N/A"}
+              </p>
             </div>
           </div>
 
           <div className="border-t border-gray-100 pt-4">
-            <p className="text-sm text-gray-500">Home Address</p>
-            <p className="font-medium text-gray-900">
+            <p className="text-gray-500">Home Address</p>
+            <p className="font-medium text-gray-900 text-lg">
               {user.homeAddress || "N/A"}
             </p>
           </div>
 
           <div className="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-500">NIN Status</p>
-              <span className="inline-flex mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
+              <p className="text-gray-500">NIN Status</p>
+              <span
+                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full font-medium text-lg capitalize ${ninStatusStyles[user.ninStatus]}`}
+              >
                 {user.ninStatus}
               </span>
             </div>
             <div>
-              <p className="text-sm text-gray-500">PVC Status</p>
-              <span className="inline-flex mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
+              <p className="text-gray-500">PVC Status</p>
+              <span
+                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full font-medium text-lg capitalize ${pvcStatusStyles[user.pvcStatus]}`}
+              >
                 {user.pvcStatus}
               </span>
             </div>
+          </div>
+
+          <div className="flex gap-6">
+            <Button
+              variant="outline"
+              className="text-yellow-600 border-yellow-600 hover:bg-yellow-100"
+            >
+              Restrict Selected
+            </Button>
+            <Button
+              variant="outline"
+              className="text-red-600 border-red-600 hover:bg-red-100"
+            >
+              Delete Selected
+            </Button>
           </div>
         </div>
       </Modal>
@@ -136,7 +182,7 @@ const UserActionsCell = ({ user }: { user: User }) => {
   );
 };
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<UserType>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -199,9 +245,8 @@ export const columns: ColumnDef<User>[] = [
       const status = row.getValue("ninStatus") as string;
       const statusStyles: Record<string, string> = {
         verified: "bg-green-100 text-green-800",
-        Confirmed: "bg-green-100 text-green-800",
-        Pending: "bg-yellow-100 text-yellow-800",
-        Rejected: "bg-red-100 text-red-800",
+        pending: "bg-yellow-100 text-yellow-800",
+        rejected: "bg-red-100 text-red-800",
       };
 
       return (
@@ -220,9 +265,8 @@ export const columns: ColumnDef<User>[] = [
       const status = row.getValue("pvcStatus") as string;
       const statusStyles: Record<string, string> = {
         collected: "bg-green-100 text-green-800",
-        Collected: "bg-green-100 text-green-800",
-        Pending: "bg-yellow-100 text-yellow-800",
-        "Not Collected": "bg-red-100 text-red-800",
+        pending: "bg-yellow-100 text-yellow-800",
+        not_collected: "bg-red-100 text-red-800",
       };
 
       return (
@@ -235,8 +279,16 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "registrationDate",
+    accessorKey: "createdAt",
     header: "Registration Date",
+    cell: ({ row }) => {
+      const registrationDate = row.getValue("createdAt") as string;
+      return (
+        <span className="capitalize">
+          {new Date(registrationDate).toDateString()}
+        </span>
+      );
+    },
   },
   {
     id: "actions",

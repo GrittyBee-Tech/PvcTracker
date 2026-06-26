@@ -2,12 +2,9 @@
 
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -20,21 +17,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollableSelect } from "@/components/ui/scrollable-select";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  loading?: boolean;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  onPageChange: (page: number) => void;
+  filters: {
+    state: string;
+    lga: string;
+    search: string;
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onFiltersChange: (filters: any) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  loading,
+  pagination,
+  onPageChange,
+  filters,
+  onFiltersChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
 
   const options = useMemo(
@@ -42,109 +58,99 @@ export function DataTable<TData, TValue>({
       data,
       columns,
       getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
       onSortingChange: setSorting,
       getSortedRowModel: getSortedRowModel(),
-      onColumnFiltersChange: setColumnFilters,
-      getFilteredRowModel: getFilteredRowModel(),
       onRowSelectionChange: setRowSelection,
       state: {
         sorting,
-        columnFilters,
         rowSelection,
       },
+      manualPagination: true,
+      manualFiltering: true,
     }),
-    [data, columns, sorting, columnFilters, rowSelection],
+    [data, columns, sorting, rowSelection],
   );
 
   const table = useReactTable(options);
 
-  // Extract unique states and LGAs from the data
-  const uniqueStates = useMemo(() => {
-    const states = Array.from(
-      new Set(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data.map((item: any) => item.stateOfOrigin as string).filter(Boolean),
-      ),
-    );
-    return [
-      { name: "All States", value: "all" },
-      ...states.map((state) => ({ name: state, value: state })),
-    ];
-  }, [data]);
+  const [states, setStates] = useState<{ name: string; value: string }[]>([
+    { name: "All States", value: "all" },
+  ]);
 
-  const uniqueLGAs = useMemo(() => {
-    // Only show LGAs for the currently filtered state, or all LGAs if no state is selected
-    const currentStateFilter = table
-      .getColumn("stateOfOrigin")
-      ?.getFilterValue() as string;
-    let filteredData = data;
-
-    if (currentStateFilter && currentStateFilter !== "all") {
-      filteredData = data.filter(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (item: any) => item.stateOfOrigin === currentStateFilter,
-      );
-    }
-
-    const lgas = Array.from(
-      new Set(
-        filteredData
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .map((item: any) => item.lgaOfOrigin as string)
-          .filter(Boolean),
-      ),
-    );
-    return [
-      { name: "All LGAs", value: "all" },
-      ...lgas.map((lga) => ({ name: lga, value: lga })),
-    ];
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, table.getColumn("stateOfOrigin")?.getFilterValue()]);
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const response = await fetch("/api/locations/states");
+        const data = await response.json();
+        if (response.ok && Array.isArray(data)) {
+          const fetchedStates = data.map((state: string) => ({
+            name: state,
+            value: state,
+          }));
+          setStates([{ name: "All States", value: "all" }, ...fetchedStates]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch states:", error);
+      }
+    };
+    fetchStates();
+  }, []);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap gap-4 items-center">
+          <div className="relative w-64">
+            <input
+              placeholder="Search by name, email, phone..."
+              value={filters.search}
+              onChange={(e) =>
+                onFiltersChange({ ...filters, search: e.target.value })
+              }
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary pl-8"
+            />
+            <div className="absolute left-2.5 top-2.5 text-gray-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </div>
+          </div>
           <div className="w-48">
             <ScrollableSelect
               id="state-filter"
               name="state"
               placeholder="Filter by state..."
-              options={uniqueStates}
-              value={
-                (table
-                  .getColumn("stateOfOrigin")
-                  ?.getFilterValue() as string) || "all"
-              }
+              options={states}
+              value={filters.state || "all"}
               onValueChange={(value) => {
-                table
-                  .getColumn("stateOfOrigin")
-                  ?.setFilterValue(value === "all" ? "" : value);
-                // Reset LGA filter when state changes
-                table.getColumn("lgaOfOrigin")?.setFilterValue("");
+                onFiltersChange({
+                  ...filters,
+                  state: value === "all" ? "" : value,
+                  lga: "",
+                });
               }}
               selectClassName="h-10 mt-0 py-2 border-gray-300"
             />
           </div>
-          <div className="w-48">
-            <ScrollableSelect
-              id="lga-filter"
-              name="lga"
+          <div className="relative w-48">
+            <input
               placeholder="Filter by LGA..."
-              options={uniqueLGAs}
-              value={
-                (table.getColumn("lgaOfOrigin")?.getFilterValue() as string) ||
-                "all"
+              value={filters.lga}
+              onChange={(e) =>
+                onFiltersChange({ ...filters, lga: e.target.value })
               }
-              onValueChange={(value) =>
-                table
-                  .getColumn("lgaOfOrigin")
-                  ?.setFilterValue(value === "all" ? "" : value)
-              }
-              selectClassName="h-10 mt-0 py-2 border-gray-300"
-              disabled={uniqueLGAs.length <= 1}
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
         </div>
@@ -227,22 +233,22 @@ export function DataTable<TData, TValue>({
 
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-gray-500">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          Total {pagination.total} users | Page {pagination.page} of{" "}
+          {pagination.totalPages}
         </div>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          onClick={() => onPageChange(pagination.page - 1)}
+          disabled={pagination.page <= 1 || loading}
         >
           Previous
         </Button>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
+          onClick={() => onPageChange(pagination.page + 1)}
+          disabled={pagination.page >= pagination.totalPages || loading}
         >
           Next
         </Button>
