@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth";
 import { withDb } from "@/lib/withDb";
 import AuditLogModel from "@/models/auditLog";
 import { checkPermission } from "@/lib/permissions";

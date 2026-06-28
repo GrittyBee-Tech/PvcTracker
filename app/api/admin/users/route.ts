@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth";
 import { withDb } from "@/lib/withDb";
 import UserModel from "@/models/users";
 import { checkPermission } from "@/lib/permissions";

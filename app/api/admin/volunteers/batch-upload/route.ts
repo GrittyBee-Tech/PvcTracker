@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth";
 import { withDb } from "@/lib/withDb";
 import VolunteerModel from "@/models/volunteerApplication";
 import UserModel from "@/models/users";

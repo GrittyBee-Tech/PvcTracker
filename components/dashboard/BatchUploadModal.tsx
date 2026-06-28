@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/ui/modal";
-import { Upload, FileText, X, CheckCircle2, AlertCircle } from "lucide-react";
+import { Upload, FileText, X,  } from "lucide-react";
 import Swal from "sweetalert2";
 
 interface BatchUploadModalProps {

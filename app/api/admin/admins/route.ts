@@ -1,6 +1,5 @@
-import { auth } from "@/lib/auth";
 import { withDb } from "@/lib/withDb";
-import UserModel from "@/models/users";
+import UserModel, { IUser } from "@/models/users";
 import AdminProfileModel from "@/models/adminProfile";
 import AuditLogModel from "@/models/auditLog";
 import { checkPermission } from "@/lib/permissions";
@@ -8,14 +7,17 @@ import { NextResponse } from "next/server";
 
 export const GET = withDb(async (request: Request) => {
   try {
-    const { authorized, response } = await checkPermission(request, "view:admins");
+    const { authorized, response } = await checkPermission(
+      request,
+      "view:admins",
+    );
     if (!authorized && response) return response;
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
-    const query = { role: "admin" };
+    const query: { role: IUser["role"] } = { role: "admin" };
     const skip = (page - 1) * limit;
 
     const [users, total] = await Promise.all([
@@ -28,11 +30,15 @@ export const GET = withDb(async (request: Request) => {
     ]);
 
     // Fetch the linked AdminProfiles to get their permissions
-    const userIds = users.map(u => u._id);
-    const adminProfiles = await AdminProfileModel.find({ userId: { $in: userIds } });
+    const userIds = users.map((u) => u._id);
+    const adminProfiles = await AdminProfileModel.find({
+      userId: { $in: userIds },
+    });
 
-    const admins = users.map(user => {
-      const profile = adminProfiles.find(p => p.userId.toString() === user._id.toString());
+    const admins = users.map((user) => {
+      const profile = adminProfiles.find(
+        (p) => p.userId.toString() === user._id.toString(),
+      );
       return {
         ...user.toObject(),
         permissions: profile ? profile.permissions : [],
@@ -65,32 +71,48 @@ export const GET = withDb(async (request: Request) => {
 // Create new admin
 export const POST = withDb(async (request: Request) => {
   try {
-    const { authorized, response, session } = await checkPermission(request, "manage:admins");
+    const { authorized, response, session } = await checkPermission(
+      request,
+      "manage:admins",
+    );
     if (!authorized && response) return response;
 
     const body = await request.json();
-    const { firstName, lastName, email, phoneNumber, nin, permissions = [] } = body;
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      nin,
+      permissions = [],
+    } = body;
 
     if (!email || !firstName || !lastName || !phoneNumber || !nin) {
-      return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+      return NextResponse.json(
+        { message: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
     // Check if user already exists
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       if (existingUser.role === "admin") {
-        return NextResponse.json({ message: "User is already an admin" }, { status: 400 });
+        return NextResponse.json(
+          { message: "User is already an admin" },
+          { status: 400 },
+        );
       }
       // Elevate existing user to admin
       existingUser.role = "admin";
       await existingUser.save();
-      
+
       await AdminProfileModel.create({
         userId: existingUser._id,
         permissions,
         assignedBy: session!.user.id,
       });
-      
+
       await AuditLogModel.create({
         adminId: session!.user.id,
         action: "ELEVATE_ADMIN",
@@ -99,7 +121,13 @@ export const POST = withDb(async (request: Request) => {
         details: `Elevated user to admin with permissions: ${permissions.join(", ")}`,
       });
 
-      return NextResponse.json({ message: "Existing user elevated to admin successfully", admin: existingUser }, { status: 200 });
+      return NextResponse.json(
+        {
+          message: "Existing user elevated to admin successfully",
+          admin: existingUser,
+        },
+        { status: 200 },
+      );
     }
 
     const newAdmin = await UserModel.create({
