@@ -98,6 +98,7 @@ export function DataTable<TData, TValue>({
     { name: "All Statuses", value: "all" },
     { name: "Approved", value: "approved" },
     { name: "Pending", value: "pending" },
+    { name: "Rejected", value: "rejected" },
   ];
 
   return (
@@ -137,10 +138,13 @@ export function DataTable<TData, TValue>({
             />
           </div>
         </div>
-        
+
         {Object.keys(rowSelection).length > 0 && (
           <div className="flex gap-2">
-            <Button variant="outline" className="text-red-600 border-red-600 hover:bg-red-50">
+            <Button
+              variant="outline"
+              className="text-red-600 border-red-600 hover:bg-red-50"
+            >
               Delete Selected
             </Button>
           </div>
@@ -148,18 +152,19 @@ export function DataTable<TData, TValue>({
       </div>
 
       <div className="rounded-md border bg-white relative">
-        {loading && (
-          <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        )}
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-b-2 border-gray-200">
+              <TableRow
+                key={headerGroup.id}
+                className="border-b-2 border-gray-200"
+              >
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-gray-700 font-semibold py-3">
+                    <TableHead
+                      key={header.id}
+                      className="text-gray-700 font-semibold py-3"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -172,7 +177,12 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="relative">
+            {loading && (
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            )}
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -182,14 +192,20 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="text-gray-600 py-3">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-gray-500">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-gray-500"
+                >
                   {loading ? "Loading..." : "No results found."}
                 </TableCell>
               </TableRow>
@@ -197,7 +213,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-gray-500">
           Total {pagination.total} applications | Page {pagination.page} of{" "}

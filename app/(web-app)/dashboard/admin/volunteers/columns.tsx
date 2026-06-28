@@ -19,30 +19,51 @@ import Image from "next/image";
 
 const VolunteerActionsCell = ({
   application,
+  refresh,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   application: Record<string, any>;
+  refresh: () => void;
 }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isApproveOpen, setIsApproveOpen] = useState(false);
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [note, setNote] = useState("");
+  const [loading, setLoading] = useState(false);
   const user = application.userId;
 
-  const handleAction = async (action: "Approve" | "Reject") => {
-    // In a real app, you would call an API here
-    Swal.fire({
-      icon: "success",
-      position: "top",
-      text: `Volunteer ${action}d successfully`,
-      toast: true,
-      showConfirmButton: false,
-      padding: "10",
-      timer: 3000,
-    });
-    setIsApproveOpen(false);
-    setIsRejectOpen(false);
-    setNote("");
+  const handleAction = async (action: "approve" | "reject") => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/admin/volunteers/${application._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, note }),
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          position: "top",
+          text: `Volunteer application ${action}d successfully`,
+          toast: true,
+          showConfirmButton: false,
+          padding: "10",
+          timer: 3000,
+        });
+        refresh();
+        setIsApproveOpen(false);
+        setIsRejectOpen(false);
+        setNote("");
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || `Failed to ${action} volunteer`);
+      }
+    } catch (error: any) {
+      Swal.fire({ icon: "error", title: "Action Failed", text: error.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,7 +98,7 @@ const VolunteerActionsCell = ({
             View full application
           </DropdownMenuItem>
 
-          {!application.isApproved && (
+          {!application.status || application.status === "pending" ? (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -93,7 +114,7 @@ const VolunteerActionsCell = ({
                 Reject application
               </DropdownMenuItem>
             </>
-          )}
+          ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -175,13 +196,13 @@ const VolunteerActionsCell = ({
             <div>
               <p className="text-sm text-gray-500">Application Status</p>
               <span
-                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  application.isApproved
-                    ? "bg-green-100 text-green-800"
-                    : "bg-yellow-100 text-yellow-800"
+                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                  application.status === "approved" ? "bg-green-100 text-green-800" :
+                  application.status === "rejected" ? "bg-red-100 text-red-800" :
+                  "bg-yellow-100 text-yellow-800"
                 }`}
               >
-                {application.isApproved ? "Approved" : "Pending Review"}
+                {application.status || "pending"}
               </span>
             </div>
             <p className="text-xs text-gray-400">
@@ -204,9 +225,10 @@ const VolunteerActionsCell = ({
             </Button>
             <Button
               className="bg-green-700 hover:bg-green-800 text-white"
-              onClick={() => handleAction("Approve")}
+              onClick={() => handleAction("approve")}
+              disabled={loading}
             >
-              Confirm Approval
+              {loading ? "Processing..." : "Confirm Approval"}
             </Button>
           </>
         }
@@ -220,8 +242,8 @@ const VolunteerActionsCell = ({
             as a volunteer?
           </p>
           <p className="text-sm text-gray-500">
-            This will grant them access to the volunteer dashboard and allow
-            them to register other users.
+            This will grant them access to the volunteer dashboard and allow them
+            to register other users.
           </p>
         </div>
       </Modal>
@@ -239,9 +261,10 @@ const VolunteerActionsCell = ({
             </Button>
             <Button
               variant="destructive"
-              onClick={() => handleAction("Reject")}
+              onClick={() => handleAction("reject")}
+              disabled={loading}
             >
-              Confirm Rejection
+              {loading ? "Processing..." : "Confirm Rejection"}
             </Button>
           </>
         }
@@ -276,7 +299,7 @@ const VolunteerActionsCell = ({
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const columns: ColumnDef<any>[] = [
+export const columns = (refresh: () => void): ColumnDef<any>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -323,19 +346,19 @@ export const columns: ColumnDef<any>[] = [
     header: "Residence State",
   },
   {
-    accessorKey: "isApproved",
+    accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const isApproved = row.getValue("isApproved") as boolean;
+      const status = (row.getValue("status") as string) || "pending";
       return (
         <span
-          className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            isApproved
-              ? "bg-green-100 text-green-800"
-              : "bg-yellow-100 text-yellow-800"
+          className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+            status === "approved" ? "bg-green-100 text-green-800" :
+            status === "rejected" ? "bg-red-100 text-red-800" :
+            "bg-yellow-100 text-yellow-800"
           }`}
         >
-          {isApproved ? "Approved" : "Pending Review"}
+          {status}
         </span>
       );
     },
@@ -347,6 +370,6 @@ export const columns: ColumnDef<any>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <VolunteerActionsCell application={row.original} />,
+    cell: ({ row }) => <VolunteerActionsCell application={row.original} refresh={refresh} />,
   },
 ];

@@ -3,10 +3,14 @@
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useEffect, useState, useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import { Upload } from "lucide-react";
+import BatchUploadModal from "@/components/dashboard/BatchUploadModal";
 
 export default function VolunteersPage() {
   const [applications, setApplications] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   // Triggers for fetching
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,6 +34,8 @@ export default function VolunteersPage() {
     }),
     [currentPage, limit, totalCount, totalPages],
   );
+
+  
 
   const fetchVolunteers = async () => {
     setLoading(true);
@@ -65,21 +71,36 @@ export default function VolunteersPage() {
 
   return (
     <div className="text-black space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Manage Volunteers</h1>
-        <p className="text-gray-600">
-          Here you can view, filter, and manage all the volunteer applications
-          on the platform.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Manage Volunteers</h1>
+          <p className="text-gray-600">
+            Here you can view, filter, and manage all the volunteer applications
+            on the platform.
+          </p>
+        </div>
+        <Button
+          onClick={() => setIsUploadModalOpen(true)}
+          className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2"
+        >
+          <Upload className="w-4 h-4" />
+          Batch Upload
+        </Button>
       </div>
       <DataTable
-        columns={columns}
+        columns={columns(fetchVolunteers)}
         data={applications}
         loading={loading}
         pagination={pagination}
         onPageChange={setCurrentPage}
         filters={filters}
         onFiltersChange={setFilters}
+      />
+
+      <BatchUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onSuccess={fetchVolunteers}
       />
     </div>
   );
