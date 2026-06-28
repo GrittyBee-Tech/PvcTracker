@@ -15,8 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Modal from "@/components/ui/modal";
 import Swal from "sweetalert2";
-import { UserType } from "@/models/users";
-import { PERMISSIONS } from "@/models/adminProfile";
+import { UserType, PERMISSIONS } from "@/types";
 
 const ninStatusStyles: Record<string, string> = {
   verified: "bg-green-100 text-green-800",

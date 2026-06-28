@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
-import AdminProfileModel, { Permission, PERMISSIONS } from "@/models/adminProfile";
+import AdminProfileModel from "@/models/adminProfile";
+import { Permission, PERMISSIONS } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function checkPermission(request: Request, requiredPermission?: Permission) {

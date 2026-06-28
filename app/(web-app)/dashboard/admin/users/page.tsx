@@ -2,8 +2,8 @@
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { useEffect, useMemo, useState } from "react";
-import { UserType } from "@/models/users";
+import { useEffect, useState, useMemo } from "react";
+import { UserType } from "@/types";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<UserType[]>([]);

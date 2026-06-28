@@ -1,24 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { UserType } from "@/types";
 
-export interface UserType {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: Date;
-  gender: string;
-  phoneNumber: string;
-  emailVerified: boolean;
-  role: "user" | "admin" | "volunteer"; // Example roles
-  nin: string; // National Identification Number
-  vin?: string; // Voter Identification Number
-  ninStatus: "pending" | "rejected" | "verified";
-  pvcStatus: "collected" | "not_collected";
-  stateOfOrigin: string;
-  lgaOfOrigin: string;
-  homeAddress: string;
-  status: "active" | "restricted" | "deleted";
-}
 export interface IUser extends UserType, Document {
   pvcStatusUpdatedAt: Date;
   createdAt: Date;

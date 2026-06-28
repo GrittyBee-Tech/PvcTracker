@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/ui/modal";
 import Swal from "sweetalert2";
-import { PERMISSIONS } from "@/models/adminProfile";
+import { PERMISSIONS } from "@/types";
 
 interface AddAdminModalProps {
   isOpen: boolean;

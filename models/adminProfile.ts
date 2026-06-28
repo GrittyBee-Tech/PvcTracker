@@ -1,18 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-
-export const PERMISSIONS = [
-  "view:users",
-  "manage:users",
-  "view:volunteers",
-  "manage:volunteers",
-  "view:admins",
-  "manage:admins",
-  "manage:centres",
-  "view:audit_logs",
-  "view:analytics",
-] as const;
-
-export type Permission = typeof PERMISSIONS[number];
+import { Permission, PERMISSIONS } from "@/types";
 
 export interface IAdminProfile extends Document {
   userId: mongoose.Types.ObjectId;

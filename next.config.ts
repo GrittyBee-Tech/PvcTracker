@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Silence Turbopack/Webpack conflict error
+  turbopack: {},
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Fallback for node modules when running on the client (browser)
