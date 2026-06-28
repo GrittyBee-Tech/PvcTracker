@@ -11,7 +11,7 @@ export const PATCH = withDb(
   async (request: Request, { params }: { params: { userId: string } }) => {
     try {
       const { authorized, response, session } = await checkPermission(request, "manage:users");
-      if (!authorized) return response;
+      if (!authorized && response) return response;
 
       const { status, role, permissions = [] } = await request.json();
       const { userId } = await params;
@@ -99,7 +99,7 @@ export const DELETE = withDb(
   async (request: Request, { params }: { params: { userId: string } }) => {
     try {
       const { authorized, response, session } = await checkPermission(request, "manage:users");
-      if (!authorized) return response;
+      if (!authorized && response) return response;
 
       const { userId } = params;
       const user = await UserModel.findById(userId);

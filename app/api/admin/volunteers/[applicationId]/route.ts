@@ -9,7 +9,7 @@ import { NextResponse } from "next/server";
 export const PATCH = withDb(async (request: Request, { params }: { params: { applicationId: string } }) => {
   try {
     const { authorized, response, session } = await checkPermission(request, "manage:volunteers");
-    if (!authorized) return response;
+    if (!authorized && response) return response;
 
     const { action, note } = await request.json();
     const { applicationId } = params;

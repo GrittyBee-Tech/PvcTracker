@@ -10,7 +10,7 @@ import * as XLSX from "xlsx";
 export const POST = withDb(async (request: Request) => {
   try {
     const { authorized, response, session } = await checkPermission(request, "manage:volunteers");
-    if (!authorized) return response;
+    if (!authorized && response) return response;
 
     const formData = await request.formData();
     const file = formData.get("file") as File;

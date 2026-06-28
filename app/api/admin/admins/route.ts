@@ -9,7 +9,7 @@ import { NextResponse } from "next/server";
 export const GET = withDb(async (request: Request) => {
   try {
     const { authorized, response } = await checkPermission(request, "view:admins");
-    if (!authorized) return response;
+    if (!authorized && response) return response;
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -66,7 +66,7 @@ export const GET = withDb(async (request: Request) => {
 export const POST = withDb(async (request: Request) => {
   try {
     const { authorized, response, session } = await checkPermission(request, "manage:admins");
-    if (!authorized) return response;
+    if (!authorized && response) return response;
 
     const body = await request.json();
     const { firstName, lastName, email, phoneNumber, nin, permissions = [] } = body;

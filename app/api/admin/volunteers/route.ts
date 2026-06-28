@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 export const GET = withDb(async (request: Request) => {
   try {
     const { authorized, response } = await checkPermission(request, "view:volunteers");
-    if (!authorized) return response;
+    if (!authorized && response) return response;
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");

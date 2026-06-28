@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 export const POST = withDb(async (request: Request) => {
   try {
     const { authorized, response, session } = await checkPermission(request, "manage:users");
-    if (!authorized) return response;
+    if (!authorized && response) return response;
 
     const { userIds, action } = await request.json();
 
