@@ -102,6 +102,11 @@ export const auth = betterAuth({
         input: true,
         required: false,
       },
+      status: {
+        type: "string",
+        defaultValue: "active",
+        input: true,
+      },
       createdAt: {
         type: "date",
         required: false,

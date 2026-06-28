@@ -109,7 +109,7 @@ export const POST = withDb(async (request: Request) => {
 
     // Create Audit Log
     await AuditLogModel.create({
-      adminId: session.user.id,
+      adminId: session?.user.id,
       action: "BATCH_UPLOAD_VOLUNTEERS",
       details: `Batch uploaded ${successCount} volunteers from file: ${file.name}`,
       metadata: {

@@ -26,9 +26,9 @@ export interface UserType {
   vin?: string;
   ninStatus: "pending" | "rejected" | "verified";
   pvcStatus: "collected" | "not_collected";
-  stateOfOrigin: string;
-  lgaOfOrigin: string;
-  homeAddress: string;
+  stateOfOrigin?: string;
+  lgaOfOrigin?: string;
+  homeAddress?: string;
   status: "active" | "restricted" | "deleted";
   createdAt?: Date | string;
   updatedAt?: Date | string;
