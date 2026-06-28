@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const adminLinks: DashboardLink[] = [
   { href: "/dashboard/admin", label: "Dashboard", icon: "LayoutDashboard" },
+  { href: "/dashboard/admin/admins", label: "Admins", icon: "ShieldCheck" },
   { href: "/dashboard/admin/users", label: "Users", icon: "Users" },
   { href: "/dashboard/admin/volunteers", label: "Volunteers", icon: "UserCheck" },
   { href: "/dashboard/admin/centres", label: "Centres", icon: "MapPin" },

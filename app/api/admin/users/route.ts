@@ -1,17 +1,13 @@
 import { auth } from "@/lib/auth";
 import { withDb } from "@/lib/withDb";
 import UserModel from "@/models/users";
+import { checkPermission } from "@/lib/permissions";
 import { NextResponse } from "next/server";
 
 export const GET = withDb(async (request: Request) => {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (session?.user.role !== "admin") {
-      return NextResponse.json(
-        { message: "Forbidden: Admin access required" },
-        { status: 400 },
-      );
-    }
+    const { authorized, response } = await checkPermission(request, "view:users");
+    if (!authorized) return response;
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -21,7 +17,10 @@ export const GET = withDb(async (request: Request) => {
     const search = searchParams.get("search");
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const query: Record<string, any> = { role: "user" };
+    const query: Record<string, any> = { 
+      role: "user",
+      status: { $ne: "deleted" }
+    };
 
     if (state) query.stateOfOrigin = state;
     if (lga) query.lgaOfOrigin = lga;

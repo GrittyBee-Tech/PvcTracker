@@ -20,6 +20,7 @@ import {
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollableSelect } from "@/components/ui/scrollable-select";
+import Swal from "sweetalert2";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -39,6 +40,7 @@ interface DataTableProps<TData, TValue> {
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onFiltersChange: (filters: any) => void;
+  refresh: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -49,9 +51,46 @@ export function DataTable<TData, TValue>({
   onPageChange,
   filters,
   onFiltersChange,
+  refresh,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({});
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const [bulkLoading, setBulkLoading] = useState(false);
+
+  const handleBulkAction = async (action: "restrict" | "activate" | "delete") => {
+    const selectedIds = Object.keys(rowSelection);
+    if (selectedIds.length === 0) return;
+
+    setBulkLoading(true);
+    try {
+      const response = await fetch("/api/admin/users/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userIds: selectedIds, action }),
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `Bulk ${action} Successful`,
+          text: `${selectedIds.length} users have been ${action}d.`,
+          toast: true,
+          position: "top",
+          showConfirmButton: false,
+          timer: 3000,
+        });
+        setRowSelection({});
+        refresh();
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || `Failed to ${action} users`);
+      }
+    } catch (error: any) {
+      Swal.fire({ icon: "error", title: "Bulk Action Failed", text: error.message });
+    } finally {
+      setBulkLoading(false);
+    }
+  };
 
   const options = useMemo(
     () => ({
@@ -61,6 +100,7 @@ export function DataTable<TData, TValue>({
       onSortingChange: setSorting,
       getSortedRowModel: getSortedRowModel(),
       onRowSelectionChange: setRowSelection,
+      getRowId: (row: any) => row.id,
       state: {
         sorting,
         rowSelection,
@@ -159,13 +199,25 @@ export function DataTable<TData, TValue>({
           <div className="flex gap-2">
             <Button
               variant="outline"
+              className="text-green-600 border-green-600 hover:bg-green-50"
+              onClick={() => handleBulkAction("activate")}
+              disabled={bulkLoading}
+            >
+              Activate Selected
+            </Button>
+            <Button
+              variant="outline"
               className="text-yellow-600 border-yellow-600 hover:bg-yellow-50"
+              onClick={() => handleBulkAction("restrict")}
+              disabled={bulkLoading}
             >
               Restrict Selected
             </Button>
             <Button
               variant="outline"
               className="text-red-600 border-red-600 hover:bg-red-50"
+              onClick={() => handleBulkAction("delete")}
+              disabled={bulkLoading}
             >
               Delete Selected
             </Button>
@@ -199,7 +251,12 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="relative">
+            {loading && (
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            )}
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

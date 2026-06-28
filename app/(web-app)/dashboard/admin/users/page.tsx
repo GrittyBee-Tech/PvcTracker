@@ -48,10 +48,13 @@ export default function UsersPage() {
         `/api/admin/users?${queryParams.toString()}`,
       );
       const data = await response.json();
-      console.log(data);
 
       if (response.ok) {
-        setUsers(data.users);
+        const transformedUser = data.users.map((us: Record<string, any>) => ({
+          ...us,
+          id: us._id,
+        }));
+        setUsers(transformedUser);
         setTotalCount(data.pagination.total);
         setTotalPages(data.pagination.totalPages);
       }
@@ -89,13 +92,14 @@ export default function UsersPage() {
         </p>
       </div>
       <DataTable
-        columns={columns}
+        columns={columns(fetchUsers)}
         data={users}
         loading={loading}
         pagination={pagination}
         onPageChange={setCurrentPage}
         filters={filters}
         onFiltersChange={setFilters}
+        refresh={fetchUsers}
       />
     </div>
   );

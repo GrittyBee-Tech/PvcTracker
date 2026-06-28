@@ -17,6 +17,7 @@ export interface UserType {
   stateOfOrigin: string;
   lgaOfOrigin: string;
   homeAddress: string;
+  status: "active" | "restricted" | "deleted";
 }
 export interface IUser extends UserType, Document {
   pvcStatusUpdatedAt: Date;
@@ -68,6 +69,12 @@ const UserSchema: Schema<IUser> = new Schema(
     homeAddress: {
       type: String,
       required: false,
+    },
+    status: {
+      type: String,
+      enum: ["active", "restricted", "deleted"],
+      default: "active",
+      required: true,
     },
   },
   { timestamps: true },
