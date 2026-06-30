@@ -27,6 +27,8 @@ export interface UserType {
   ninStatus: "pending" | "rejected" | "verified";
   pvcStatus: "collected" | "not_collected";
   stateOfOrigin?: string;
+  votingState?: string;
+  votingLga?: string;
   lgaOfOrigin?: string;
   homeAddress?: string;
   status: "active" | "restricted" | "deleted";
