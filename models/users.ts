@@ -48,6 +48,14 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       required: false,
     },
+    votingState: {
+      type: String,
+      required: false,
+    },
+    votingLga: {
+      type: String,
+      required: false,
+    },
     homeAddress: {
       type: String,
       required: false,
