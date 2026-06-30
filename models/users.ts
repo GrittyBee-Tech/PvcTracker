@@ -15,6 +15,8 @@ export interface UserType {
   pvcStatus: "collected" | "not_collected";
   stateOfOrigin: string;
   lgaOfOrigin: string;
+  votingState: string;
+  votingLga: string;
   homeAddress: string;
   createdAt: Date;
   updatedAt: Date;
@@ -61,6 +63,14 @@ const UserSchema: Schema<IUser> = new Schema(
       required: false,
     },
     lgaOfOrigin: {
+      type: String,
+      required: false,
+    },
+    votingState: {
+      type: String,
+      required: false,
+    },
+    votingLga: {
       type: String,
       required: false,
     },
