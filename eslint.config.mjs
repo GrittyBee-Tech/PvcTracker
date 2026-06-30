@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     rules: {
       // Turn off TanStack Table / React Compiler compatibility warnings globally
       "react-hooks/incompatible-library": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "@typescript-eslint/no-explicit-any": "warn"
       
       // If you also want to turn off the explicit 'any' rule globally later, you would add it here:
       // "@typescript-eslint/no-explicit-any": "off"

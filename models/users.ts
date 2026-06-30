@@ -1,28 +1,10 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { UserType } from "@/types";
 
-export interface UserType {
-  email: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: Date;
-  gender: string;
-  phoneNumber: string;
-  emailVerified: boolean;
-  role: "user" | "admin" | "volunteer"; // Example roles
-  nin: string; // National Identification Number
-  vin?: string; // Voter Identification Number
-  ninStatus: "pending" | "rejected" | "verified";
-  pvcStatus: "collected" | "not_collected";
-  stateOfOrigin: string;
-  lgaOfOrigin: string;
-  votingState: string;
-  votingLga: string;
-  homeAddress: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
 export interface IUser extends UserType, Document {
   pvcStatusUpdatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const UserSchema: Schema<IUser> = new Schema(
@@ -77,6 +59,12 @@ const UserSchema: Schema<IUser> = new Schema(
     homeAddress: {
       type: String,
       required: false,
+    },
+    status: {
+      type: String,
+      enum: ["active", "restricted", "deleted"],
+      default: "active",
+      required: true,
     },
   },
   { timestamps: true },
