@@ -19,6 +19,8 @@ type UpdateProfileFormType = {
   phoneNumber: string;
   stateOfOrigin: string;
   lgaOfOrigin: string;
+  votingState: string;
+  votingLga: string;
   homeAddress: string;
 };
 
@@ -31,6 +33,8 @@ interface UserProfileFormProps {
     phoneNumber?: string;
     stateOfOrigin?: string;
     lgaOfOrigin?: string;
+    votingState?: string;
+    votingLga?: string;
     homeAddress?: string;
     vin?: string;
   };
@@ -47,6 +51,8 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
       phoneNumber: user.phoneNumber || "",
       stateOfOrigin: user.stateOfOrigin || "",
       lgaOfOrigin: user.lgaOfOrigin || "",
+      votingState: user.votingState || "",
+      votingLga: user.votingLga || "",
       homeAddress: user.homeAddress || "",
     });
 
@@ -54,9 +60,11 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
   const [vin, setVin] = useState(user.vin || "");
 
   const [loadingStates, setLoadingStates] = useState(false);
-  const [loadingLgas, setLoadingLgas] = useState(false);
+  const [loadingOriginLgas, setLoadingOriginLgas] = useState(false);
+  const [loadingVotingLgas, setLoadingVotingLgas] = useState(false);
   const [states, setStates] = useState<StateOption[]>([]);
-  const [lgas, setLgas] = useState<{ name: string }[]>([]);
+  const [originLgas, setOriginLgas] = useState<{ name: string }[]>([]);
+  const [votingLgas, setVotingLgas] = useState<{ name: string }[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   // 2. Clear out the bad JSON stringify evaluations with explicit checks
@@ -67,15 +75,27 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
     updateProfileData.phoneNumber === (user.phoneNumber || "") &&
     updateProfileData.stateOfOrigin === (user.stateOfOrigin || "") &&
     updateProfileData.lgaOfOrigin === (user.lgaOfOrigin || "") &&
+    updateProfileData.votingState === (user.votingState || "") &&
+    updateProfileData.votingLga === (user.votingLga || "") &&
     updateProfileData.homeAddress === (user.homeAddress || "");
 
   const handleChange = (field: keyof UpdateProfileFormType, value: string) => {
-    setUpdateProfileData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setUpdateProfileData((prev) => {
+      const newData = { ...prev, [field]: value };
+      if (field === "stateOfOrigin") {
+        newData.lgaOfOrigin = "";
+      }
+      if (field === "votingState") {
+        newData.votingLga = "";
+      }
+      return newData;
+    });
+
     if (field === "stateOfOrigin" && !value) {
-      setLgas([]);
+      setOriginLgas([]);
+    }
+    if (field === "votingState" && !value) {
+      setVotingLgas([]);
     }
   };
 
@@ -159,10 +179,11 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
     loadStates();
   }, []);
 
-  // Synchronize LGAs when state selection alters
+  // Synchronize Origin LGAs when state selection alters
   useEffect(() => {
-    async function loadLgas() {
-      setLoadingLgas(true);
+    async function loadOriginLgas() {
+      if (!updateProfileData.stateOfOrigin) return;
+      setLoadingOriginLgas(true);
       setError(null);
       try {
         const response = await fetch(
@@ -173,17 +194,49 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
           throw new Error(err?.error || "Failed to load LGAs");
         }
         const payload = await response.json();
-        setLgas(payload?.data ?? []);
+        setOriginLgas(payload?.data ?? []);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to load LGAs");
       } finally {
-        setLoadingLgas(false);
+        setLoadingOriginLgas(false);
       }
     }
-    loadLgas();
+    loadOriginLgas();
   }, [updateProfileData.stateOfOrigin]);
 
-  const lgaOptions = lgas.map((lga) => ({ name: lga.name, value: lga.name }));
+  // Synchronize Voting LGAs when state selection alters
+  useEffect(() => {
+    async function loadVotingLgas() {
+      if (!updateProfileData.votingState) return;
+      setLoadingVotingLgas(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `/api/locations/lgas?state=${encodeURIComponent(updateProfileData.votingState)}`,
+        );
+        if (!response.ok) {
+          const err = await response.json().catch(() => null);
+          throw new Error(err?.error || "Failed to load LGAs");
+        }
+        const payload = await response.json();
+        setVotingLgas(payload?.data ?? []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load LGAs");
+      } finally {
+        setLoadingVotingLgas(false);
+      }
+    }
+    loadVotingLgas();
+  }, [updateProfileData.votingState]);
+
+  const originLgaOptions = originLgas.map((lga) => ({
+    name: lga.name,
+    value: lga.name,
+  }));
+  const votingLgaOptions = votingLgas.map((lga) => ({
+    name: lga.name,
+    value: lga.name,
+  }));
 
   return (
     <div className="space-y-4 md:px-8 py-4 xl:pr-12">
@@ -291,9 +344,9 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
             <Select
               name="lgaOfOrigin"
               label="Local Government Area of Origin"
-              options={lgaOptions}
+              options={originLgaOptions}
               value={updateProfileData.lgaOfOrigin}
-              disabled={loadingLgas || !updateProfileData.stateOfOrigin}
+              disabled={loadingOriginLgas || !updateProfileData.stateOfOrigin}
               onChange={handleChange}
               placeholder={
                 updateProfileData.stateOfOrigin
@@ -302,6 +355,38 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
               }
               selectClassName={
                 !updateProfileData.stateOfOrigin ? "opacity-60" : ""
+              }
+            />
+          </div>
+
+          <div className="col-span-4 md:col-span-2">
+            <Select
+              name="votingState"
+              label="State you are registered to vote"
+              options={states}
+              value={updateProfileData.votingState}
+              onChange={handleChange}
+              placeholder={
+                loadingStates ? "Loading states..." : "Select a state"
+              }
+            />
+          </div>
+
+          <div className="col-span-4 md:col-span-2">
+            <Select
+              name="votingLga"
+              label="Local government you are registered to vote"
+              options={votingLgaOptions}
+              value={updateProfileData.votingLga}
+              disabled={loadingVotingLgas || !updateProfileData.votingState}
+              onChange={handleChange}
+              placeholder={
+                updateProfileData.votingState
+                  ? "Select an LGA"
+                  : "Select a state first"
+              }
+              selectClassName={
+                !updateProfileData.votingState ? "opacity-60" : ""
               }
             />
           </div>
