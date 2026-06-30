@@ -97,6 +97,16 @@ export const auth = betterAuth({
         input: true,
         required: false,
       },
+      votingState: {
+        type: "string",
+        input: true,
+        required: false,
+      },
+      votingLga: {
+        type: "string",
+        input: true,
+        required: false,
+      },
       homeAddress: {
         type: "string",
         input: true,
