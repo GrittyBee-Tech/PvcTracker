@@ -68,7 +68,7 @@ const About = () => {
         <div className="grid lg:grid-cols-5 gap-6">
           <article className="lg:col-span-3 rounded-3xl border border-[#DDE3DE] bg-white p-7 md:p-9 shadow-sm">
             <h2 className="font-space-grotesk text-2xl md:text-3xl font-bold text-[#0A140F] mb-4">
-              Project Overview
+              Project Overview.
             </h2>
             <p className="font-dm-sans text-[#1E2C22] leading-8">
               Since 2021, PVC WAKA has supported more than 500,000 young people
