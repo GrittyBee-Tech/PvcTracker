@@ -98,9 +98,9 @@ const About = () => {
             About the Platform
           </h2>
           <p className="font-dm-sans text-[#1E2C22] leading-8 mb-6">
-            PVC WAKA is a civic-tech web application designed to increase
-            Permanent Voter Card registration and collection rates across
-            Nigeria. The platform supports users with:
+            PVC Collection tracker is a civic-tech web application designed to
+            increase Permanent Voter Card registration and collection rates
+            across Nigeria. The platform supports users with:
           </p>
 
           <div className="grid md:grid-cols-2 gap-3">
