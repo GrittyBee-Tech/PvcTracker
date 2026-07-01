@@ -1,43 +1,6 @@
 import Link from "next/link";
 import React from "react";
 
-const impactHighlights = [
-  {
-    label: "Communities reached",
-    value: "500K+",
-  },
-  {
-    label: "States activated",
-    value: "8",
-  },
-  {
-    label: "Ambassadors target",
-    value: "500",
-  },
-  {
-    label: "2027 mobilisation goal",
-    value: "1M+",
-  },
-];
-
-const processSteps = [
-  {
-    title: "Find Verified Support",
-    description:
-      "Locate trusted volunteers and guidance channels close to your community.",
-  },
-  {
-    title: "Complete PVC Tasks",
-    description:
-      "Get help with registration, transfer, detail correction, and replacement quickly.",
-  },
-  {
-    title: "Track Progress",
-    description:
-      "Monitor your requests and receive updates so nothing falls through the cracks.",
-  },
-];
-
 const LandingPage = () => {
   return (
     <section className="grid md:py-20 py-5 lg:px-20 border-b border-border px-6">
@@ -56,7 +19,6 @@ const LandingPage = () => {
         uncollected PVCs due to low awareness, difficulty locating INEC centres,
         and fragmented grassroots mobilisation efforts.
       </p>
-
       <div className="flex flex-col sm:flex-row gap-3 mt-7">
         <Link
           href="/auth/register"
@@ -84,7 +46,6 @@ const LandingPage = () => {
             participation easier and more inclusive.
           </p>
         </article>
-
         <article className="lg:col-span-2 rounded-2xl bg-[#103724] border border-[#1A5C38] p-6 md:p-8 text-white">
           <p className="font-space-grotesk text-xl font-bold">
             Ready to take action?

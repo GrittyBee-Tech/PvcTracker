@@ -3,7 +3,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { FAQ_SCHEMA } from "@/utils/constants/faq";
 import { useState } from "react";
-import { BsFillNodePlusFill, BsFillNodeMinusFill } from "react-icons/bs";
 import { Minus, Plus } from "lucide-react";
 
 const Faq = () => {
@@ -59,7 +58,6 @@ const Faq = () => {
                     )}
                   </motion.span>
                 </div>
-
                 <AnimatePresence initial={false}>
                   {showFaq === id && (
                     <motion.div
