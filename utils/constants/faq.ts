@@ -1,15 +1,15 @@
 export const FAQ_SCHEMA = [
   {
     id: 1,
-    question: 'What is PVC WAKA?',
+    question: 'What is PVC collection tracker?',
     answer:
-      ' PVC WAKA is a free online platform built by the ABENOL Foundation to help Nigerians check their Permanent Voter Card (PVC) registration status, find the nearest INEC registration or collection centre, and stay updated on their voter registration journey — all in one place.',
+      ' PVC collection tracker is a free online platform built by the ABENOL Foundation to help Nigerians check their Permanent Voter Card (PVC) registration status, find the nearest INEC registration or collection centre, and stay updated on their voter registration journey — all in one place.',
   },
   {
     id: 2,
-    question: 'Who can use PVC WAKA?',
+    question: 'Who can use PVC collection tracker?',
     answer:
-      'Any Nigerian citizen who wants to register, check their PVC status, or find an INEC centre can use PVC WAKA. All you need is a valid National Identification Number (NIN), a phone number, and an email address.',
+      'Any Nigerian citizen who wants to register, check their PVC status, or find an INEC centre can use PVC collection tracker. All you need is a valid National Identification Number (NIN), a phone number, and an email address.',
   },
   {
     id: 3,
@@ -25,7 +25,7 @@ export const FAQ_SCHEMA = [
   },
   {
     id: 5,
-    question: 'Is my personal data safe on PVC WAKA?',
-    answer: 'Yes. PVC WAKA is built in compliance with the Nigeria Data Protection Regulation (NDPR). Your NIN and personal data are encrypted and stored securely. We do not share your information with any third party without your explicit consent.' 
+    question: 'Is my personal data safe on PVC collection tracker?',
+    answer: 'Yes. PVC collection tracker is built in compliance with the Nigeria Data Protection Regulation (NDPR). Your NIN and personal data are encrypted and stored securely. We do not share your information with any third party without your explicit consent.' 
   },
 ];
