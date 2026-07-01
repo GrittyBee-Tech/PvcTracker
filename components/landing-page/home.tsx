@@ -71,53 +71,6 @@ const LandingPage = () => {
           Learn More
         </Link>
       </div>
-
-      <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {impactHighlights.map((item) => (
-          <article
-            key={item.label}
-            className="rounded-2xl border border-[#DCE6DE] bg-white/90 px-5 py-4"
-          >
-            <p className="font-space-grotesk text-3xl font-extrabold text-primary">
-              {item.value}
-            </p>
-            <p className="font-dm-sans text-sm text-[#4D5D51] mt-1">
-              {item.label}
-            </p>
-          </article>
-        ))}
-      </div>
-
-      <div className="mt-12 rounded-3xl border border-[#DCE6DE] bg-linear-to-r from-[#F5FBF7] via-[#F7FCF9] to-[#EEF7F1] p-6 md:p-8">
-        <h2 className="font-space-grotesk text-2xl md:text-3xl font-bold text-[#0A140F]">
-          How PVC WAKA Works
-        </h2>
-        <p className="font-dm-sans text-[#3F4E43] mt-2 leading-7 md:w-8/12">
-          From registration support to issue escalation, we provide a practical,
-          community-first path to help every eligible voter complete their PVC
-          journey.
-        </p>
-
-        <div className="grid md:grid-cols-3 gap-4 mt-6">
-          {processSteps.map((step, index) => (
-            <article
-              key={step.title}
-              className="rounded-2xl bg-white border border-[#E2EAE3] p-5"
-            >
-              <p className="font-space-grotesk text-xl font-bold text-[#1A5C38]">
-                0{index + 1}
-              </p>
-              <h3 className="font-space-grotesk text-lg font-bold text-[#0A140F] mt-2">
-                {step.title}
-              </h3>
-              <p className="font-dm-sans text-sm text-[#4D5D51] mt-2 leading-7">
-                {step.description}
-              </p>
-            </article>
-          ))}
-        </div>
-      </div>
-
       <div className="mt-10 grid lg:grid-cols-5 gap-5">
         <article className="lg:col-span-3 rounded-2xl bg-white border border-[#DCE6DE] p-6 md:p-8">
           <h2 className="font-space-grotesk text-2xl font-bold text-[#0A140F]">

@@ -44,7 +44,7 @@ const About = () => {
             <p className="font-dm-sans text-[#33463A] text-base md:text-lg leading-8">
               PVC WAKA is a youth-led civic engagement initiative helping
               first-time and historically disengaged voters navigate voter
-              registration and participation across Nigeria.
+              registration and participation across Nigeria
             </p>
           </div>
         </header>
@@ -53,7 +53,7 @@ const About = () => {
           {impactStats.map((item) => (
             <article
               key={item.label}
-              className="rounded-2xl border border-[#DDE3DE] bg-white p-5 shadow-sm"
+              className="rounded-2xl border border-[#DDE3DE] bg-white  p-5 shadow-sm"
             >
               <p className="font-space-grotesk text-3xl font-extrabold text-primary">
                 {item.value}

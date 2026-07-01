@@ -23,7 +23,7 @@ export const OBJECTIVE_SCHEMA: ObjectiveType[] = [
     btnLink: "/auth/register",
   },
   {
-    title: "Support your community as a WAKA Volunteer",
+    title: "Support your community as a PVC WAKA Volunteer",
     icon: BsFillPostcardHeartFill as IconType,
     description:
       "Help people navigate PVC registration, provide trusted guidance, and assist multiple users under your dashboard so no eligible voter is left behind.",
