@@ -15,27 +15,27 @@ type ObjectiveType = {
 
 export const OBJECTIVE_SCHEMA: ObjectiveType[] = [
   {
-    title: "Your PVC Journey, Empowered Online.",
+    title: "Check and manage your PVC journey online",
     icon: BsFillGlobeAmericasFill as IconType,
     description:
-      " As a Nigerian citizen, you can now easily check your PVC registration and collection status online. Our platform gives you accurate location info, helps you find INEC centers in your local government area, and lets you track your registration progress",
-    btntext: "Join as User",
+      "Find accurate registration and collection information, locate nearby INEC centres in your local government area, and track your progress from one place.",
+    btntext: "Create User Account",
     btnLink: "/auth/register",
   },
   {
-    title: "Become a PVC WAKA Volunteer, Make a Difference.",
+    title: "Support your community as a WAKA Volunteer",
     icon: BsFillPostcardHeartFill as IconType,
     description:
-      " Join us as a community volunteer and help guide fellow Nigerians through the PVC registration process. Empower others, provide critical support, and track multiple users under your account—so together, we can ensure no one is left behind.",
+      "Help people navigate PVC registration, provide trusted guidance, and assist multiple users under your dashboard so no eligible voter is left behind.",
     btntext: "Become a Volunteer",
     btnLink: "/volunteer",
   },
   {
-    title: "Track and Escalate PVC Delays, Demand Accountability.",
+    title: "Report delays and escalate unresolved PVC issues",
     icon: BsPcDisplayHorizontal as IconType,
     description:
-      "We Hold INEC Accountable for You. Our platform allows you to monitor your PVC registration progress. If you face any delays or issues, you can report them easily. We track your case and escalate it to INEC, ensuring your concerns are not ignored and that you get the support you need.",
-    btntext: "Report Issue",
+      "Monitor your registration status, submit complaints when issues occur, and get support while cases are tracked and escalated for accountability.",
+    btntext: "Report an Issue",
     btnLink: "/contact",
   },
 ];

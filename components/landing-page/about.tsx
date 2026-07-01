@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 
 const impactStats = [
@@ -83,7 +82,9 @@ const About = () => {
           </article>
 
           <article className="lg:col-span-2 rounded-3xl border border-[#DDE3DE] bg-[#0F2F1E] p-7 md:p-9 text-white shadow-sm">
-            <p className="font-space-grotesk text-xl font-bold mb-3">The Goal</p>
+            <p className="font-space-grotesk text-xl font-bold mb-3">
+              The Goal
+            </p>
             <p className="font-dm-sans leading-8 text-[#E7F5EC]">
               Mobilize at least 500 Waka Ambassadors and reach over 1 million
               people through digital and physical advocacy campaigns, scaling

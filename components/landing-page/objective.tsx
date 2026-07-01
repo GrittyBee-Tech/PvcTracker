@@ -1,35 +1,54 @@
 "use client";
 
 import { OBJECTIVE_SCHEMA } from "@/utils/constants/objective";
+import Link from "next/link";
 
 const Objective = () => {
   return (
-    <section className="lg:px-20 md:py-20 py-10 px-6 border-b border-border">
+    <section className="lg:px-20 md:py-20 py-12 px-6 border-b border-border">
+      <header className="max-w-3xl mb-8 md:mb-10">
+        <p className="font-dm-sans font-bold tracking-[0.14em] text-xs uppercase text-primary">
+          Core Objectives
+        </p>
+        <h2 className="font-space-grotesk text-3xl md:text-4xl font-extrabold text-[#0A140F] mt-2">
+          Three practical ways PVC WAKA supports voters
+        </h2>
+        <p className="font-dm-sans text-[#4B5B4F] mt-3 leading-8">
+          Whether you are registering for the first time, supporting others as a
+          volunteer, or resolving delays, these tools keep your civic journey
+          simple and actionable.
+        </p>
+      </header>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {OBJECTIVE_SCHEMA.map((item, index) => (
-          <div
+          <article
             key={index}
-            className="bg-[#F9FDFA] border border-gray-200 group hover:bg-white shadow-xl rounded-2xl p-6 max-h-112 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-2 hover:scale-[1.03]"
+            className="relative overflow-hidden rounded-3xl border border-[#DDE6DF] bg-linear-to-b from-white to-[#F5FBF7] p-6 md:p-7 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
           >
-            <span className="text-4xl group-hover:text-[#0A140F] text-[#4B6F52] mb-4 grid justify-center transition-transform duration-200 group-hover:rotate-6 group-hover:scale-110">
+            <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[#3fbcaa]/10 blur-xl" />
+
+            <span className="relative text-3xl text-[#1A5C38] mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-[#EAF5ED] border border-[#D4E3D7]">
               <item.icon />
             </span>
 
-            <h2 className="md:text-2xl font-space-grotesk text-[#4B6F52] text-center mt-3 w-11/12 mx-auto font-bold mb-4">
+            <h3 className="relative text-xl md:text-2xl font-space-grotesk text-[#0A140F] font-bold leading-tight">
               {item.title}
-            </h2>
+            </h3>
 
-            <p className="text-[#0A140F] font-dm-sans group-hover:text-black text-center h-50">
+            <p className="relative text-[#27362C] font-dm-sans mt-4 leading-8 flex-1">
               {item.description}
             </p>
 
-            <a
-              href={item.btnLink}
-              className="bg-[#4B6F52] grid justify-center w-60 hover:bg-[#a58a3a] mx-auto text-white font-bold py-2 px-4 rounded-lg mt-4 transition-transform duration-150 hover:scale-105 active:scale-95"
-            >
-              {item.btntext}
-            </a>
-          </div>
+            {item.btnLink && item.btntext ? (
+              <Link
+                href={item.btnLink}
+                className="relative mt-6 inline-flex items-center justify-center rounded-lg bg-[#1A5C38] px-5 py-3 text-white font-dm-sans font-bold hover:bg-[#c9a84c] transition-colors"
+              >
+                {item.btntext}
+              </Link>
+            ) : null}
+          </article>
         ))}
       </div>
     </section>
