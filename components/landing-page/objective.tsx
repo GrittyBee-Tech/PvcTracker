@@ -1,3 +1,5 @@
+"use client";
+
 import { OBJECTIVE_SCHEMA } from "@/utils/constants/objective";
 
 const Objective = () => {
@@ -7,21 +9,23 @@ const Objective = () => {
         {OBJECTIVE_SCHEMA.map((item, index) => (
           <div
             key={index}
-            className="bg-[#F9FDFA]  border-gray-200 border  group  hover:bg-white  shadow-xl  rounded-2xl p-6 max-h-112 flex flex-col justify-between"
+            className="bg-[#F9FDFA] border border-gray-200 group hover:bg-white shadow-xl rounded-2xl p-6 max-h-112 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-2 hover:scale-[1.03]"
           >
-            <span className="text-4xl group-hover:text-[#0A140F] text-[#4B6F52] mb-4 grid justify-center">
+            <span className="text-4xl group-hover:text-[#0A140F] text-[#4B6F52] mb-4 grid justify-center transition-transform duration-200 group-hover:rotate-6 group-hover:scale-110">
               <item.icon />
             </span>
-            <h2 className="md:text-2xl font-space-grotesk text-[#4B6F52] text-center mt-3  w-11/12 mx-auto font-bold mb-4">
+
+            <h2 className="md:text-2xl font-space-grotesk text-[#4B6F52] text-center mt-3 w-11/12 mx-auto font-bold mb-4">
               {item.title}
             </h2>
+
             <p className="text-[#0A140F] font-dm-sans group-hover:text-black text-center h-50">
               {item.description}
             </p>
 
             <a
               href={item.btnLink}
-              className="bg-[#4B6F52] grid  justify-center w-60 hover:bg-[#a58a3a] mx-auto text-white font-bold py-2 px-4 rounded-lg mt-4"
+              className="bg-[#4B6F52] grid justify-center w-60 hover:bg-[#a58a3a] mx-auto text-white font-bold py-2 px-4 rounded-lg mt-4 transition-transform duration-150 hover:scale-105 active:scale-95"
             >
               {item.btntext}
             </a>
