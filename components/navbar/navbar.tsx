@@ -14,7 +14,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="grid grid-flow-col p-6 lg:px-20 border-b border-border bg-[#F9FDFA] items-center justify-between py-3 fixed top-0 w-full">
+      <nav className=" z-99999 grid grid-flow-col p-6 lg:px-20 border-b border-border bg-white items-center justify-between py-3 fixed top-0 w-full">
         <Logo />
 
         <div className=" grid grid-flow-col ">
