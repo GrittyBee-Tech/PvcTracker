@@ -92,7 +92,6 @@ const About = () => {
             </p>
           </article>
         </div>
-
         <article className="rounded-3xl border border-[#DDE3DE] bg-white p-7 md:p-9 shadow-sm">
           <h2 className="font-space-grotesk text-2xl md:text-3xl font-bold text-[#0A140F] mb-3">
             About the Platform
