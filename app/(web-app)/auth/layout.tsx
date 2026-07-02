@@ -2,13 +2,22 @@
 
 import Logo from "@/components/ui/Logo";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import {
+  usePathname,
+  useRouter,
+  useSelectedLayoutSegment,
+} from "next/navigation";
 import { Suspense, useEffect } from "react";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 
 function AuthPortalContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const segment = useSelectedLayoutSegment();
+
+  if (segment === "reset-password" || pathname === "/auth/reset-password") {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen relative flex flex-col justify-center bg-linear-to-b from-accent/40 to-background">

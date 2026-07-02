@@ -32,6 +32,12 @@ const LandingPage = () => {
         >
           Learn More
         </Link>
+        <Link
+          href="/partner"
+          className="inline-flex items-center justify-center rounded-lg border border-[#1A5C38] px-6 py-3 text-[#1A5C38] font-dm-sans font-bold hover:bg-[#1A5C38] hover:text-white transition-colors"
+        >
+          Partner with us
+        </Link>
       </div>
       <div className="mt-10 grid lg:grid-cols-5 gap-5">
         <article className="lg:col-span-3 rounded-2xl bg-white border border-[#DCE6DE] p-6 md:p-8">
