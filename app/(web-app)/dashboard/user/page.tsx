@@ -84,7 +84,7 @@ export default function UserDashboardPage() {
   const pvcDisplay = getPvcStatusDisplay(user?.pvcStatus);
 
   return (
-    <div className="relative space-y-8">
+    <div className="relative space-y-8 md:pt-10 ">
       <div className="flex items-center justify-between">
         <div>
           <div className="grid grid-flow-col items-center w-max gap-2">
@@ -101,7 +101,7 @@ export default function UserDashboardPage() {
         </div>
       </div>
       {/* Status Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-2">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-8">
         <Card className="border-gray-400 shadow-md">
           <CardHeader className="flex flex-row  items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base font-medium text-primary">
