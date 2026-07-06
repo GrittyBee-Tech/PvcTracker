@@ -37,7 +37,7 @@ export interface IVolunteer extends Document {
     phone: string;
   };
 
-  isApproved: boolean;
+  status: "pending" | "approved" | "rejected";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -96,9 +96,10 @@ const VolunteerSchema: Schema<IVolunteer> = new Schema(
       },
     },
 
-    isApproved: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
     },
   },
   { timestamps: true }

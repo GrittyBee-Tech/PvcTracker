@@ -37,7 +37,7 @@ export default function DashboardLayout({
   const [navOpen, setNavOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-white text-white font-sans">
+    <div className="flex h-screen text-white font-sans">
       <DashboardSideBar
         links={links}
         role={role}
@@ -66,7 +66,11 @@ export default function DashboardLayout({
             </button>
             <div className="h-9 w-px bg-green-900/50" />
             <button className="flex items-center gap-2.5 p-1.5 pr-3 text-white hover:text-white transition-colors rounded-full hover:bg-green-900/20 border border-transparent hover:border-green-900/30">
-              <UserCircle className="w-8 h-8 text-white" />
+              {/* <UserCircle className="w-8 h-8 text-white" /> */}
+              <div className="w-9 h-9 rounded-full overflow-hidden bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center text-sm font-semibold tracking-wider select-none">
+                {user?.firstName?.[0]?.toUpperCase() || "U"}
+                {user?.lastName?.[0]?.toUpperCase() || "N"}
+              </div>
               <div className="flex flex-col items-start text-left">
                 <span className="text-sm  text-white font-dm-sans font-medium leading-none">
                   {displayName}
@@ -80,7 +84,7 @@ export default function DashboardLayout({
         </header>
 
         {/* Main Scrollable Content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-linear-to-b from-accent/40 to-background">
+        <main className="flex-1 overflow-y-auto p-8 bg-linear-to-b from-accent/40 to-background">
           <div className="max-w-6xl mx-auto">{children}</div>
         </main>
       </div>
@@ -103,7 +107,7 @@ const DashboardSideBar = ({
 
   return (
     <aside
-      className={`${navOpen ? "w-38" : "w-13"} transition-width duration-200 ease-in md:w-64 bg-[#F9FDFA] border-r border-green-900/30 flex flex-col`}
+      className={`${navOpen ? "w-38" : "w-13"} transition-width duration-200 ease-in md:w-64 bg-slate-50 border-r border-green-900/30 flex flex-col`}
     >
       <div className="h-16 flex items-center">
         <div

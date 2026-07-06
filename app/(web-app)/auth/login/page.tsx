@@ -62,7 +62,8 @@ export default function Login() {
         onRequest: () => {
           setIsLoading(true);
         },
-        onSuccess: () => {
+        onSuccess: ({ data, response }) => {
+          console.log({ data, response });
           Swal.fire({
             title: "Login successful!",
             icon: "success",
@@ -72,7 +73,7 @@ export default function Login() {
             timerProgressBar: true,
             showConfirmButton: false,
           });
-          router.push("/dashboard/user");
+          router.push(`/dashboard/${data.user?.role || "user"}`);
         },
         onError: (ctx) => {
           console.log(ctx.error);

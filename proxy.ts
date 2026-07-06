@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
       }
       
       // For page routes, redirect to a 403 or dashboard home
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL(`/dashboard/${userRole}`, request.url));
     }
   }
 

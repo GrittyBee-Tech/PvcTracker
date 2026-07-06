@@ -6,8 +6,12 @@ import DashboardLayout, {
 import { useAuth } from "@/hooks/useAuth";
 
 const adminLinks: DashboardLink[] = [
-  { href: "/dashboard/admin", label: "Dashboard", icon: "Home" },
+  { href: "/dashboard/admin", label: "Dashboard", icon: "LayoutDashboard" },
+  { href: "/dashboard/admin/admins", label: "Admins", icon: "ShieldCheck" },
   { href: "/dashboard/admin/users", label: "Users", icon: "Users" },
+  { href: "/dashboard/admin/volunteers", label: "Volunteers", icon: "UserCheck" },
+  { href: "/dashboard/admin/centres", label: "Centres", icon: "MapPin" },
+  { href: "/dashboard/admin/audit-logs", label: "Audit Logs", icon: "ClipboardList" },
   { href: "/dashboard/admin/settings", label: "Settings", icon: "Settings" },
 ];
 
