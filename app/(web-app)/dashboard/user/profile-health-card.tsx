@@ -2,17 +2,12 @@ import { CompletenessResult } from "@/utils/profile";
 import Link from "next/link";
 
 export function ProfileHealthCard({
-  ninStatus,
-  vin,
-  // completionPercentage,
   profileCompleteness,
 }: {
   ninStatus?: "verified" | "rejected" | "pending";
   vin?: string | null;
-  // completionPercentage: number;
   profileCompleteness: CompletenessResult;
 }) {
-  console.log(profileCompleteness);
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md flex flex-col justify-between">

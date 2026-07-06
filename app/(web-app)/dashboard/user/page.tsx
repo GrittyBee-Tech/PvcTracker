@@ -1,24 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { CheckCircle2, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  FaCheck,
-  FaCopy,
-  FaHandsClapping,
-  FaHourglassStart,
-  FaLocationDot,
-} from "react-icons/fa6";
-import {
-  FaAddressCard,
-  FaUser,
-  FaUserCheck,
-  FaUserEdit,
-  FaUserTimes,
-} from "react-icons/fa";
+import { FaCheck, FaCopy, FaHandsClapping } from "react-icons/fa6";
 import { NearestCentreCard } from "./nearest-centre-card";
 import { ProfileHealthCard } from "./profile-health-card";
 import { useState } from "react";
@@ -226,7 +209,9 @@ export default function UserDashboardPage() {
         <h2 className="text-xl font-semibold text-primary">Quick Actions</h2>
         <div className="grid gap-6 md:grid-cols-2 mt-4">
           <NearestCentreCard />
-          <ProfileHealthCard ninStatus={user?.ninStatus} vin={user?.vin} profileCompleteness={calculateProfileCompleteness(user)} />
+          <ProfileHealthCard
+            profileCompleteness={calculateProfileCompleteness(user)}
+          />
         </div>
       </div>
     </div>
