@@ -1,78 +1,141 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import Logo from "../ui/Logo";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { IoClose } from "react-icons/io5";
 
 const Navbar = () => {
-  // const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-  const handleMoblileMenuToggle = () => {
+  const handleMobileMenuToggle = () => {
     setShowMobileMenu((prev) => !prev);
   };
 
+  const closeMobileMenu = () => {
+    setShowMobileMenu(false);
+  };
+
+  useEffect(() => {
+    setShowMobileMenu(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (showMobileMenu) {
+      document.body.style.overflow = "hidden";
+      return;
+    }
+
+    document.body.style.overflow = "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showMobileMenu]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setShowMobileMenu(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const navLinkClass = (href: string) =>
+    `font-dm-sans font-bold transition-colors ${
+      pathname === href
+        ? "text-primary underline"
+        : "text-[#5C675D] hover:text-primary hover:underline"
+    }`;
+
   return (
     <>
-      <nav className=" z-99999 grid grid-flow-col p-6 lg:px-20 border-b border-border bg-white items-center justify-between py-3 fixed top-0 w-full">
-        <Logo />
+      <nav className="fixed top-0 z-50 w-full border-b border-border bg-white/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-16 max-w-360 items-center justify-between px-6 lg:px-20">
+          <Logo />
 
-        <div className=" grid grid-flow-col ">
-          <div className="hidden md:grid grid-flow-col items-center  gap-10 text-lg">
-            <a
-              href="/about"
-              className="hover:underline font-dm-sans text-[#5C675D] font-bold  "
-            >
+          <div className="hidden md:flex items-center gap-10 text-lg">
+            <Link href="/about" className={navLinkClass("/about")}>
               About
-            </a>
-            <a
-              href="/contact"
-              className="hover:underline font-dm-sans text-[#5C675D] font-bold "
-            >
+            </Link>
+            <Link href="/contact" className={navLinkClass("/contact")}>
               Contact
-            </a>
-            <a
+            </Link>
+            <Link
               href="/auth/register"
-              className="border-[#DDE3DE] bg-primary font-dm-sans text-[white] hover:bg-[#c9a84c] hover:text-white cursor-pointer border px-10  font-bold py-2 rounded-lg"
+              className="rounded-lg border border-[#DDE3DE] bg-primary px-7 py-2 font-dm-sans font-bold text-white transition-colors hover:bg-[#c9a84c]"
             >
               Get Started
-            </a>
+            </Link>
           </div>
 
-          <GiHamburgerMenu
-            onClick={handleMoblileMenuToggle}
-            className="md:hidden text-lg  text-[#5C675D]"
-          />
+          <button
+            type="button"
+            onClick={handleMobileMenuToggle}
+            className="inline-flex items-center justify-center rounded-md p-2 text-[#5C675D] transition-colors hover:bg-[#F2F6F2] md:hidden"
+            aria-label={showMobileMenu ? "Close menu" : "Open menu"}
+            aria-expanded={showMobileMenu}
+            aria-controls="mobile-nav-menu"
+          >
+            {showMobileMenu ? (
+              <IoClose className="text-2xl" />
+            ) : (
+              <GiHamburgerMenu className="text-xl" />
+            )}
+          </button>
         </div>
       </nav>
 
-      {/* Navbar mobile */}
       {showMobileMenu && (
-        <nav className="fixed md:hidden h-screen  bg-primary backdrop-blur-lg border-t border-t-primary z-50">
-          <div className="grid grid-flow-row items-center w-full px-5 py-3">
-            <Logo />
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 z-40 bg-black/40 md:hidden"
+            aria-label="Close mobile menu"
+            onClick={closeMobileMenu}
+          />
 
-            <a
-              href="/about"
-              className="hover:underline text-white  mt-4 font-bold"
-            >
-              About
-            </a>
-            <a
-              href="/contact"
-              className="hover:underline text-white mt-4 font-bold "
-            >
-              Contact
-            </a>
-            <a
-              href="/auth/register"
-              className="text-white bg-primary cursor-pointer mt-5 border px-4 py-1.5 font-semibold rounded-lg"
-            >
-              Get Started
-            </a>
-          </div>
-        </nav>
+          <nav
+            id="mobile-nav-menu"
+            className="fixed inset-x-0 top-16 z-50 border-b border-border bg-white shadow-lg md:hidden"
+          >
+            <div className="grid gap-1 px-6 py-5">
+              <Link
+                href="/about"
+                className="rounded-md px-2 py-2.5 font-dm-sans text-base font-bold text-[#1A5C38] hover:bg-[#F2F6F2]"
+                onClick={closeMobileMenu}
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className="rounded-md px-2 py-2.5 font-dm-sans text-base font-bold text-[#1A5C38] hover:bg-[#F2F6F2]"
+                onClick={closeMobileMenu}
+              >
+                Contact
+              </Link>
+              <Link
+                href="/auth/register"
+                className="mt-2 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2.5 font-dm-sans font-bold text-white transition-colors hover:bg-[#c9a84c]"
+                onClick={closeMobileMenu}
+              >
+                Get Started
+              </Link>
+            </div>
+          </nav>
+        </>
       )}
+
+      <div className="h-16" aria-hidden="true" />
     </>
   );
 };
