@@ -25,7 +25,8 @@ import { useState } from "react";
 
 export default function UserDashboardPage() {
   const { user } = useAuth();
-  const [copied, setCopied] = useState(false);
+  const [ninCopied, setNinCopied] = useState(false);
+  const [vinCopied, setVinCopied] = useState(false);
 
   // Safely grab dynamic variables
   const isNinVerified = user?.ninStatus === "verified";
@@ -35,8 +36,15 @@ export default function UserDashboardPage() {
   const handleCopyVin = () => {
     if (user?.vin) {
       navigator.clipboard.writeText(user.vin);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
+      setVinCopied(true);
+      setTimeout(() => setVinCopied(false), 2500);
+    }
+  };
+  const handleCopyNin = () => {
+    if (user?.nin) {
+      navigator.clipboard.writeText(user.nin);
+      setNinCopied(true);
+      setTimeout(() => setNinCopied(false), 2500);
     }
   };
 
@@ -44,7 +52,7 @@ export default function UserDashboardPage() {
     <div className="relative space-y-10">
       <div>
         <div className="flex items-center gap-2 w-max">
-          <h1 className="text-3xl font-space-grotesk font-bold text-primary">
+          <h1 className="md:text-3xl text-xl font-space-grotesk font-bold text-primary">
             Welcome, {user?.lastName} {user?.firstName}
           </h1>
           <FaHandsClapping className="text-primary text-3xl animate-bounce" />
@@ -97,7 +105,28 @@ export default function UserDashboardPage() {
                 NIN Verification
               </span>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 flex items-center justify-between bg-white border border-slate-200 px-2.5 py-1 rounded text-sm font-mono text-slate-700">
+              <span className="truncate max-w-36">
+                {user?.nin
+                  ? `${user.nin.slice(0, 4)}*****${user.nin.slice(-2)}`
+                  : "Not Linked Yet"}
+              </span>
+              {user?.nin && (
+                <button
+                  onClick={handleCopyNin}
+                  className="text-emerald-800 p-1 hover:bg-slate-100 rounded transition flex items-center gap-1"
+                  title="Copy permanent NIN"
+                >
+                  <FaCopy className="size-4" />
+                  <span
+                    className={`font-sans ${ninCopied ? "text-sm" : "text-xs"}`}
+                  >
+                    {ninCopied ? "Copied" : "Copy"}
+                  </span>
+                </button>
+              )}
+            </div>
+            {/* <div className="mt-4">
               <span
                 className={`text-sm font-medium px-2 py-0.5 rounded capitalize ${
                   user?.ninStatus === "verified"
@@ -111,7 +140,7 @@ export default function UserDashboardPage() {
                   ? user.ninStatus.replace("_", " ")
                   : "Pending Verification"}
               </span>
-            </div>
+            </div> */}
           </div>
 
           {/* Step 2: Custom Encrypted VIN Field */}
@@ -145,9 +174,9 @@ export default function UserDashboardPage() {
                 >
                   <FaCopy className="size-4" />
                   <span
-                    className={`font-sans ${copied ? "text-sm" : "text-xs"}`}
+                    className={`font-sans ${vinCopied ? "text-sm" : "text-xs"}`}
                   >
-                    {copied ? "Copied" : "Copy"}
+                    {vinCopied ? "Copied" : "Copy"}
                   </span>
                 </button>
               )}
