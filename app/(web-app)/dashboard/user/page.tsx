@@ -44,7 +44,7 @@ export default function UserDashboardPage() {
     <div className="relative space-y-10">
       <div>
         <div className="flex items-center gap-2 w-max">
-          <h1 className="text-3xl font-space-grotesk font-bold text-primary">
+          <h1 className="md:text-3xl text-xl font-space-grotesk font-bold text-primary">
             Welcome, {user?.lastName} {user?.firstName}
           </h1>
           <FaHandsClapping className="text-primary text-3xl animate-bounce" />

@@ -26,12 +26,18 @@ export function NearestCentreCard() {
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <Link href={'/dashboard/user/find-centre'} className="flex justify-center items-center gap-1 rounded-lg bg-emerald-800 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-900 transition">
+        <Link
+          href={"/dashboard/user/find-centre"}
+          className="flex justify-center items-center gap-1 rounded-lg bg-emerald-800 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-900 transition"
+        >
           View Map
         </Link>
-        <button className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+        <Link
+          href={"/dashboard/user/report-issues"}
+          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+        >
           Report Crowd
-        </button>
+        </Link>
       </div>
     </div>
   );
