@@ -22,6 +22,7 @@ import {
 import { NearestCentreCard } from "./nearest-centre-card";
 import { ProfileHealthCard } from "./profile-health-card";
 import { useState } from "react";
+import { calculateProfileCompleteness } from "@/utils/profile";
 
 export default function UserDashboardPage() {
   const { user } = useAuth();
@@ -224,44 +225,8 @@ export default function UserDashboardPage() {
       <div className="">
         <h2 className="text-xl font-semibold text-primary">Quick Actions</h2>
         <div className="grid gap-6 md:grid-cols-2 mt-4">
-          {/* <Card className="border-gray-400 shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium text-primary">
-                Find INEC Centre
-              </CardTitle>
-              <FaLocationDot className="w-5 h-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-3">
-                Locate the nearest registration or collection center.
-              </p>
-              <Link href="/dashboard/user/find-centre" passHref>
-                <Button className="w-full bg-primary text-white">
-                  Go to Centre Finder
-                </Button>
-              </Link>
-            </CardContent>
-          </Card> */}
           <NearestCentreCard />
-          {/* <Card className="border-gray-400 shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium text-primary">
-                Update Profile
-              </CardTitle>
-              <FaUserEdit className="w-5 h-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-8">
-                Edit your personal details or PVC information.
-              </p>
-              <Link href="/dashboard/user/edit-profile" passHref>
-                <Button className="w-full bg-primary text-white">
-                  Edit Profile
-                </Button>
-              </Link>
-            </CardContent>
-          </Card> */}
-          <ProfileHealthCard ninStatus={user?.ninStatus} vin={user?.vin} />
+          <ProfileHealthCard ninStatus={user?.ninStatus} vin={user?.vin} profileCompleteness={calculateProfileCompleteness(user)} />
         </div>
       </div>
     </div>
