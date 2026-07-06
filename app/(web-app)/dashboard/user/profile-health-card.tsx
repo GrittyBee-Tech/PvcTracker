@@ -1,14 +1,13 @@
+import { CompletenessResult } from "@/utils/profile";
 import Link from "next/link";
 
 export function ProfileHealthCard({
-  ninStatus,
-  vin,
+  profileCompleteness,
 }: {
   ninStatus?: "verified" | "rejected" | "pending";
   vin?: string | null;
+  profileCompleteness: CompletenessResult;
 }) {
-  // Example state tracker
-  const completionPercentage = 66;
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md flex flex-col justify-between">
@@ -17,53 +16,38 @@ export function ProfileHealthCard({
           ⚙️ Verification Progress
         </h3>
         <span className="text-sm font-bold text-emerald-700">
-          {completionPercentage}%
+          {profileCompleteness.percentage}%
         </span>
       </div>
 
       {/* Progress Bar */}
-      <div className="mt-2 h-2 w-full rounded-full bg-slate-100">
+      <div className="my-2 h-2 w-full rounded-full bg-slate-200">
         <div
           className="h-2 rounded-full bg-emerald-600 transition-all duration-500"
-          style={{ width: `${completionPercentage}%` }}
+          style={{ width: `${profileCompleteness.percentage}%` }}
         />
       </div>
 
       {/* Actionable Tasks List */}
-      <div className="mt-4 space-y-2.5">
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          {ninStatus === "verified" ? (
-            <>
-              <span className="text-emerald-600 font-bold">✓</span>
-              <span className="line-through text-slate-400">NIN Verified</span>
-            </>
-          ) : ninStatus === "rejected" ? (
-            <>
-              <span className="text-red-500 font-bold">✓</span>
-              <span className="line-through text-red-400">NIN Rejected</span>
-            </>
-          ) : (
-            <>
-              <span className="text-amber-500 font-bold">⚠️</span>
-              <span className=" text-slate-400">Verify your NIN</span>
-            </>
-          )}
-        </div>
-        <div className="flex items-center gap-2 text-sm text-slate-800 font-medium">
-          {vin ? (
-            <>
-              <span className="text-emerald-600 animate-bounce">✓</span>
-              <span className="flex-1 line-through text-slate-400">
-                VIN saved
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="text-amber-500 animate-bounce">⚠️</span>
-              <span className="flex-1">VIN Number Needed</span>
-            </>
-          )}
-        </div>
+      <div className="space-y-2">
+        {profileCompleteness?.missingFields.length === 0 ? (
+          <p className="text-emerald-600 font-semibold flex items-center gap-1">
+            <span className="text-emerald-600 font-bold text-xl mr-2">✓</span>
+            All fields are complete!
+          </p>
+        ) : (
+          <>
+            <h4 className="font-semibold text-red-500">Missing Info:</h4>
+            <ul className="list-none space-y-1.5 text-sm text-slate-600">
+              {profileCompleteness?.missingFields.slice(0, 3).map((field) => (
+                <li key={field} className="animate-bounce duration-50">
+                  <span className="text-amber-500 font-bold mr-2">⚠️</span>
+                  {field}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
 
       {/* Primary Action Contextualizes Based on Needs */}
