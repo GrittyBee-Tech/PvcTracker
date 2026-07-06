@@ -36,7 +36,7 @@ export function NearestCentreCard() {
           href={"/dashboard/user/report-issues"}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
         >
-          Report Crowd
+          Report Issue
         </Link>
       </div>
     </div>
