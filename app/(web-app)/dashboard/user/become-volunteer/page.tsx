@@ -66,23 +66,91 @@ export default function VolunteerPage() {
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    const maxSizeInBytes = 2 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      Swal.fire({
+        icon: "error",
+        text: "Invalid file format. Please upload JPG, PNG, or WEBP.",
+        toast: true,
+        position: "top-end",
+        timer: 2500,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+      return;
+    }
+
+    if (file.size > maxSizeInBytes) {
+      Swal.fire({
+        icon: "error",
+        text: "Image is too large. Maximum size is 2MB.",
+        toast: true,
+        position: "top-end",
+        timer: 2500,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+      return;
+    }
+
     setIsUploadingPhoto(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append(
-      "upload_preset",
-      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
-    );
 
     try {
+      const signatureRes = await fetch("/api/cloudinary/sign", {
+        method: "POST",
+      });
+
+      const signatureData = await signatureRes.json();
+
+      if (!signatureRes.ok) {
+        throw new Error(
+          signatureData?.error || "Unable to initialize image upload",
+        );
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", signatureData.uploadPreset);
+      formData.append("api_key", signatureData.apiKey);
+      formData.append("timestamp", String(signatureData.timestamp));
+      formData.append("signature", signatureData.signature);
+
+      if (signatureData.folder) {
+        formData.append("folder", signatureData.folder);
+      }
+
       const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/image/upload`,
         {
           method: "POST",
           body: formData,
         },
       );
       const data = await res.json();
+
+      if (!res.ok || !data?.secure_url) {
+        const cloudinaryMessage =
+          data?.error?.message ||
+          `Cloudinary upload failed with status ${res.status}`;
+
+        if (/unsigned|preset/i.test(cloudinaryMessage)) {
+          throw new Error(
+            "Cloudinary rejected this upload preset. Ensure the preset exists and is set to Unsigned in Cloudinary settings.",
+          );
+        }
+
+        if (/file size too large|max file size/i.test(cloudinaryMessage)) {
+          throw new Error(
+            "Cloudinary rejected the image size. Please upload a smaller photo.",
+          );
+        }
+
+        throw new Error(cloudinaryMessage);
+      }
+
       setPhotoUrl(data.secure_url);
     } catch (err: unknown) {
       Swal.fire({
@@ -202,7 +270,18 @@ export default function VolunteerPage() {
         const res = await fetch("/api/volunteer/apply", {
           method: "GET",
         });
+
+        if (!res.ok) {
+          return;
+        }
+
         const data = await res.json();
+
+        if (!data?.application) {
+          setDisableSubmit(false);
+          setTerms(false);
+          return;
+        }
 
         setForm({
           maritalStatus: data.application?.maritalStatus,
@@ -256,10 +335,10 @@ export default function VolunteerPage() {
             {PhotoUrl ? (
               <Image
                 src={PhotoUrl}
-                width={80}
-                height={80}
+                width={100}
+                height={100}
                 alt="Passport preview"
-                className="w-20 h-20 rounded-full object-cover"
+                className="rounded-full object-cover h-20 w-20"
               />
             ) : (
               <FaUserTie className="h-10 w-10 text-primary" />
@@ -267,7 +346,7 @@ export default function VolunteerPage() {
           </div>
           <div>
             <p
-              className="text-sm text-center text-primary font-medium cursor-pointer"
+              className="text-sm mt-7 text-center text-primary font-medium cursor-pointer"
               onClick={() =>
                 document.getElementById("passport-photo-input")?.click()
               }

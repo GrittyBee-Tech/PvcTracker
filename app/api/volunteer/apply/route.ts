@@ -11,8 +11,12 @@ export const POST = withDb(async (request: Request) => {
   try {
     const formData = await request.formData();
 
-    const session = await auth.api.getSession(request);
-    const userId = new Types.ObjectId(session?.user.id as string);
+    const session = await auth.api.getSession({ headers: request.headers });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
+    }
+
+    const userId = new Types.ObjectId(session.user.id);
     const stateOfResidence = formData.get("stateOfResidence") as string;
     const homeAddress = formData.get("homeAddress") as string;
     const maritalStatus = formData.get("maritalStatus") as
@@ -85,8 +89,12 @@ export const POST = withDb(async (request: Request) => {
 
 export const GET = withDb(async (request: Request) => {
   try {
-    const session = await auth.api.getSession(request);
-    const userId = new Types.ObjectId(session?.user.id as string);
+    const session = await auth.api.getSession({ headers: request.headers });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
+    }
+
+    const userId = new Types.ObjectId(session.user.id);
     const Application = await VolunteerModel.findOne({
       userId,
     });
