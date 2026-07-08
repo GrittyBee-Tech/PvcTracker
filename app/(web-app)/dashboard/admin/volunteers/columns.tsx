@@ -133,7 +133,7 @@ const VolunteerActionsCell = ({
                 width={80}
                 height={80}
                 alt="Volunteer"
-                className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+                className="rounded-full object-cover border-2 border-primary/20"
               />
             )}
             <div>
@@ -197,9 +197,11 @@ const VolunteerActionsCell = ({
               <p className="text-sm text-gray-500">Application Status</p>
               <span
                 className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                  application.status === "approved" ? "bg-green-100 text-green-800" :
-                  application.status === "rejected" ? "bg-red-100 text-red-800" :
-                  "bg-yellow-100 text-yellow-800"
+                  application.status === "approved"
+                    ? "bg-green-100 text-green-800"
+                    : application.status === "rejected"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-yellow-100 text-yellow-800"
                 }`}
               >
                 {application.status || "pending"}
@@ -242,8 +244,8 @@ const VolunteerActionsCell = ({
             as a volunteer?
           </p>
           <p className="text-sm text-gray-500">
-            This will grant them access to the volunteer dashboard and allow them
-            to register other users.
+            This will grant them access to the volunteer dashboard and allow
+            them to register other users.
           </p>
         </div>
       </Modal>
@@ -353,9 +355,11 @@ export const columns = (refresh: () => void): ColumnDef<any>[] => [
       return (
         <span
           className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-            status === "approved" ? "bg-green-100 text-green-800" :
-            status === "rejected" ? "bg-red-100 text-red-800" :
-            "bg-yellow-100 text-yellow-800"
+            status === "approved"
+              ? "bg-green-100 text-green-800"
+              : status === "rejected"
+                ? "bg-red-100 text-red-800"
+                : "bg-yellow-100 text-yellow-800"
           }`}
         >
           {status}
@@ -370,6 +374,8 @@ export const columns = (refresh: () => void): ColumnDef<any>[] => [
   },
   {
     id: "actions",
-    cell: ({ row }) => <VolunteerActionsCell application={row.original} refresh={refresh} />,
+    cell: ({ row }) => (
+      <VolunteerActionsCell application={row.original} refresh={refresh} />
+    ),
   },
 ];
