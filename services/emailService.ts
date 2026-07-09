@@ -23,7 +23,7 @@ export async function sendWelcomeEmail(
   try {
     const resend = getResendInstance();
     const { data, error } = await resend.emails.send({
-      from: "PVC WAKA <onboarding@pvc-waka.izzyman.space>",
+      from: "PVC WAKA <onboarding@support.pvctracker.org>",
       to: [email],
       subject: "Welcome to PVC WAKA!",
       react: WelcomeEmail({ firstName, verificationUrl }) as React.ReactElement,
@@ -50,7 +50,7 @@ export async function sendPasswordResetEmail(
   try {
     const resend = getResendInstance();
     const { data, error } = await resend.emails.send({
-      from: "PVC WAKA <onboarding@pvc-waka.izzyman.space>",
+      from: "PVC WAKA <onboarding@support.pvctracker.org>",
       to: [email],
       subject: "Password Reset Request",
       react: ResetPasswordEmail({
