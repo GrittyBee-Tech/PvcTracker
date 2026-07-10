@@ -149,16 +149,16 @@ const VolunteerActionsCell = ({
             <div>
               <p className="text-sm text-gray-500">Marital Status</p>
               <p className="font-medium capitalize">
-                {application.maritalStatus}
+                {application?.maritalStatus}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">State of Residence</p>
-              <p className="font-medium">{application.stateOfResidence}</p>
+              <p className="font-medium">{application?.stateOfResidence}</p>
             </div>
             <div className="col-span-2">
               <p className="text-sm text-gray-500">Home Address</p>
-              <p className="font-medium">{application.homeAddress}</p>
+              <p className="font-medium">{application?.homeAddress}</p>
             </div>
           </div>
 
@@ -169,25 +169,25 @@ const VolunteerActionsCell = ({
             <div className="grid grid-cols-2 gap-y-4 gap-x-4">
               <div>
                 <p className="text-sm text-gray-500">Name</p>
-                <p className="font-medium">{application.nextOfKin?.name}</p>
+                <p className="font-medium">{application?.nextOfKin?.name}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Relationship</p>
                 <p className="font-medium capitalize">
-                  {application.nextOfKin?.relationship}
+                  {application?.nextOfKin?.relationship}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Phone</p>
-                <p className="font-medium">{application.nextOfKin?.phone}</p>
+                <p className="font-medium">{application?.nextOfKin?.phone}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">State</p>
-                <p className="font-medium">{application.nextOfKin?.state}</p>
+                <p className="font-medium">{application?.nextOfKin?.state}</p>
               </div>
               <div className="col-span-2">
                 <p className="text-sm text-gray-500">Address</p>
-                <p className="font-medium">{application.nextOfKin?.address}</p>
+                <p className="font-medium">{application?.nextOfKin?.address}</p>
               </div>
             </div>
           </div>
@@ -206,7 +206,7 @@ const VolunteerActionsCell = ({
               </span>
             </div>
             <p className="text-xs text-gray-400">
-              Applied on: {new Date(application.createdAt).toLocaleDateString()}
+              Applied on: {new Date(application?.createdAt).toLocaleDateString()}
             </p>
           </div>
         </div>
