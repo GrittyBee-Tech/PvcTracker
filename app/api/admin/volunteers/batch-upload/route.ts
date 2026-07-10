@@ -8,7 +8,10 @@ import * as XLSX from "xlsx";
 
 export const POST = withDb(async (request: Request) => {
   try {
-    const { authorized, response, session } = await checkPermission(request, "manage:volunteers");
+    const { authorized, response, session } = await checkPermission(
+      request,
+      "manage:volunteers",
+    );
     if (!authorized && response) return response;
 
     const formData = await request.formData();
@@ -40,6 +43,13 @@ export const POST = withDb(async (request: Request) => {
     const emailKey = keys.find((k) => k.toLowerCase() === "email");
     const vinKey = keys.find((k) => k.toLowerCase() === "vin");
 
+    if (!vinKey) {
+      return NextResponse.json(
+        { message: "Invalid file format. VIN column is required." },
+        { status: 400 },
+      );
+    }
+
     if (!emailKey) {
       return NextResponse.json(
         { message: "Invalid file format. Email column is required." },
@@ -54,15 +64,15 @@ export const POST = withDb(async (request: Request) => {
       const email = row[emailKey]?.toString().trim();
       const vin = vinKey ? row[vinKey]?.toString().trim() : "";
 
-      if (!email) continue;
+      if (!vin) continue;
 
       try {
         const user = await UserModel.findOne({
-          email: { $regex: new RegExp(`^${email}$`, "i") },
+          vin: { $regex: new RegExp(`^${vin}$`, "i") },
         });
 
         if (!user) {
-          errors.push(`User not found for email: ${email}`);
+          errors.push(`User not found for VIN: ${vin}`);
           continue;
         }
 
@@ -103,7 +113,7 @@ export const POST = withDb(async (request: Request) => {
 
         successCount++;
       } catch (err: any) {
-        errors.push(`Error processing ${email}: ${err.message}`);
+        errors.push(`Error processing VIN ${vin}: ${err.message}`);
       }
     }
 
@@ -115,7 +125,7 @@ export const POST = withDb(async (request: Request) => {
       metadata: {
         fileName: file.name,
         successCount,
-        errorCount: errors.length,
+        errors,
       },
     });
 
@@ -135,4 +145,3 @@ export const POST = withDb(async (request: Request) => {
     );
   }
 });
-
