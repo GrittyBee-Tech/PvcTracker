@@ -95,8 +95,11 @@ const Footer = () => {
             Contact
           </h3>
           <div className="space-y-2 font-dm-sans text-sm text-[#5C675D]">
-            <p>support@pvcwaka.org</p>
-            <p>+234 (0) 800 123 4567</p>
+            <a href="mailto:info@abenolfoundation.org">
+              info@abenolfoundation.org
+            </a>
+
+            <p className="mt-2">+234 (0) 800 123 4567</p>
             <p>Mon - Fri, 9:00am - 5:00pm</p>
           </div>
         </div>
