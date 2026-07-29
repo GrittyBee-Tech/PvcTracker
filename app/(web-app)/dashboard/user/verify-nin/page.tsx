@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import PaystackPop from "@paystack/inline-js";
-import { useRouter } from "next/navigation";
-import { IoFootstepsSharp } from "react-icons/io5";
+import { useFlutterwave } from "flutterwave-react-v3";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { useAuth } from "@/hooks/useAuth";
 import { showToast } from "@/utils/constants/toast";
@@ -12,6 +12,7 @@ import Modal from "@/components/ui/modal";
 
 export default function VerifyNin() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
 
   const isInitialized = useRef(false);
@@ -19,8 +20,78 @@ export default function VerifyNin() {
   const [loading, setLoading] = useState(true);
   const [verifyNin, setVerifyNin] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [flutterwaveModalOpen, setFlutterwaveModalOpen] = useState(false);
+  const [flutterwaveConfig, setFlutterwaveConfig] = useState<{
+    public_key: string;
+    tx_ref: string;
+    amount: number;
+    currency: string;
+    payment_options: string;
+    customer: {
+      email: string;
+      phone_number: string;
+      name: string;
+    };
+  } | null>(null);
 
+  const paymentProvider: "flutterwave" | "paystack" = "flutterwave";
   const [nin, setNin] = useState(user?.nin || "");
+
+  const verifyPayment = async (
+    reference: string | number,
+    provider: "paystack" | "flutterwave",
+  ) => {
+    try {
+      const verifyRes = await fetch("/api/user/nin-payment/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reference: String(reference),
+          provider,
+          txRef: flutterwaveConfig?.tx_ref || "",
+        }),
+      });
+
+      const verifyData = await verifyRes.json();
+
+      if (!verifyRes.ok) {
+        showToast("error", verifyData.message || "Payment verification failed");
+        return;
+      }
+
+      setVerifyNin(true);
+      showToast(
+        "success",
+        verifyData.message || "Payment verified successfully",
+      );
+      setFlutterwaveModalOpen(false);
+    } catch (error) {
+      showToast("error", "Unable to verify payment");
+    }
+  };
+
+  const handleFlutterwavePayment = useFlutterwave({
+    public_key: flutterwaveConfig?.public_key || "",
+    tx_ref: flutterwaveConfig?.tx_ref || "",
+    amount: flutterwaveConfig?.amount || 0,
+    currency: flutterwaveConfig?.currency || "NGN",
+    payment_options: flutterwaveConfig?.payment_options || "card,banktransfer",
+    customer: flutterwaveConfig?.customer || {
+      email: user?.email || "",
+      phone_number: "",
+      name:
+        [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+        user?.email ||
+        "",
+    },
+    customizations: {
+      title: "PVC WAKA NIN Verification",
+      description: "Complete your profile verification",
+      logo: "https://res.cloudinary.com/demo/image/upload/v1693500000/pvc-waka-logo.png",
+    },
+  });
 
   const verifyNinNumber = async () => {
     if (!nin.trim()) {
@@ -52,10 +123,23 @@ export default function VerifyNin() {
       showToast("success", "NIN verified successfully. Redirecting");
       router.push("/dashboard/user");
     } catch (error) {
-      console.error(error);
       showToast("error", "Failed to verify NIN");
+    } finally {
+      setVerifying(false);
     }
   };
+
+  useEffect(() => {
+    const reference =
+      searchParams.get("transaction_id") ||
+      searchParams.get("tx_ref") ||
+      searchParams.get("trxref");
+
+    if (reference) {
+      void verifyPayment(reference, paymentProvider);
+      return;
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (isInitialized.current) return;
@@ -70,6 +154,7 @@ export default function VerifyNin() {
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ provider: paymentProvider }),
         });
 
         const data = await res.json();
@@ -77,7 +162,10 @@ export default function VerifyNin() {
         setLoading(false);
 
         if (!res.ok) {
-          showToast("error", data.message);
+          showToast(
+            "error",
+            data.message || data.error || "Unable to start payment",
+          );
           router.push("/dashboard/user");
           return;
         }
@@ -88,40 +176,25 @@ export default function VerifyNin() {
           return;
         }
 
+        if (data.provider === "flutterwave") {
+          const publicKey = process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY;
+          setFlutterwaveConfig({
+            public_key: publicKey || "",
+            tx_ref: data.reference,
+            amount: Number(data.amount),
+            currency: data.currency || "NGN",
+            payment_options: data.meta?.payment_options || "card,banktransfer",
+            customer: data.meta?.customer,
+          });
+          setFlutterwaveModalOpen(true);
+          return;
+        }
+
         const popup = new PaystackPop();
 
         popup.resumeTransaction(data.access_code, {
           onSuccess: async ({ reference }) => {
-            try {
-              const verifyRes = await fetch("/api/user/nin-payment/verify", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  reference,
-                }),
-              });
-
-              const verifyData = await verifyRes.json();
-
-              if (!verifyRes.ok) {
-                showToast(
-                  "error",
-                  verifyData.message || "Payment verification failed",
-                );
-                return;
-              }
-
-              setVerifyNin(true);
-              showToast(
-                "success",
-                verifyData.message || "Payment verified successfully",
-              );
-            } catch (error) {
-              console.error(error);
-              showToast("error", "Unable to verify payment");
-            }
+            await verifyPayment(reference, "paystack");
           },
 
           onCancel: () => {
@@ -129,8 +202,6 @@ export default function VerifyNin() {
           },
         });
       } catch (error) {
-        console.error(error);
-
         if (error instanceof Error) {
           showToast("error", error.message);
         } else {
@@ -145,18 +216,35 @@ export default function VerifyNin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!flutterwaveModalOpen || !flutterwaveConfig) return;
+
+    handleFlutterwavePayment({
+      callback: async (response) => {
+        const transactionId = response?.transaction_id;
+        if (transactionId) {
+          await verifyPayment(transactionId, "flutterwave");
+        }
+      },
+      onClose: () => {
+        setLoading(false);
+        setFlutterwaveModalOpen(false);
+        router.back();
+      },
+    });
+    setFlutterwaveModalOpen(false);
+  }, [flutterwaveConfig, flutterwaveModalOpen, handleFlutterwavePayment]);
+
   return (
     <section className="-ml-6">
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="grid mx-auto">
-            <div className="grid grid-flow-col gap-2 text-white w-max font-bold">
+          <div className="mx-auto grid">
+            <div className="grid w-max grid-flow-col gap-2 font-bold text-white">
               <h1 className="text-xl sm:text-2xl md:text-7xl">PVC WAKA</h1>
-
-              <IoFootstepsSharp className="text-xl sm:text-2xl md:text-3xl" />
             </div>
 
-            <p className="text-xl text-center animate-ping text-white mt-6">
+            <p className="mt-6 animate-ping text-center text-xl text-white">
               Opening payment...
             </p>
           </div>
@@ -173,7 +261,7 @@ export default function VerifyNin() {
             <button
               onClick={verifyNinNumber}
               disabled={verifying}
-              className="md:px-6 md:py-2 py-2 px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60"
+              className="rounded border border-green-700 bg-primary px-4 py-2 font-bold text-white disabled:opacity-60 md:px-6 md:py-2 md:text-lg"
             >
               {verifying ? "Verifying..." : "Verify NIN"}
             </button>

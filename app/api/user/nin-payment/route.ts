@@ -1,4 +1,8 @@
 import { auth } from "@/lib/auth";
+import {
+  initializeFlutterwavePayment,
+  initializePaystackPayment,
+} from "@/lib/paymentHelpers";
 import { withDb } from "@/lib/withDb";
 import TransactionModel from "@/models/transaction";
 import VerificationSessionModel from "@/models/verificationSession";
@@ -7,16 +11,30 @@ import { NextResponse } from "next/server";
 export const POST = withDb(async (request: Request) => {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
-    const email = session?.user.email;
-    const { LUMIID_VERIFICATION_AMOUNT, PAYSTACK_SECRET_KEY } = process.env;
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const email = session.user.email;
+    const amount = Number(process.env.LUMIID_VERIFICATION_AMOUNT || 0);
+    const provider = body.provider || process.env.DEFAULT_PAYMENT_PROVIDER;
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.APP_URL ||
+      "http://localhost:3000";
+    const redirectUrl = `${appUrl.replace(/\/$/, "")}/dashboard/user/verify-nin`;
 
     const existingTransaction = await TransactionModel.findOne({
-      user_id: session?.user.id,
+      user_id: session.user.id,
       purpose: "NIN Verification",
       status: "success",
     });
+    // console.log("Existing transaction:", { existingTransaction });
 
     if (existingTransaction) {
+      // && existingTransaction.provider !== "flutterwave"
       const usedSession = await VerificationSessionModel.findOne({
         transaction_id: existingTransaction._id.toString(),
         status: { $in: ["verified", "rejected"] },
@@ -28,6 +46,7 @@ export const POST = withDb(async (request: Request) => {
             message: "Payment already completed for NIN verification.",
             access_code: existingTransaction.access_code,
             payment_status: "success",
+            provider: existingTransaction.provider,
           },
           { status: 200 },
         );
@@ -35,7 +54,7 @@ export const POST = withDb(async (request: Request) => {
     }
 
     const pendingTransaction = await TransactionModel.findOne({
-      user_id: session?.user.id,
+      user_id: session.user.id,
       purpose: "NIN Verification",
       status: "pending",
     });
@@ -45,53 +64,100 @@ export const POST = withDb(async (request: Request) => {
         {
           message: "Payment initialization resumed.",
           access_code: pendingTransaction.access_code,
-          paymnt_status: "pending",
+          tx_ref: pendingTransaction.reference,
+          payment_status: "pending",
+          provider: pendingTransaction.provider,
+          amount: pendingTransaction.amount,
+          currency: "NGN",
+          meta: pendingTransaction.meta || {},
         },
         { status: 200 },
       );
     }
 
-    const res = await fetch("https://api.paystack.co/transaction/initialize", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-      },
-      body: JSON.stringify({
+    if (provider === "flutterwave") {
+      const customer = {
         email,
-        amount: Number(LUMIID_VERIFICATION_AMOUNT),
-        currency: "NGN",
-        metadata: {
-          userId: session?.user.id,
-          purpose: "id_verification",
+        name:
+          [session.user.firstName, session.user.lastName]
+            .filter(Boolean)
+            .join(" ") || email,
+      };
+
+      const initResult = await initializeFlutterwavePayment({
+        userId: session.user.id,
+        email,
+        amount,
+        redirectUrl,
+        customer,
+      });
+
+      if (!initResult.ok) {
+        console.error("Flutterwave Initialization Error:", initResult.raw);
+        return NextResponse.json(
+          { error: initResult.error || "Failed to initialize NIN payment" },
+          { status: initResult.status },
+        );
+      }
+
+      await TransactionModel.create({
+        user_id: session.user.id,
+        reference: initResult.reference,
+        provider: "flutterwave",
+        access_code: initResult.payment_url,
+        purpose: "NIN Verification",
+        amount: initResult.amount!,
+        status: "pending",
+        meta: initResult.meta || {},
+      });
+
+      return NextResponse.json(
+        {
+          message: "Payment initialized successfully",
+          payment_status: "pending",
+          provider: "flutterwave",
+          reference: initResult.reference,
+          amount: initResult.amount,
+          currency: initResult.currency,
+          meta: initResult.meta,
+          payment_url: initResult.payment_url,
         },
-      }),
+        { status: 201 },
+      );
+    }
+
+    const initResult = await initializePaystackPayment({
+      userId: session.user.id,
+      email,
+      amount,
     });
 
-    const initializeData = await res.json();
-
-    if (initializeData.status !== true) {
-      console.error("Paystack Initialization Error:", initializeData);
+    if (!initResult.ok) {
+      console.error("Paystack Initialization Error:", initResult.raw);
       return NextResponse.json(
-        { error: "Failed to initialize NIN payment" },
-        { status: 500 },
+        { error: initResult.error || "Failed to initialize NIN payment" },
+        { status: initResult.status },
       );
     }
 
     await TransactionModel.create({
-      user_id: session?.user.id,
-      reference: initializeData.data.reference,
-      access_code: initializeData.data.access_code,
+      user_id: session.user.id,
+      reference: initResult.reference!,
+      provider: "paystack",
+      access_code: initResult.access_code,
       purpose: "NIN Verification",
-      amount: Number(LUMIID_VERIFICATION_AMOUNT),
+      amount,
       status: "pending",
     });
 
     return NextResponse.json(
       {
-        message: initializeData.message,
+        message: initResult.message,
         payment_status: "pending",
-        access_code: initializeData.data.access_code,
+        provider: "paystack",
+        access_code: initResult.access_code,
+        reference: initResult.reference,
+        amount,
       },
       { status: 201 },
     );
