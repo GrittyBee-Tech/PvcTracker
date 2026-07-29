@@ -94,12 +94,16 @@ const Footer = () => {
           <h3 className="font-space-grotesk text-base font-bold text-[#1A5C38] mb-4">
             Contact
           </h3>
-          <div className="space-y-2 font-dm-sans text-sm text-[#5C675D]">
+          <div className=" grid space-y-2 font-dm-sans text-sm text-[#5C675D]">
             <a href="mailto:info@abenolfoundation.org">
               info@abenolfoundation.org
             </a>
-
-            <p className="mt-2">+234 (0) 800 123 4567</p>
+            <a href="mailto:support@pvcwaka.org" className="">
+              support@pvcwaka.org
+            </a>
+            <p>
+              <a href="tel:+2347055066284">+234 (0) 705 506 6284</a>
+            </p>
             <p>Mon - Fri, 9:00am - 5:00pm</p>
           </div>
         </div>
