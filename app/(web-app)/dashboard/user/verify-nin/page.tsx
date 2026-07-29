@@ -68,7 +68,6 @@ export default function VerifyNin() {
       );
       setFlutterwaveModalOpen(false);
     } catch (error) {
-      console.error(error);
       showToast("error", "Unable to verify payment");
     }
   };
@@ -124,7 +123,6 @@ export default function VerifyNin() {
       showToast("success", "NIN verified successfully. Redirecting");
       router.push("/dashboard/user");
     } catch (error) {
-      console.error(error);
       showToast("error", "Failed to verify NIN");
     } finally {
       setVerifying(false);
@@ -160,7 +158,6 @@ export default function VerifyNin() {
         });
 
         const data = await res.json();
-        console.log("Payment initialization response:", data);
 
         setLoading(false);
 
@@ -181,7 +178,6 @@ export default function VerifyNin() {
 
         if (data.provider === "flutterwave") {
           const publicKey = process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY;
-          console.log("Flutterwave public key:", publicKey);
           setFlutterwaveConfig({
             public_key: publicKey || "",
             tx_ref: data.reference,
@@ -206,8 +202,6 @@ export default function VerifyNin() {
           },
         });
       } catch (error) {
-        console.error(error);
-
         if (error instanceof Error) {
           showToast("error", error.message);
         } else {
@@ -227,7 +221,6 @@ export default function VerifyNin() {
 
     handleFlutterwavePayment({
       callback: async (response) => {
-        console.log({ response });
         const transactionId = response?.transaction_id;
         if (transactionId) {
           await verifyPayment(transactionId, "flutterwave");

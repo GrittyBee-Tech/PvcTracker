@@ -17,6 +17,11 @@ export const POST = withDb(async (request: Request) => {
     }
 
     const { reference, txRef, provider } = await request.json();
+    console.log("Verifying payment with reference:", {
+      reference,
+      txRef,
+      provider,
+    });
     const existingTransaction = await TransactionModel.findOne({
       user_id: session.user.id,
       $or: [
