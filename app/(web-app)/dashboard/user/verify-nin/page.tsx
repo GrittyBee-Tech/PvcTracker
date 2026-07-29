@@ -50,6 +50,7 @@ export default function VerifyNin() {
         body: JSON.stringify({
           reference: String(reference),
           provider,
+          txRef: flutterwaveConfig?.tx_ref || "",
         }),
       });
 
@@ -65,6 +66,7 @@ export default function VerifyNin() {
         "success",
         verifyData.message || "Payment verified successfully",
       );
+      setFlutterwaveModalOpen(false);
     } catch (error) {
       console.error(error);
       showToast("error", "Unable to verify payment");
@@ -225,6 +227,7 @@ export default function VerifyNin() {
 
     handleFlutterwavePayment({
       callback: async (response) => {
+        console.log({ response });
         const transactionId = response?.transaction_id;
         if (transactionId) {
           await verifyPayment(transactionId, "flutterwave");
