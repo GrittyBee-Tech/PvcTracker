@@ -63,13 +63,13 @@ export const POST = withDb(async (request: Request) => {
       return NextResponse.json(
         {
           message: "Payment initialization resumed.",
-          access_code: pendingTransaction.access_code,
-          tx_ref: pendingTransaction.reference,
           payment_status: "pending",
           provider: pendingTransaction.provider,
+          reference: pendingTransaction.reference,
           amount: pendingTransaction.amount,
           currency: "NGN",
           meta: pendingTransaction.meta || {},
+          access_code: pendingTransaction.access_code,
         },
         { status: 200 },
       );
