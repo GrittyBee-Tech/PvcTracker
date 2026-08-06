@@ -9,6 +9,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { showToast } from "@/utils/constants/toast";
 
 import Modal from "@/components/ui/modal";
+import NoRefundPolicy, {
+  NIN_POLICY_CONSENT_KEY,
+} from "@/components/ui/NoRefundPolicy";
 
 export default function VerifyNin() {
   const router = useRouter();
@@ -20,6 +23,8 @@ export default function VerifyNin() {
   const [loading, setLoading] = useState(true);
   const [verifyNin, setVerifyNin] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [showPolicy, setShowPolicy] = useState(false);
+  const [agreedToPolicy, setAgreedToPolicy] = useState(false);
   const [flutterwaveModalOpen, setFlutterwaveModalOpen] = useState(false);
   const [flutterwaveConfig, setFlutterwaveConfig] = useState<{
     public_key: string;
@@ -141,78 +146,107 @@ export default function VerifyNin() {
     }
   }, [searchParams]);
 
+  const startPayment = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/user/nin-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ provider: paymentProvider }),
+      });
+
+      const data = await res.json();
+
+      setLoading(false);
+
+      if (!res.ok) {
+        showToast(
+          "error",
+          data.message || data.error || "Unable to start payment",
+        );
+        router.push("/dashboard/user");
+        return;
+      }
+
+      if (data.payment_status === "success") {
+        showToast("success", data.message);
+        setVerifyNin(true);
+        return;
+      }
+
+      if (data.provider === "flutterwave") {
+        const publicKey = process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY;
+        setFlutterwaveConfig({
+          public_key: publicKey || "",
+          tx_ref: data.reference,
+          amount: Number(data.amount),
+          currency: data.currency || "NGN",
+          payment_options: data.meta?.payment_options || "card,banktransfer",
+          customer: data.meta?.customer,
+        });
+        setFlutterwaveModalOpen(true);
+        return;
+      }
+
+      const popup = new PaystackPop();
+
+      popup.resumeTransaction(data.access_code, {
+        onSuccess: async ({ reference }) => {
+          await verifyPayment(reference, "paystack");
+        },
+
+        onCancel: () => {
+          router.push("/dashboard/user");
+        },
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        showToast("error", error.message);
+      } else {
+        showToast("error", "Something went wrong");
+      }
+
+      setLoading(false);
+    }
+  };
+
+  const acceptPolicyAndPay = () => {
+    if (!agreedToPolicy) {
+      showToast("error", "Please accept the no refund policy to continue");
+      return;
+    }
+
+    setShowPolicy(false);
+    void startPayment();
+  };
+
   useEffect(() => {
     if (isInitialized.current) return;
 
     isInitialized.current = true;
     if (user?.ninStatus === "verified") return;
 
-    const startPayment = async () => {
-      try {
-        const res = await fetch("/api/user/nin-payment", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ provider: paymentProvider }),
-        });
+    // Returning from a payment redirect — the reference effect handles it.
+    const hasPaymentReference =
+      searchParams.get("transaction_id") ||
+      searchParams.get("tx_ref") ||
+      searchParams.get("trxref");
 
-        const data = await res.json();
+    if (hasPaymentReference) return;
 
-        setLoading(false);
+    // Already accepted on the dashboard modal — go straight to payment.
+    if (sessionStorage.getItem(NIN_POLICY_CONSENT_KEY) === "true") {
+      sessionStorage.removeItem(NIN_POLICY_CONSENT_KEY);
+      void startPayment();
+      return;
+    }
 
-        if (!res.ok) {
-          showToast(
-            "error",
-            data.message || data.error || "Unable to start payment",
-          );
-          router.push("/dashboard/user");
-          return;
-        }
-
-        if (data.payment_status === "success") {
-          showToast("success", data.message);
-          setVerifyNin(true);
-          return;
-        }
-
-        if (data.provider === "flutterwave") {
-          const publicKey = process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY;
-          setFlutterwaveConfig({
-            public_key: publicKey || "",
-            tx_ref: data.reference,
-            amount: Number(data.amount),
-            currency: data.currency || "NGN",
-            payment_options: data.meta?.payment_options || "card,banktransfer",
-            customer: data.meta?.customer,
-          });
-          setFlutterwaveModalOpen(true);
-          return;
-        }
-
-        const popup = new PaystackPop();
-
-        popup.resumeTransaction(data.access_code, {
-          onSuccess: async ({ reference }) => {
-            await verifyPayment(reference, "paystack");
-          },
-
-          onCancel: () => {
-            router.push("/dashboard/user");
-          },
-        });
-      } catch (error) {
-        if (error instanceof Error) {
-          showToast("error", error.message);
-        } else {
-          showToast("error", "Something went wrong");
-        }
-
-        setLoading(false);
-      }
-    };
-
-    startPayment();
+    // Nothing is charged until the user accepts the no refund policy.
+    setLoading(false);
+    setShowPolicy(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -249,6 +283,45 @@ export default function VerifyNin() {
             </p>
           </div>
         </div>
+      )}
+
+      {showPolicy && (
+        <Modal
+          isOpen
+          position="absolute"
+          size="lg"
+          title="Before You Pay"
+          closeButton={false}
+          actions={
+            <>
+              <button
+                onClick={() => router.push("/dashboard/user")}
+                className="rounded border border-green-900/30 px-4 py-2 font-bold text-primary md:px-6 md:py-2 md:text-lg"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={acceptPolicyAndPay}
+                disabled={!agreedToPolicy}
+                className="rounded border border-green-700 bg-primary px-4 py-2 font-bold text-white disabled:opacity-60 md:px-6 md:py-2 md:text-lg"
+              >
+                I Agree &amp; Continue
+              </button>
+            </>
+          }
+        >
+          <div className="space-y-4">
+            <p className="font-bold">
+              Hello {user?.firstName}, please read this before we open payment.
+            </p>
+
+            <NoRefundPolicy
+              agreed={agreedToPolicy}
+              onAgreedChange={setAgreedToPolicy}
+            />
+          </div>
+        </Modal>
       )}
 
       {verifyNin && (

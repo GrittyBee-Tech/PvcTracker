@@ -4,6 +4,9 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import InputGroup from "@/components/ui/InputGroup";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import Modal from "@/components/ui/modal";
+import NoRefundPolicy, {
+  NIN_POLICY_CONSENT_KEY,
+} from "@/components/ui/NoRefundPolicy";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -38,6 +41,7 @@ export default function UserLayout({
   const [isVerifying, setIsVerifying] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ninError, setNinError] = useState<string | null>(null);
+  const [agreedToPolicy, setAgreedToPolicy] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -46,6 +50,12 @@ export default function UserLayout({
       showToast("error", "Please enter your NIN");
       return;
     }
+    if (!agreedToPolicy) {
+      showToast("error", "Please accept the no refund policy to continue");
+      return;
+    }
+    // Consumed by the verify-nin page so the policy is not shown twice.
+    sessionStorage.setItem(NIN_POLICY_CONSENT_KEY, "true");
     router.push(`/dashboard/user/verify-nin`);
   };
 
@@ -66,7 +76,7 @@ export default function UserLayout({
                   <button
                     className="md:px-6 md:py-2 py-2  px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60"
                     onClick={handleVerify}
-                    disabled={isVerifying}
+                    disabled={isVerifying || !agreedToPolicy}
                   >
                     {isVerifying ? (
                       <SpinnerLoader text="Processing..." />
@@ -101,7 +111,13 @@ export default function UserLayout({
                   value={nin}
                 />
                 {ninError && <p className="text-sm text-red-400">{ninError}</p>}
-                <p className="text-xs font-dm-sans text-muted-foreground"></p>
+
+                <NoRefundPolicy
+                  id="nin-no-refund-agreement"
+                  agreed={agreedToPolicy}
+                  onAgreedChange={setAgreedToPolicy}
+                  disabled={isVerifying}
+                />
               </div>
             </Modal>
           </div>
