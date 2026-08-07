@@ -87,6 +87,15 @@ const Footer = () => {
                 Report an Issue
               </Link>
             </li>
+            <li>
+              <a
+                href="/PVC WAKA USER T & C.pdf"
+                target="_blank"
+                className="hover:text-primary transition-colors"
+              >
+                Terms of Service
+              </a>
+            </li>
           </ul>
         </div>
 
