@@ -25,20 +25,18 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
 
 import L from "leaflet";
 
-type Ward = {
-  name: string;
+type OfficeLocation = {
+  officeName: string;
+  address: string;
+  pdfPage: string | number;
   latitude: number;
   longitude: number;
 };
 
 export default function FindCentreWithMap({
-  wards,
-  userLocation,
-  highlight,
+  offices,
 }: {
-  wards: Ward[];
-  userLocation?: { lat: number; lng: number } | null;
-  highlight?: Ward[] | undefined;
+  offices: OfficeLocation[];
 }) {
   useEffect(() => {
     // ensure leaflet css is loaded client-side
@@ -72,11 +70,14 @@ export default function FindCentreWithMap({
   }, []);
 
   const center: [number, number] =
-    userLocation && wards && wards.length > 0
-      ? [userLocation.lat, userLocation.lng]
-      : wards && wards.length > 0
-        ? [wards[0].latitude, wards[0].longitude]
-        : [9.082, 8.6753];
+    offices && offices.length > 0
+      ? [
+          offices.reduce((sum, office) => sum + office.latitude, 0) /
+            offices.length,
+          offices.reduce((sum, office) => sum + office.longitude, 0) /
+            offices.length,
+        ]
+      : [9.082, 8.6753];
 
   const MapC: any = MapContainer as any;
   const Tile: any = TileLayer as any;
@@ -84,7 +85,7 @@ export default function FindCentreWithMap({
   const Pop: any = Popup as any;
 
   return (
-    <MapC center={center} zoom={12} style={{ height: 480, width: "100%" }}>
+    <MapC center={center} zoom={10} style={{ height: 480, width: "100%" }}>
       <Tile
         {...({
           attribution:
@@ -93,13 +94,17 @@ export default function FindCentreWithMap({
         } as any)}
       />
 
-      {wards.map((w) => (
-        <Mark key={w.name} position={[w.latitude, w.longitude]}>
+      {offices.map((office) => (
+        <Mark
+          key={office.officeName}
+          position={[office.latitude, office.longitude]}
+        >
           <Pop>
-            <div className="font-medium">{w.name}</div>
+            <div className="font-medium">{office.officeName}</div>
+            <p className="text-xs text-muted-foreground">{office.address}</p>
             <a
               className="text-sm text-primary underline"
-              href={`https://www.google.com/maps/search/?api=1&query=${w.latitude},${w.longitude}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${office.latitude},${office.longitude}`}
               target="_blank"
               rel="noreferrer"
             >
