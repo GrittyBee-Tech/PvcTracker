@@ -8,7 +8,6 @@ export function ProfileHealthCard({
   vin?: string | null;
   profileCompleteness: CompletenessResult;
 }) {
-
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md flex flex-col justify-between">
       <div className="flex items-center justify-between">
@@ -40,9 +39,9 @@ export function ProfileHealthCard({
             <h4 className="font-semibold text-red-500">Missing Info:</h4>
             <ul className="list-none space-y-1.5 text-sm text-slate-600">
               {profileCompleteness?.missingFields.slice(0, 3).map((field) => (
-                <li key={field} className="animate-bounce duration-50">
+                <li key={String(field)} className="animate-bounce duration-50">
                   <span className="text-amber-500 font-bold mr-2">⚠️</span>
-                  {field}
+                  {String(field)}
                 </li>
               ))}
             </ul>

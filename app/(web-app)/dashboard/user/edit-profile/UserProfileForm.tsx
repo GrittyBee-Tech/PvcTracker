@@ -13,6 +13,7 @@ import { showToast } from "@/utils/constants/toast";
 
 type UpdateProfileFormType = {
   pvcStatus: "collected" | "not_collected";
+  datePvcCollected?: Date;
   firstName: string;
   lastName: string;
   dateOfBirth: Date;
@@ -29,7 +30,8 @@ interface UserProfileFormProps {
     firstName?: string;
     lastName?: string;
     pvcStatus?: "collected" | "not_collected";
-    dateOfBirth?: string | Date;
+    datePvcCollected?: Date;
+    dateOfBirth?: Date;
     phoneNumber?: string;
     stateOfOrigin?: string;
     lgaOfOrigin?: string;
@@ -47,6 +49,7 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
       firstName: user.firstName || "",
       lastName: user.lastName || "",
       pvcStatus: user.pvcStatus || "not_collected",
+      datePvcCollected: user?.datePvcCollected,
       dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : new Date(),
       phoneNumber: user.phoneNumber || "",
       stateOfOrigin: user.stateOfOrigin || "",
@@ -72,6 +75,8 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
     updateProfileData.firstName === (user.firstName || "") &&
     updateProfileData.lastName === (user.lastName || "") &&
     updateProfileData.pvcStatus === (user.pvcStatus || "not_collected") &&
+    updateProfileData.datePvcCollected === user.datePvcCollected &&
+    updateProfileData.dateOfBirth === user.dateOfBirth &&
     updateProfileData.phoneNumber === (user.phoneNumber || "") &&
     updateProfileData.stateOfOrigin === (user.stateOfOrigin || "") &&
     updateProfileData.lgaOfOrigin === (user.lgaOfOrigin || "") &&
@@ -80,6 +85,25 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
     updateProfileData.homeAddress === (user.homeAddress || "");
 
   const handleChange = (field: keyof UpdateProfileFormType, value: string) => {
+    if (field === "datePvcCollected") {
+      const now = new Date().getTime();
+      const formattedValue = new Date(value).getTime();
+      if (formattedValue > now) {
+        showToast("error", "PVC collection date can't be in future");
+        setUpdateProfileData((prev) => ({
+          ...prev,
+          ["datePvcCollected"]: undefined,
+        }));
+        return;
+      } else if (updateProfileData.pvcStatus !== "collected") {
+        showToast("error", "PVC status is not Collected");
+        setUpdateProfileData((prev) => ({
+          ...prev,
+          ["datePvcCollected"]: undefined,
+        }));
+        return;
+      }
+    }
     setUpdateProfileData((prev) => {
       const newData = { ...prev, [field]: value };
       if (field === "stateOfOrigin") {
@@ -101,10 +125,14 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
 
   const handleUpdateProfileAPICall = async (data: UpdateProfileFormType) => {
     await authClient.updateUser(
-      {
-        ...data,
-        ...(data.dateOfBirth && { dateOfBirth: new Date(data.dateOfBirth) }),
-      },
+      data,
+      // {
+      //   ...data,
+      // ...(data.dateOfBirth && { dateOfBirth: new Date(data.dateOfBirth) }),
+      // ...(data.datePvcCollected && {
+      //   datePvcCollected: new Date(data.datePvcCollected),
+      // }),
+      // },
       {
         onSuccess() {
           showToast("success", "Profile updated successfully");
@@ -269,6 +297,19 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
               placeholder="Update your PVC Status"
             />
           </div>
+
+          {updateProfileData?.pvcStatus === "collected" ? (
+            <div className="w-full col-span-4 md:col-span-2">
+              <InputGroup
+                type="date"
+                label="Date of PVC Collection"
+                name="datePvcCollected"
+                value={formatToInputDate(updateProfileData?.datePvcCollected)}
+                onChange={handleChange}
+                placeholder="Choose Date"
+              />
+            </div>
+          ) : null}
 
           <div className="col-span-4 md:col-span-2 -mt-1">
             <InputGroup

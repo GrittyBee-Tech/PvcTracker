@@ -1,10 +1,10 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { UserType } from "@/types";
+import { User } from "better-auth";
 
 interface AuthSession {
-  user: UserType | null;
+  user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
@@ -31,7 +31,7 @@ export function useAuth(): AuthSession {
 
   // 4. Return your exact custom object interface to the rest of your app
   return {
-    user: session.user as unknown as UserType, // Typecasted cleanly to match your strict union roles
+    user: session.user as unknown as User, // Typecasted cleanly to match your strict union roles
     isLoading: false,
     isAuthenticated: true,
   };

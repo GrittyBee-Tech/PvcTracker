@@ -1,4 +1,5 @@
-import { betterAuth } from "better-auth";
+// auth.ts
+import { betterAuth, User } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MONGODB_URI } from "./db";
@@ -12,6 +13,7 @@ import {
   createAuthMiddleware,
   getSessionFromCtx,
 } from "better-auth/api";
+import { userAdditionalFields } from "./user-fields";
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -25,7 +27,6 @@ const db = client.db();
 export const auth = betterAuth({
   //...
   database: mongodbAdapter(db, {
-    // Optional: if you don't provide a client, database transactions won't be enabled.
     client,
   }),
   emailAndPassword: {
@@ -33,105 +34,33 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     autoSignIn: false,
     revokeSessionsOnPasswordReset: true,
-    sendResetPassword: async ({ user, url }) => {
-      void sendPasswordResetEmail(user.email, user.name, url);
+    sendResetPassword: async ({ user, url }: { user: User; url: string }) => {
+      const name = `${user?.firstName} ${user?.lastName}` || "User";
+
+      void sendPasswordResetEmail(user?.email, name, url);
     },
   },
   emailVerification: {
-    sendVerificationEmail: async ({ user, url }) => {
-      void sendWelcomeEmail(user.email, user.name, url);
+    sendVerificationEmail: async ({
+      user,
+      url,
+    }: {
+      user: User;
+      url: string;
+    }) => {
+      const name = `${user.firstName} ${user.lastName}`;
+      void sendWelcomeEmail(user.email, name, url);
     },
     sendOnSignIn: true,
   },
   user: {
-    additionalFields: {
-      role: {
-        type: "string",
-        input: true,
-      },
-      firstName: {
-        type: "string",
-        input: true,
-      },
-      lastName: {
-        type: "string",
-        input: true,
-      },
-      dateOfBirth: {
-        type: "date",
-        input: true,
-      },
-      gender: {
-        type: "string",
-        input: true,
-      },
-      phoneNumber: {
-        type: "string",
-        input: true,
-      },
-      vin: {
-        type: "string",
-        input: true,
-        required: false,
-        unique: true,
-      },
-      nin: {
-        type: "string",
-        input: true,
-      },
-      ninStatus: {
-        type: "string",
-        defaultValue: "pending",
-      },
-      pvcStatus: {
-        type: "string",
-        defaultValue: "not_collected",
-      },
-      stateOfOrigin: {
-        type: "string",
-        input: true,
-        required: false,
-      },
-      lgaOfOrigin: {
-        type: "string",
-        input: true,
-        required: false,
-      },
-      votingState: {
-        type: "string",
-        input: true,
-        required: false,
-      },
-      votingLga: {
-        type: "string",
-        input: true,
-        required: false,
-      },
-      homeAddress: {
-        type: "string",
-        input: true,
-        required: false,
-      },
-      status: {
-        type: "string",
-        defaultValue: "active",
-        input: true,
-      },
-      createdAt: {
-        type: "date",
-        required: false,
-      },
-      updatedAt: {
-        type: "date",
-        required: false,
-      },
-    },
+    additionalFields: userAdditionalFields,
     modelName: "users",
   },
   databaseHooks: {
     user: {
       create: {
-        before: async (user) => {
+        before: async (user: User) => {
           return {
             data: {
               ...user,
@@ -141,7 +70,7 @@ export const auth = betterAuth({
         },
       },
       update: {
-        before: async (user) => {
+        before: async (user: User) => {
           return {
             data: {
               ...user,
@@ -187,3 +116,5 @@ export const auth = betterAuth({
     process.env.BETTER_AUTH_URL || "http://localhost:3000",
   ],
 });
+
+export type Auth = typeof auth;

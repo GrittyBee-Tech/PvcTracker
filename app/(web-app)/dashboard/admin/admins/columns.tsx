@@ -13,9 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Modal from "@/components/ui/modal";
-import { UserType } from "@/types";
+import { User } from "better-auth";
 
-type AdminRow = UserType & {
+type AdminRow = User & {
   permissions?: string[];
   adminStatus?: string;
 };

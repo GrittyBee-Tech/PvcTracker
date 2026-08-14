@@ -13,6 +13,7 @@ const UserSchema: Schema<IUser> = new Schema(
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     dateOfBirth: { type: Date, required: true },
+    datePvcCollected: { type: Date },
     gender: { type: String, required: true, enum: ["male", "female"] },
     phoneNumber: { type: String, required: true },
     role: {
