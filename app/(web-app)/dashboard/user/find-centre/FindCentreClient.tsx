@@ -4,15 +4,16 @@ import { useEffect, useState, useMemo } from "react";
 import Select from "@/components/ui/Select";
 import { SpinnerLoader } from "@/components/ui/Loader";
 
-type Ward = {
-  name: string;
-  latitude: number;
-  longitude: number;
+type Office = {
+  officeName: string;
+  address: string;
+  pdfPage: string | number;
 };
 
 export type Lga = {
   name: string;
-  wards: Ward[];
+  value: string;
+  offices: Office[];
 };
 
 export type StateOption = {
@@ -30,7 +31,6 @@ export default function FindCentreClient() {
   const [loadingStates, setLoadingStates] = useState(false);
   const [loadingLgas, setLoadingLgas] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [nearbyWards, setNearbyWards] = useState<Ward[] | null>(null);
 
   // Load States once upon initialization
   useEffect(() => {
@@ -78,6 +78,7 @@ export default function FindCentreClient() {
         }
 
         const payload = await response.json();
+        console.log(payload.data);
         setLgas(payload?.data ?? []);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to load LGAs");
@@ -89,22 +90,19 @@ export default function FindCentreClient() {
     loadLgas();
   }, [selectedState]);
 
-  // FIX: Derive 'wards' dynamically during the execution of the render phase.
-  // This fully eliminates the third useEffect and saves your app from dual layouts.
-  const wards = useMemo(() => {
-    if (!selectedLga || lgas.length === 0) return [];
-    const selected = lgas.find((item) => item.name === selectedLga);
-    return selected?.wards ?? [];
+  const selectedLgaEntry = useMemo(() => {
+    if (!selectedLga || lgas.length === 0) return undefined;
+    return lgas.find((item) => item.value === selectedLga);
   }, [selectedLga, lgas]);
 
-  // Reset independent state flags inside the explicit button click or choice event interaction loops
-  const handleSelectChange = (field: FieldName, value: string) => {
-    setNearbyWards(null); // Clear out downstream nearby ward filters cleanly
+  const officeList = useMemo(
+    () => selectedLgaEntry?.offices ?? [],
+    [selectedLgaEntry],
+  );
 
+  const handleSelectChange = (field: FieldName, value: string) => {
     if (field === "state") {
       setSelectedState(value);
-
-      // If the user cleared the state dropdown, reset the child states right here
       if (!value) {
         setLgas([]);
         setSelectedLga("");
@@ -116,7 +114,7 @@ export default function FindCentreClient() {
   };
 
   const stateOptions = states;
-  const lgaOptions = lgas.map((lga) => ({ name: lga.name, value: lga.name }));
+  const lgaOptions = lgas.map((lga) => ({ name: lga.name, value: lga.value }));
 
   return (
     <div className="space-y-6">
@@ -137,6 +135,7 @@ export default function FindCentreClient() {
           onChange={handleSelectChange}
           placeholder={selectedState ? "Select an LGA" : "Select a state first"}
           selectClassName={!selectedState ? "opacity-60" : ""}
+          disabled={!selectedState}
         />
       </div>
 
@@ -154,51 +153,64 @@ export default function FindCentreClient() {
             />
           </div>
         ) : (
-          <div>
-            <div className="mb-4 flex items-start justify-between">
+          <div className="space-y-6">
+            <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-5">
               <div>
-                <h2 className="text-lg font-semibold">Wards</h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm font-semibold text-slate-900">
                   {selectedLga
-                    ? `Showing wards for ${selectedLga}`
+                    ? `INEC centres for ${selectedLga}`
                     : selectedState
-                      ? "Select an LGA to display wards."
-                      : "Choose a state and LGA to see ward locations."}
+                      ? "Select an LGA to display INEC centre details."
+                      : "Choose a state and LGA to find INEC centres."}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {selectedLga
+                    ? `${officeList.length} centre${officeList.length === 1 ? "" : "s"} available`
+                    : "The list will update when both state and LGA are selected."}
                 </p>
               </div>
             </div>
 
-            {selectedLga &&
-            (nearbyWards ? nearbyWards.length === 0 : wards.length === 0) ? (
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-muted-foreground">
-                No wards were found for this LGA or within your search radius.
+            {selectedLga && officeList.length === 0 ? (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm text-muted-foreground">
+                No INEC centres were found for this LGA.
               </div>
             ) : selectedLga ? (
-              <ul className="space-y-3">
-                {(nearbyWards ?? wards).map((ward) => (
-                  <li
-                    key={ward.name}
-                    className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+              <div className="space-y-3">
+                {officeList.map((office) => (
+                  <div
+                    key={office.officeName}
+                    className="rounded-3xl border border-slate-200 bg-slate-50 p-5 shadow-sm"
                   >
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <span className="font-medium text-slate-900">
-                        {ward.name}
-                      </span>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="text-base font-semibold text-slate-900">
+                          {office.officeName}
+                        </p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {office.address}
+                        </p>
+                        <p className="mt-2 text-sm text-slate-500">
+                          PDF page: {office.pdfPage}
+                        </p>
+                      </div>
                       <a
-                        className="text-sm font-medium text-primary underline"
-                        href={`https://www.google.com/maps/search/?api=1&query=${ward.latitude},${ward.longitude}`}
+                        className="inline-flex items-center rounded-full border border-primary px-4 py-2 text-sm font-medium text-primary transition hover:bg-primary/5"
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                          office.address,
+                        )}`}
                         target="_blank"
                         rel="noreferrer"
                       >
-                        View on Google Maps
+                        Open on Google Maps
                       </a>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-muted-foreground">
-                Pick a state and LGA to load wards.
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm text-muted-foreground">
+                Pick a state and LGA to load INEC centre information.
               </div>
             )}
           </div>
