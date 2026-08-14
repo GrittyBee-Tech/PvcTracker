@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Modal from "@/components/ui/modal";
 import Swal from "sweetalert2";
-import { UserType, PERMISSIONS } from "@/types";
+import { PERMISSIONS } from "@/types";
+import { User } from "better-auth";
 
 const ninStatusStyles: Record<string, string> = {
   verified: "bg-green-100 text-green-800",
@@ -33,7 +34,7 @@ const UserActionsCell = ({
   user,
   refresh,
 }: {
-  user: UserType;
+  user: User;
   refresh: () => void;
 }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -398,7 +399,7 @@ const UserActionsCell = ({
   );
 };
 
-export const columns = (refresh: () => void): ColumnDef<UserType>[] => [
+export const columns = (refresh: () => void): ColumnDef<User>[] => [
   {
     id: "select",
     header: ({ table }) => (

@@ -1,9 +1,10 @@
 import { withDb } from "@/lib/withDb";
-import UserModel, { IUser } from "@/models/users";
+import UserModel from "@/models/users";
 import AdminProfileModel from "@/models/adminProfile";
 import AuditLogModel from "@/models/auditLog";
 import { checkPermission } from "@/lib/permissions";
 import { NextResponse } from "next/server";
+import { User } from "better-auth";
 
 export const GET = withDb(async (request: Request) => {
   try {
@@ -17,7 +18,7 @@ export const GET = withDb(async (request: Request) => {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
-    const query: { role: IUser["role"] } = { role: "admin" };
+    const query: { role: User["role"] } = { role: "admin" };
     const skip = (page - 1) * limit;
 
     const [users, total] = await Promise.all([

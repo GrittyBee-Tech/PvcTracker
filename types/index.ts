@@ -10,14 +10,14 @@ export const PERMISSIONS = [
   "view:analytics",
 ] as const;
 
-export type Permission = typeof PERMISSIONS[number];
+export type Permission = (typeof PERMISSIONS)[number];
 
 export interface UserType {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  dateOfBirth: Date | string;
+  dateOfBirth: Date;
   gender: string;
   phoneNumber: string;
   emailVerified: boolean;
@@ -26,6 +26,7 @@ export interface UserType {
   vin?: string;
   ninStatus: "pending" | "rejected" | "verified";
   pvcStatus: "collected" | "not_collected";
+  datePvcCollected: Date;
   stateOfOrigin?: string;
   votingState?: string;
   votingLga?: string;
