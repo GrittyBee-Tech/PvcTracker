@@ -61,6 +61,10 @@ export const auth = betterAuth({
         type: "date",
         input: true,
       },
+      datePvcCollected: {
+        type: "date",
+        input: true,
+      },
       gender: {
         type: "string",
         input: true,

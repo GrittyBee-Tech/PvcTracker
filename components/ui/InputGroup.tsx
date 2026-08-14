@@ -36,7 +36,7 @@ const InputGroup = <T extends string>({
         placeholder={placeholder}
         onChange={(e) => onChange(name, e.target.value)}
         disabled={disabled}
-        className={`w-full mt-1.5 p-2 text-sm font-dm-sans font-medium border outline-none rounded-lg bg-white border-border text-black placeholder:text-gray-400 focus:border-green-500 ${inputClassName}`}
+        className={`w-full mt-1.5 p-2 text-sm font-dm-sans font-medium border outline-none rounded-lg bg-white border-border text-black placeholder:text-gray-400 focus:border-green-500 disabled:opacity-60 disabled:cursor-not-allowed ${inputClassName}`}
       />
     </div>
   );
