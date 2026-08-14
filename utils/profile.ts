@@ -1,31 +1,30 @@
-import { UserType } from "@/types";
+import { User } from "better-auth";
 
 export interface CompletenessResult {
   percentage: number;
   filled: number;
   total: number;
-  missingFields: string[];
+  missingFields: (keyof User)[];
 }
 
-export const profileWhitelistMapping: Partial<Record<keyof UserType, string>> =
-  {
-    firstName: "First Name",
-    lastName: "Last Name",
-    dateOfBirth: "Date of Birth",
-    gender: "Gender",
-    phoneNumber: "Phone Number",
-    vin: "VIN",
-    nin: "NIN",
-    pvcStatus: "PVC Status",
-    stateOfOrigin: "State of Origin",
-    lgaOfOrigin: "LGA of Origin",
-    votingState: "Voting State",
-    votingLga: "Voting LGA",
-    homeAddress: "Home Address",
-  } as const;
+export const profileWhitelistMapping: Partial<Record<keyof User, string>> = {
+  firstName: "First Name",
+  lastName: "Last Name",
+  dateOfBirth: "Date of Birth",
+  gender: "Gender",
+  phoneNumber: "Phone Number",
+  vin: "VIN",
+  nin: "NIN",
+  pvcStatus: "PVC Status",
+  stateOfOrigin: "State of Origin",
+  lgaOfOrigin: "LGA of Origin",
+  votingState: "Voting State",
+  votingLga: "Voting LGA",
+  homeAddress: "Home Address",
+} as const;
 
 export function getMissingFieldNames(
-  missingFields: Array<keyof UserType> | undefined,
+  missingFields: Array<keyof User> | undefined,
 ): string[] {
   if (!missingFields) return [];
   const names = missingFields
@@ -36,20 +35,20 @@ export function getMissingFieldNames(
 }
 
 export function calculateProfileCompleteness(
-  userObj: UserType | null,
+  userObj: User | null,
 ): CompletenessResult {
   if (userObj === null) {
     return {
       percentage: 0,
       filled: 0,
       total: 0,
-      missingFields: Object.keys(userObj || {}) as Array<keyof UserType>,
+      missingFields: Object.keys(userObj || {}) as Array<keyof User>,
     };
   }
-  // 2. Strongly type the whitelist using keyof UserType.
+  // 2. Strongly type the whitelist using keyof User.
   // This guarantees that if you rename or remove a field in the interface,
   // TypeScript will throw a compilation error right here.
-  const profileWhitelist: Array<keyof UserType> = [
+  const profileWhitelist: Array<keyof User> = [
     "firstName",
     "lastName",
     "dateOfBirth",
@@ -66,7 +65,7 @@ export function calculateProfileCompleteness(
   ];
 
   const totalRequiredFields = profileWhitelist.length;
-  const filledFields: Array<keyof UserType> = [];
+  const filledFields: Array<keyof User> = [];
 
   // 3. Evaluate the whitelisted keys
   profileWhitelist.forEach((field) => {

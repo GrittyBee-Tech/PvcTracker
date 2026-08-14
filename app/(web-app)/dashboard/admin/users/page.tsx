@@ -3,10 +3,10 @@
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useEffect, useState, useMemo } from "react";
-import { UserType } from "@/types";
+import { User } from "better-auth";
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<UserType[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Triggers for fetching

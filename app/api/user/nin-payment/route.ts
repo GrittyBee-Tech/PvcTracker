@@ -6,18 +6,21 @@ import {
 import { withDb } from "@/lib/withDb";
 import TransactionModel from "@/models/transaction";
 import VerificationSessionModel from "@/models/verificationSession";
+import { User } from "better-auth";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export const POST = withDb(async (request: Request) => {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await auth.api.getSession({ headers: await headers() });
 
-    if (!session?.user?.id) {
+    if (!session || !session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json().catch(() => ({}));
-    const email = session.user.email;
+    const user = session.user as typeof session.user & Partial<User>;
+    const email = user.email;
     const amount = Number(process.env.LUMIID_VERIFICATION_AMOUNT || 0);
     const provider = body.provider || process.env.DEFAULT_PAYMENT_PROVIDER;
     const appUrl =
@@ -27,7 +30,7 @@ export const POST = withDb(async (request: Request) => {
     const redirectUrl = `${appUrl.replace(/\/$/, "")}/dashboard/user/verify-nin`;
 
     const existingTransaction = await TransactionModel.findOne({
-      user_id: session.user.id,
+      user_id: user.id,
       purpose: "NIN Verification",
       status: "success",
     });
@@ -54,7 +57,7 @@ export const POST = withDb(async (request: Request) => {
     }
 
     const pendingTransaction = await TransactionModel.findOne({
-      user_id: session.user.id,
+      user_id: user.id,
       purpose: "NIN Verification",
       status: "pending",
     });
@@ -79,13 +82,13 @@ export const POST = withDb(async (request: Request) => {
       const customer = {
         email,
         name:
-          [session.user.firstName, session.user.lastName]
+          [user?.firstName, user?.lastName]
             .filter(Boolean)
             .join(" ") || email,
       };
 
       const initResult = await initializeFlutterwavePayment({
-        userId: session.user.id,
+        userId: user.id,
         email,
         amount,
         redirectUrl,
@@ -101,7 +104,7 @@ export const POST = withDb(async (request: Request) => {
       }
 
       await TransactionModel.create({
-        user_id: session.user.id,
+        user_id: user.id,
         reference: initResult.reference,
         provider: "flutterwave",
         access_code: initResult.payment_url,
@@ -127,7 +130,7 @@ export const POST = withDb(async (request: Request) => {
     }
 
     const initResult = await initializePaystackPayment({
-      userId: session.user.id,
+      userId: user.id,
       email,
       amount,
     });
@@ -141,7 +144,7 @@ export const POST = withDb(async (request: Request) => {
     }
 
     await TransactionModel.create({
-      user_id: session.user.id,
+      user_id: user.id,
       reference: initResult.reference!,
       provider: "paystack",
       access_code: initResult.access_code,
