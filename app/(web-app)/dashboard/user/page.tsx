@@ -6,6 +6,7 @@ import { NearestCentreCard } from "./nearest-centre-card";
 import { ProfileHealthCard } from "./profile-health-card";
 import { useState } from "react";
 import { calculateProfileCompleteness } from "@/utils/profile";
+import { formatToDisplayDate } from "@/lib/utils";
 
 export default function UserDashboardPage() {
   const { user } = useAuth();
@@ -16,6 +17,7 @@ export default function UserDashboardPage() {
   const isNinVerified = user?.ninStatus === "verified";
   const hasVin = !!user?.vin;
   const isPvcCollected = user?.pvcStatus === "collected";
+  const collectedOn = formatToDisplayDate(user?.datePvcCollected);
 
   const handleCopyVin = () => {
     if (user?.vin) {
@@ -189,7 +191,7 @@ export default function UserDashboardPage() {
                 PVC Collection
               </span>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               <span
                 className={`text-sm font-medium px-2.5 py-0.75 rounded capitalize ${
                   isPvcCollected
@@ -199,6 +201,14 @@ export default function UserDashboardPage() {
               >
                 {isPvcCollected ? "Collected" : "Not Picked Up Yet"}
               </span>
+              {isPvcCollected && collectedOn && (
+                <span
+                  className="text-xs font-medium text-emerald-700/80 font-dm-sans"
+                  title="PVC collection date"
+                >
+                  on {collectedOn}
+                </span>
+              )}
             </div>
           </div>
         </div>

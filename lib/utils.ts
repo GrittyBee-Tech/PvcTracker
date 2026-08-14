@@ -20,3 +20,17 @@ export function formatToInputDate(date: Date | string | undefined): string {
 
   return `${year}-${month}-${day}`;
 }
+
+// 2. Human readable variant used for display surfaces e.g "12 Aug 2026"
+export function formatToDisplayDate(date: Date | string | undefined | null) {
+  if (!date) return "";
+  const d = new Date(date);
+
+  if (isNaN(d.getTime())) return "";
+
+  return d.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}

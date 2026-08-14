@@ -16,6 +16,7 @@ export const profileWhitelistMapping: Partial<Record<keyof User, string>> = {
   vin: "VIN",
   nin: "NIN",
   pvcStatus: "PVC Status",
+  datePvcCollected: "PVC Collection Date",
   stateOfOrigin: "State of Origin",
   lgaOfOrigin: "LGA of Origin",
   votingState: "Voting State",
@@ -63,6 +64,13 @@ export function calculateProfileCompleteness(
     "votingLga",
     "homeAddress",
   ];
+
+  // The collection date only becomes a required field once the PVC is marked as
+  // collected — the edit-profile form rejects a date on any other status, so it
+  // would otherwise be an unreachable "missing" item.
+  if (userObj.pvcStatus === "collected") {
+    profileWhitelist.push("datePvcCollected");
+  }
 
   const totalRequiredFields = profileWhitelist.length;
   const filledFields: Array<keyof User> = [];
