@@ -12,6 +12,7 @@ import {
   createAuthMiddleware,
   getSessionFromCtx,
 } from "better-auth/api";
+import { IUser } from "@/models/users";
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -33,12 +34,24 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     autoSignIn: false,
     revokeSessionsOnPasswordReset: true,
-    sendResetPassword: async ({ user, url }) => {
+    sendResetPassword: async ({
+      user,
+      url,
+    }: {
+      user: { name: string; email: string };
+      url: string;
+    }) => {
       void sendPasswordResetEmail(user.email, user.name, url);
     },
   },
   emailVerification: {
-    sendVerificationEmail: async ({ user, url }) => {
+    sendVerificationEmail: async ({
+      user,
+      url,
+    }: {
+      user: { name: string; email: string };
+      url: string;
+    }) => {
       void sendWelcomeEmail(user.email, user.name, url);
     },
     sendOnSignIn: true,
@@ -64,6 +77,7 @@ export const auth = betterAuth({
       datePvcCollected: {
         type: "date",
         input: true,
+        required: false,
       },
       gender: {
         type: "string",
@@ -135,7 +149,7 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async (user) => {
+        before: async (user: IUser) => {
           return {
             data: {
               ...user,
@@ -145,7 +159,7 @@ export const auth = betterAuth({
         },
       },
       update: {
-        before: async (user) => {
+        before: async (user: IUser) => {
           return {
             data: {
               ...user,

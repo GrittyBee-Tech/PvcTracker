@@ -147,8 +147,7 @@ export default function Register() {
         onRequest: () => {
           setStatus("loading");
         },
-        onSuccess: (ctx) => {
-          console.log(ctx.data);
+        onSuccess: () => {
           setStatus("success");
           Swal.fire({
             icon: "success",
@@ -156,7 +155,7 @@ export default function Register() {
             text: "Account created. Check your inbox for a verification link.",
           });
         },
-        onError: (ctx) => {
+        onError: (ctx: Record<string, any>) => {
           console.error(ctx.error);
           Swal.fire({
             icon: "error",
