@@ -27,6 +27,11 @@ const links = [
     label: "Report Issue",
     icon: "AlertTriangle",
   },
+  {
+    href: "/dashboard/user/partner",
+    label: "Partner",
+    icon: "Handshake",
+  },
 ];
 
 export default function UserLayout({
