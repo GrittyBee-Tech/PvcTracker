@@ -1,5 +1,28 @@
 import Link from "next/link";
 import Logo from "../ui/Logo";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaTiktok,
+  FaXTwitter,
+  FaYoutube,
+} from "react-icons/fa6";
+
+const socials = [
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/abenolng",
+    Icon: FaFacebookF,
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/abenolng/",
+    Icon: FaInstagram,
+  },
+  { name: "X", href: "https://x.com/Abenolng", Icon: FaXTwitter },
+  { name: "TikTok", href: "https://www.tiktok.com/@abenolng", Icon: FaTiktok },
+  { name: "YouTube", href: "https://www.youtube.com/@abenolng", Icon: FaYoutube },
+];
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -19,6 +42,22 @@ const Footer = () => {
           >
             Become a Volunteer
           </Link>
+
+          <div className="flex items-center gap-3 pt-1">
+            {socials.map(({ name, href, Icon }) => (
+              <a
+                key={name}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={name}
+                title={name}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-[#5C675D] hover:bg-primary hover:border-primary hover:text-white transition-colors"
+              >
+                <Icon className="h-4 w-4" />
+              </a>
+            ))}
+          </div>
         </div>
 
         <div>
