@@ -19,18 +19,17 @@ const links = [
   {
     href: "/dashboard/user/become-volunteer",
     label: "Volunteer",
-    icon: "HeartHandshake",
+    icon: "HandHeart",
   },
-
+  {
+    href: "/dashboard/user/partner",
+    label: "Partnership",
+    icon: "Handshake",
+  },
   {
     href: "/dashboard/user/report-issues",
     label: "Report Issue",
     icon: "AlertTriangle",
-  },
-  {
-    href: "/dashboard/user/partner",
-    label: "Partner",
-    icon: "Handshake",
   },
 ];
 
