@@ -96,7 +96,7 @@ export default function PartnerPlans() {
           Partner with ABenol Foundation
         </div>
         <h1 className="font-space-grotesk text-2xl md:text-3xl font-bold text-primary">
-          Give a Little, Every Month. Change a Life, All Year.
+          Give a Little Every Month,Change a Life, All Year.
         </h1>
         <p className="font-dm-sans text-sm md:text-base text-muted-foreground max-w-2xl">
           The ABENOL Giving Circle - a monthly gift that quietly becomes a
@@ -104,7 +104,7 @@ export default function PartnerPlans() {
         </p>
       </header>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-2">
         {plans.map((plan) => {
           const isSelected = plan.id === selectedId;
           const Icon = plan.icon;
