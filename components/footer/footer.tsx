@@ -1,28 +1,6 @@
 import Link from "next/link";
 import Logo from "../ui/Logo";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaTiktok,
-  FaXTwitter,
-  FaYoutube,
-} from "react-icons/fa6";
-
-const socials = [
-  {
-    name: "Facebook",
-    href: "https://www.facebook.com/abenolng",
-    Icon: FaFacebookF,
-  },
-  {
-    name: "Instagram",
-    href: "https://www.instagram.com/abenolng/",
-    Icon: FaInstagram,
-  },
-  { name: "X", href: "https://x.com/Abenolng", Icon: FaXTwitter },
-  { name: "TikTok", href: "https://www.tiktok.com/@abenolng", Icon: FaTiktok },
-  { name: "YouTube", href: "https://www.youtube.com/@abenolng", Icon: FaYoutube },
-];
+import { SOCIAL_LINKS } from "@/utils/constants/socials";
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -44,7 +22,7 @@ const Footer = () => {
           </Link>
 
           <div className="flex items-center gap-3 pt-1">
-            {socials.map(({ name, href, Icon }) => (
+            {SOCIAL_LINKS.map(({ name, href, icon: Icon }) => (
               <a
                 key={name}
                 href={href}
