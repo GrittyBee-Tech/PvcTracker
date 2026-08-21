@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Crown, Handshake, Heart, Sparkles } from "lucide-react";
+import { Check, Crown, Gem, Handshake, Heart, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { SOCIAL_LINKS } from "@/utils/constants/socials";
 
 export const DONATE_URL = "https://bit.ly/donatetoABENOL";
 
@@ -19,42 +20,59 @@ type Plan = {
 const plans: Plan[] = [
   {
     id: "starter",
-    name: "Starter",
+    name: "The Spark",
     amount: 1000,
     tagline: "Get involved and keep the movement going.",
     perks: [
-      "Supports 1 citizen's PVC journey each month",
-      "Partner badge on your profile",
-      "Monthly impact newsletter",
+      "8 months of free pads - a girl gets to stay in class, not at home.",
+      "One borehole — a village stops walking miles for water.",
+      "One surgery —a child gets the chance to live.",
+      "Sponsor 3 months mentorship for secondary school students",
     ],
     icon: Heart,
   },
   {
     id: "supporter",
-    name: "Supporter",
+    name: "The Builder",
     amount: 5000,
-    tagline: "Fund a full community drive every month.",
+    tagline: "If 1,000 people donate ₦5,000 monthly, here is what we can do.",
     perks: [
-      "Supports up to 5 citizens each month",
-      "Everything in Starter",
-      "Early access to volunteer campaigns",
-      "Name listed on our partners wall",
+      "12 months of free pads — a girl gets to stay in class, not at home.",
+      "3 boreholes — clean water reaches 3 communities for good.",
+      "3 surgeries — 3 children get the chance to live.",
+      "One university empowered — a whole campus of students mentored.",
+      "3 months of mentorship — teenagers guided away from shortcuts.",
     ],
     icon: Sparkles,
     popular: true,
   },
   {
     id: "champion",
-    name: "Champion",
+    name: "The Changemaker",
     amount: 10000,
-    tagline: "Power registration centres across a whole state.",
+    tagline: "If 1,000 people donate ₦10,000 monthly, here is what we can do.",
     perks: [
-      "Supports up to 12 citizens each month",
-      "Everything in Supporter",
-      "Quarterly impact report from the field",
-      "Direct line to the ABENOL partnerships team",
+      "12 months of free pads — a girl gets to stay in class, not at home.",
+      "5 boreholes across the country — clean water where it's needed most.",
+      "5 surgeries, in private and public hospitals — no child turned away.",
     ],
     icon: Crown,
+  },
+  {
+    id: "legend",
+    name: "The Legacy Circle",
+    amount: 50000,
+    tagline: "If 1,000 people donate ₦50,000 monthly, here is what we can do.",
+    perks: [
+      "12 months of free pads — a girl gets to stay in class, not at home.",
+      "10 boreholes across the country — clean water becomes routine.",
+      "10 surgeries, in private and public hospitals — no child turned away.",
+      "9 universities empowered — a nationwide mentorship movement.",
+      "12 months of mentorship for secondary students, everywhere ABENOL works.",
+      "12 months of active Youth civic sensitisation programs.",
+      "Grants for 10 retired teachers with small businesses",
+    ],
+    icon: Gem,
   },
 ];
 
@@ -75,15 +93,14 @@ export default function PartnerPlans() {
       <header className="space-y-3">
         <div className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-primary">
           <Handshake className="size-4" />
-          Partner with PVC Waka
+          Partner with ABenol Foundation
         </div>
         <h1 className="font-space-grotesk text-2xl md:text-3xl font-bold text-primary">
-          Choose a monthly partnership
+          Give a Little, Every Month. Change a Life, All Year.
         </h1>
         <p className="font-dm-sans text-sm md:text-base text-muted-foreground max-w-2xl">
-          Every subscription helps more Nigerians register, track and collect
-          their PVC. Pick the tier that works for you — you can cancel or change
-          it at any time.
+          The ABENOL Giving Circle - a monthly gift that quietly becomes a
+          borehole, a surgery, a girl who never misses school.
         </p>
       </header>
 
@@ -187,6 +204,33 @@ export default function PartnerPlans() {
           <Heart className="size-4" />
           Donate
         </a>
+      </div>
+
+      <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-card p-6 text-center">
+        <div>
+          <p className="font-space-grotesk font-bold text-primary">
+            Follow the movement
+          </p>
+          <p className="font-dm-sans text-sm text-muted-foreground">
+            See where your partnership goes — follow ABENOL for updates from the
+            field.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {SOCIAL_LINKS.map(({ name, href, icon: Icon }) => (
+            <a
+              key={name}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={name}
+              title={name}
+              className="flex size-10 items-center justify-center rounded-full border border-border text-primary transition-colors hover:border-primary hover:bg-primary hover:text-white"
+            >
+              <Icon className="size-4" />
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );
