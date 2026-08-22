@@ -22,14 +22,14 @@ const links = [
     icon: "HandHeart",
   },
   {
-    href: "/dashboard/user/partner",
-    label: "Partnership",
-    icon: "Handshake",
-  },
-  {
     href: "/dashboard/user/report-issues",
     label: "Report Issue",
     icon: "AlertTriangle",
+  },
+  {
+    href: "/dashboard/user/partner",
+    label: "Partnership",
+    icon: "Handshake",
   },
 ];
 
