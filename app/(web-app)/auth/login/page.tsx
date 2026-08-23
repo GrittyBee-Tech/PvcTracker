@@ -62,8 +62,7 @@ export default function Login() {
         onRequest: () => {
           setIsLoading(true);
         },
-        onSuccess: ({ data, response }) => {
-          console.log({ data, response });
+        onSuccess: ({ data }) => {
           Swal.fire({
             title: "Login successful!",
             icon: "success",

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { User } from "better-auth";
 
@@ -8,34 +7,32 @@ export async function proxy(request: NextRequest) {
 
   // 1. Fetch the session
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: request.headers,
   });
-  if (!session) {
-    return new NextResponse(
-      JSON.stringify({
-        success: false,
-        message: "Unauthorized",
-      }),
-    );
-  }
-
-  const isDashboardRoute = nextUrl.pathname.startsWith("/dashboard");
   const isAdminRoute =
     nextUrl.pathname.startsWith("/api/admin") ||
     nextUrl.pathname.startsWith("/dashboard/admin");
 
   // 2. Guard: Unauthenticated users trying to access protected areas
-  if ((isDashboardRoute || isAdminRoute) && !session) {
+  if (!session) {
+    if (nextUrl.pathname.startsWith("/api/")) {
+      return new NextResponse(
+        JSON.stringify({
+          success: false,
+          message: "Unauthorized",
+        }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     const loginUrl = new URL("/auth/login", nextUrl);
-    // Optional: Pass the current URL as a callback so they return after login
     loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // 3. Guard: Authenticated but unauthorized users trying to access Admin endpoints
   if (isAdminRoute) {
-    // Structural Assumption: Your auth library returns a 'role' on the user object
-    const user = session?.user as typeof session.user & Partial<User>;
+    const user = session.user as typeof session.user & Partial<User>;
     const userRole = user?.role;
 
     if (userRole !== "admin") {
@@ -62,5 +59,5 @@ export async function proxy(request: NextRequest) {
 
 // FIX: Update matcher to catch all sub-routes using the named wildcard ':path*'
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/admin/:path*"],
+  matcher: ["/dashboard/:path*", "/api/admin/:path*", "/api/user/:path*"],
 };

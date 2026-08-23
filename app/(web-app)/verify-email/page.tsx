@@ -33,13 +33,13 @@ function VerifyEmailContent() {
         Swal.fire({
           icon: "success",
           title: "Email Verified!",
-          text: "Your email has been successfully verified! Redirecting to login...",
+          text: "Your email has been successfully verified! Redirecting to dashboard...",
         });
 
-        // Auto-redirect to login after 3 seconds
+        // Auto-redirect to dashboard after 1 seconds
         setTimeout(() => {
-          router.push("/auth/login");
-        }, 3000);
+          router.push("/dashboard/user");
+        }, 1000);
       } catch (err: unknown) {
         setStatus("error");
         if (err instanceof Error) {
