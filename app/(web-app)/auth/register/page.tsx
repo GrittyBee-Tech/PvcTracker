@@ -153,6 +153,8 @@ export default function Register() {
             icon: "success",
             title: "Registration Successful",
             text: "Account created. Check your inbox for a verification link.",
+            showConfirmButton: false,
+            timer: 3000
           });
         },
         onError: (ctx: Record<string, any>) => {

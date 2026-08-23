@@ -28,7 +28,6 @@ export async function sendWelcomeEmail(
       subject: "Welcome to PVC WAKA!",
       react: WelcomeEmail({ firstName, verificationUrl }) as React.ReactElement,
     });
-    console.log({ data, error });
 
     if (error) {
       console.error("Resend API error:", error);
