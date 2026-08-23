@@ -32,7 +32,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
-    autoSignIn: false,
+    autoSignIn: true,
     revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }: { user: User; url: string }) => {
       const name = `${user?.firstName} ${user?.lastName}` || "User";
@@ -48,10 +48,14 @@ export const auth = betterAuth({
       user: User;
       url: string;
     }) => {
+      const parsedUrl = new URL(url);
+      parsedUrl.searchParams.set("callbackURL", "/dashboard/user");
+
       const name = `${user.firstName} ${user.lastName}`;
-      void sendWelcomeEmail(user.email, name, url);
+      void sendWelcomeEmail(user.email, name, parsedUrl.toString());
     },
     sendOnSignIn: true,
+    autoSignInAfterVerification: true,
   },
   user: {
     additionalFields: userAdditionalFields,
