@@ -22,7 +22,7 @@ const plans: Plan[] = [
     id: "starter",
     name: "The Spark",
     amount: 1000,
-    tagline: "Get involved and keep the movement going.",
+    tagline: "If 1,000 people donate ₦1,000 monthly, here is what we can do.",
     perks: [
       "8 months of free pads - a girl gets to stay in class, not at home.",
       "One borehole — a village stops walking miles for water.",
@@ -55,6 +55,9 @@ const plans: Plan[] = [
       "12 months of free pads — a girl gets to stay in class, not at home.",
       "5 boreholes across the country — clean water where it's needed most.",
       "5 surgeries, in private and public hospitals — no child turned away.",
+      "2 universities empowered — mentorship reaching further.",
+      "9 months of mentorship — teenagers guided away from shortcuts across Nigeria.",
+      "6 months of active Youth civic sensitisation programs.",
     ],
     icon: Crown,
   },
@@ -68,7 +71,7 @@ const plans: Plan[] = [
       "10 boreholes across the country — clean water becomes routine.",
       "10 surgeries, in private and public hospitals — no child turned away.",
       "9 universities empowered — a nationwide mentorship movement.",
-      "12 months of mentorship for secondary students, everywhere ABENOL works.",
+      "12 months of mentorship — teenagers guided away from shortcuts across Nigeria.",
       "12 months of active Youth civic sensitisation programs.",
       "Grants for 10 retired teachers with small businesses",
     ],
@@ -93,14 +96,16 @@ export default function PartnerPlans() {
       <header className="space-y-3">
         <div className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-primary">
           <Handshake className="size-4" />
-          Partner with ABenol Foundation
+          Partner with ABENOL Foundation
         </div>
         <h1 className="font-space-grotesk text-2xl md:text-3xl font-bold text-primary">
           Give a Little Every Month,Change a Life, All Year.
         </h1>
         <p className="font-dm-sans text-sm md:text-base text-muted-foreground max-w-2xl">
           The ABENOL Giving Circle - a monthly gift that quietly becomes a
-          borehole, a surgery, a girl who never misses school.
+          borehole, a surgery, the reason hundreds of teenage girls never miss
+          school, the empowerment for thousands of undergraduates in higher
+          institutions and so much more. Your gift, your legacy.
         </p>
       </header>
 
