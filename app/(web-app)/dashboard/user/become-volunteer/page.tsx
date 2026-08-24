@@ -539,7 +539,7 @@ export default function VolunteerPage() {
         )}
       </form>
       {isModalOpen && (
-        <div className="fixed top-0 right-0 bottom-0 z-50 left-12 md:left-64">
+        <div className="fixed top-0 right-0 bottom-0 z-50 left-12 md:left-60">
           <VolunteerModal
             isOpen={isModalOpen}
             position="absolute"

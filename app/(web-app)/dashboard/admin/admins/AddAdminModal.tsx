@@ -84,6 +84,7 @@ export default function AddAdminModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      containerClassName="fixed top-16 right-0 bottom-0 left-0 md:left-60 z-20"
       title="Add New Admin"
       size="lg"
     >

@@ -19,6 +19,7 @@ export default function VerifyNin() {
   const { user } = useAuth();
 
   const isInitialized = useRef(false);
+  const paymentVerifiedRef = useRef(false);
 
   const [loading, setLoading] = useState(true);
   const [verifyNin, setVerifyNin] = useState(false);
@@ -47,6 +48,7 @@ export default function VerifyNin() {
     provider: "paystack" | "flutterwave",
   ) => {
     try {
+      setLoading(true);
       const verifyRes = await fetch("/api/user/nin-payment/verify", {
         method: "POST",
         headers: {
@@ -63,16 +65,21 @@ export default function VerifyNin() {
 
       if (!verifyRes.ok) {
         showToast("error", verifyData.message || "Payment verification failed");
+        setLoading(false);
         return;
       }
 
+      paymentVerifiedRef.current = true;
+      setLoading(false);
+      setShowPolicy(false);
+      setFlutterwaveModalOpen(false);
       setVerifyNin(true);
       showToast(
         "success",
         verifyData.message || "Payment verified successfully",
       );
-      setFlutterwaveModalOpen(false);
     } catch (error) {
+      setLoading(false);
       showToast("error", "Unable to verify payment");
     }
   };
@@ -128,23 +135,12 @@ export default function VerifyNin() {
       showToast("success", "NIN verified successfully. Redirecting");
       router.push("/dashboard/user");
     } catch (error) {
+      console.error("Error verifying NIN:", error);
       showToast("error", "Failed to verify NIN");
     } finally {
       setVerifying(false);
     }
   };
-
-  useEffect(() => {
-    const reference =
-      searchParams.get("transaction_id") ||
-      searchParams.get("tx_ref") ||
-      searchParams.get("trxref");
-
-    if (reference) {
-      void verifyPayment(reference, paymentProvider);
-      return;
-    }
-  }, [searchParams]);
 
   const startPayment = async () => {
     try {
@@ -160,24 +156,29 @@ export default function VerifyNin() {
 
       const data = await res.json();
 
-      setLoading(false);
-
       if (!res.ok) {
+        setLoading(false);
         showToast(
           "error",
           data.message || data.error || "Unable to start payment",
         );
-        router.push("/dashboard/user");
+        // router.push("/dashboard/user");
         return;
       }
 
       if (data.payment_status === "success") {
         showToast("success", data.message);
+        paymentVerifiedRef.current = true;
+        setLoading(false);
+        setShowPolicy(false);
         setVerifyNin(true);
         return;
       }
 
+      setLoading(false);
+
       if (data.provider === "flutterwave") {
+        setFlutterwaveModalOpen(true);
         const publicKey = process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY;
         setFlutterwaveConfig({
           public_key: publicKey || "",
@@ -187,7 +188,6 @@ export default function VerifyNin() {
           payment_options: data.meta?.payment_options || "card,banktransfer",
           customer: data.meta?.customer,
         });
-        setFlutterwaveModalOpen(true);
         return;
       }
 
@@ -263,11 +263,17 @@ export default function VerifyNin() {
       onClose: () => {
         setLoading(false);
         setFlutterwaveModalOpen(false);
-        router.back();
+        if (!paymentVerifiedRef.current) {
+          router.push("/dashboard/user");
+        }
       },
     });
     setFlutterwaveModalOpen(false);
-  }, [flutterwaveConfig, flutterwaveModalOpen, handleFlutterwavePayment]);
+  }, [
+    flutterwaveConfig,
+    flutterwaveModalOpen,
+    handleFlutterwavePayment,
+  ]);
 
   return (
     <section className="-ml-6">
@@ -288,7 +294,7 @@ export default function VerifyNin() {
       {showPolicy && (
         <Modal
           isOpen
-          position="absolute"
+          containerClassName="fixed top-16 right-0 bottom-0 left-0 md:left-60 z-20"
           size="lg"
           title="Before You Pay"
           closeButton={false}
@@ -327,7 +333,7 @@ export default function VerifyNin() {
       {verifyNin && (
         <Modal
           isOpen
-          position="absolute"
+          containerClassName="fixed top-16 right-0 bottom-0 left-0 md:left-60 z-20"
           title="Verify Your Information"
           closeButton={false}
           actions={

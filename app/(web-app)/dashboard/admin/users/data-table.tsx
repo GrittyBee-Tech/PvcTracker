@@ -138,9 +138,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-wrap gap-4 items-center">
-          <div className="relative w-64">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
             <input
               placeholder="Search by name, email, phone..."
               value={filters.search}
@@ -166,7 +166,7 @@ export function DataTable<TData, TValue>({
               </svg>
             </div>
           </div>
-          <div className="w-48">
+          <div className="w-full sm:w-48">
             <ScrollableSelect
               id="state-filter"
               name="state"
@@ -183,7 +183,7 @@ export function DataTable<TData, TValue>({
               selectClassName="h-10 mt-0 py-2 border-gray-300"
             />
           </div>
-          <div className="relative w-48">
+          <div className="relative w-full sm:w-48">
             <input
               placeholder="Filter by LGA..."
               value={filters.lga}
@@ -196,10 +196,10 @@ export function DataTable<TData, TValue>({
         </div>
 
         {Object.keys(rowSelection).length > 0 && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-start sm:justify-end">
             <Button
               variant="outline"
-              className="text-green-600 border-green-600 hover:bg-green-50"
+              className="text-green-600 border-green-600 hover:bg-green-50 text-xs sm:text-sm"
               onClick={() => handleBulkAction("activate")}
               disabled={bulkLoading}
             >
@@ -207,7 +207,7 @@ export function DataTable<TData, TValue>({
             </Button>
             <Button
               variant="outline"
-              className="text-yellow-600 border-yellow-600 hover:bg-yellow-50"
+              className="text-yellow-600 border-yellow-600 hover:bg-yellow-50 text-xs sm:text-sm"
               onClick={() => handleBulkAction("restrict")}
               disabled={bulkLoading}
             >
@@ -215,7 +215,7 @@ export function DataTable<TData, TValue>({
             </Button>
             <Button
               variant="outline"
-              className="text-red-600 border-red-600 hover:bg-red-50"
+              className="text-red-600 border-red-600 hover:bg-red-50 text-xs sm:text-sm"
               onClick={() => handleBulkAction("delete")}
               disabled={bulkLoading}
             >
@@ -225,7 +225,7 @@ export function DataTable<TData, TValue>({
         )}
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border bg-white overflow-x-auto w-full shadow-xs">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

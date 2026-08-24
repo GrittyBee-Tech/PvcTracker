@@ -103,9 +103,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-wrap gap-4 items-center">
-          <div className="w-48">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center w-full sm:w-auto">
+          <div className="w-full sm:w-48">
             <ScrollableSelect
               id="state-filter"
               name="state"
@@ -121,7 +121,7 @@ export function DataTable<TData, TValue>({
               selectClassName="h-10 mt-0 py-2 border-gray-300"
             />
           </div>
-          <div className="w-48">
+          <div className="w-full sm:w-48">
             <ScrollableSelect
               id="status-filter"
               name="status"
@@ -143,7 +143,7 @@ export function DataTable<TData, TValue>({
           <div className="flex gap-2">
             <Button
               variant="outline"
-              className="text-red-600 border-red-600 hover:bg-red-50"
+              className="text-red-600 border-red-600 hover:bg-red-50 text-xs sm:text-sm"
             >
               Delete Selected
             </Button>
@@ -151,7 +151,7 @@ export function DataTable<TData, TValue>({
         )}
       </div>
 
-      <div className="rounded-md border bg-white relative">
+      <div className="rounded-md border bg-white relative overflow-x-auto w-full shadow-xs">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
