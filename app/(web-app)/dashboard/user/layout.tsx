@@ -71,7 +71,7 @@ export default function UserLayout({
         {isUnverified && pathname !== "/dashboard/user/verify-nin" && (
           <Modal
             isOpen={isUnverified}
-            containerClassName="fixed top-16 pt-4 right-0 bottom-0 left-0 md:left-64 z-20"
+            containerClassName="fixed top-16 pt-4 right-0 bottom-0 left-0 md:left-60 z-20"
             title="Verify Your Information"
             closeButton={false}
             actions={
@@ -102,8 +102,7 @@ export default function UserLayout({
                 <p>₦200 will be charged for this NIN verification request.</p>
               </div>
               <p className="text-primary font-dm-sans -mt-3">
-                Please enter your NIN and continue to pay the verification
-                fee.
+                Please enter your NIN and continue to pay the verification fee.
               </p>
               <InputGroup
                 label="NIN"

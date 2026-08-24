@@ -48,7 +48,7 @@ export default function DashboardLayout({
   }, [navOpen]);
 
   return (
-    <div className="flex h-screen text-white font-sans bg-background overflow-hidden">
+    <div className="grid grid-cols-[15rem_1fr] h-screen text-white font-sans bg-background overflow-hidden">
       {/* Mobile Drawer Overlay Backdrop */}
       {navOpen && (
         <div
@@ -67,7 +67,7 @@ export default function DashboardLayout({
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
         <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-green-900/30 bg-primary/90 backdrop-blur-md sticky top-0 z-30 shadow-xs">
           {/* Left: Mobile Menu Toggle & Mobile Brand Logo */}
@@ -137,7 +137,7 @@ const DashboardSideBar = ({
   return (
     <aside
       className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-slate-50 border-r border-green-900/30 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl
+        fixed inset-y-0 left-0 z-50 w-60 bg-slate-50 border-r border-green-900/30 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl
         md:static md:z-auto md:translate-x-0 md:shadow-none
         ${navOpen ? "translate-x-0" : "-translate-x-full"}
       `}
