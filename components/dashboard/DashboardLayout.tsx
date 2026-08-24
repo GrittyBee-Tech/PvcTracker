@@ -48,7 +48,7 @@ export default function DashboardLayout({
   }, [navOpen]);
 
   return (
-    <div className="grid grid-cols-[15rem_1fr] h-screen text-white font-sans bg-background overflow-hidden">
+    <div className="grid grid-cols-1 md:grid-cols-[15rem_1fr] h-screen text-white font-sans bg-background overflow-hidden">
       {/* Mobile Drawer Overlay Backdrop */}
       {navOpen && (
         <div
