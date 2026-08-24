@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 interface ModalProps {
   isOpen: boolean;
   position?: "fixed" | "absolute";
+  containerClassName?: string;
   title?: string;
   children: ReactNode;
   onClose?: () => void;
@@ -17,6 +18,7 @@ interface ModalProps {
 export default function Modal({
   isOpen,
   position = "fixed",
+  containerClassName,
   title,
   children,
   onClose,
@@ -29,7 +31,8 @@ export default function Modal({
   if (!isOpen) return null;
 
   const wrapperClass =
-    position === "absolute" ? "absolute inset-0" : "fixed inset-0";
+    containerClassName ||
+    (position === "absolute" ? "absolute inset-0 z-20" : "fixed inset-0 z-20");
 
   const sizeClasses = {
     sm: "w-full sm:max-w-sm",
@@ -39,7 +42,7 @@ export default function Modal({
   };
 
   return (
-    <div className={`${wrapperClass} z-50 mb-0`}>
+    <div className={`${wrapperClass} mb-0`}>
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -47,7 +50,7 @@ export default function Modal({
       />
 
       {/* Modal Content */}
-      <div className="absolute inset-0 flex items-center justify-center md:p-4 p-6 overflow-y-auto">
+      <div className="absolute my-3 inset-0 flex items-center justify-center md:p-4 p-6 overflow-y-auto">
         <div
           className={`
             ${bg}
@@ -63,7 +66,7 @@ export default function Modal({
         >
           {/* Header */}
           {title && (
-            <div className="flex items-center justify-between px-6 py-4 border-b border-green-900/30">
+            <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-green-900/30">
               <h2 className="text-xl font-heading font-semibold text-primary">
                 {title}
               </h2>
@@ -80,7 +83,7 @@ export default function Modal({
           )}
 
           {/* Body */}
-          <div className="px-6 py-4 text-primary">{children}</div>
+          <div className="p-4 sm:px-6 sm:py-4 text-primary">{children}</div>
 
           {/* Footer */}
           {actions && (

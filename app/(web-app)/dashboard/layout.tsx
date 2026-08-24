@@ -2,7 +2,7 @@
 
 import { SpinnerLoader } from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function DashboardAuthLayout({
@@ -11,12 +11,19 @@ export default function DashboardAuthLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated, user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
+    if (isLoading) return;
+
+    if (!isAuthenticated) {
       router.replace("/auth/login");
-    } else {
+      return;
+    }
+
+    // Only redirect if visiting root "/dashboard" or "/dashboard/"
+    if (pathname === "/dashboard" || pathname === "/dashboard/") {
       const destination =
         user?.role === "volunteer"
           ? "/dashboard/volunteer"
@@ -26,7 +33,7 @@ export default function DashboardAuthLayout({
 
       router.replace(destination);
     }
-  }, [isAuthenticated, router, isLoading, user?.role]);
+  }, [isAuthenticated, router, isLoading, user?.role, pathname]);
 
   if (isLoading) {
     return (

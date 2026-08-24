@@ -63,7 +63,7 @@ export default function AdminPage() {
             </div>
             
             {/* KPI Cards */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                 <Card className="shadow-sm border-gray-100 transition-all duration-200 hover:shadow-md hover:border-primary/30 hover:-translate-y-1">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium text-gray-500">Total Users</CardTitle>
@@ -107,12 +107,12 @@ export default function AdminPage() {
             </div>
 
             {/* Charts Grid */}
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
                 <Card className="shadow-sm border-gray-100 transition-all duration-300 hover:shadow-lg">
                     <CardHeader>
                         <CardTitle className="text-lg">PVC Collection Status</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
+                    <CardContent className="h-[250px] sm:h-[300px]">
                         <StatusPieChart data={data.charts.pvcStatus} colors={COLORS} />
                     </CardContent>
                 </Card>
@@ -121,7 +121,7 @@ export default function AdminPage() {
                     <CardHeader>
                         <CardTitle className="text-lg">NIN Verification Status</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
+                    <CardContent className="h-[250px] sm:h-[300px]">
                         <StatusPieChart data={data.charts.ninStatus} colors={COLORS} />
                     </CardContent>
                 </Card>
@@ -130,7 +130,7 @@ export default function AdminPage() {
                     <CardHeader>
                         <CardTitle className="text-lg">Top 10 States by Registration</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[350px] w-full pt-4">
+                    <CardContent className="h-[280px] sm:h-[350px] w-full pt-4">
                         <StateDistributionChart data={data.charts.stateDistribution} />
                     </CardContent>
                 </Card>
