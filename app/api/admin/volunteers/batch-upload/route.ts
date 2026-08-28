@@ -61,7 +61,7 @@ export const POST = withDb(async (request: Request) => {
     const errors = [];
 
     for (const row of data) {
-      const email = row[emailKey]?.toString().trim();
+      // const email = row[emailKey]?.toString().trim();
       const vin = vinKey ? row[vinKey]?.toString().trim() : "";
 
       if (!vin) continue;

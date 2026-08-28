@@ -5,16 +5,12 @@ import {
   Bell,
   Menu,
   X,
-  PanelLeftClose,
-  PanelLeftOpen,
 } from "lucide-react";
 import * as Icons from "lucide-react";
 import Link from "next/link";
 import LogoutButton from "../ui/LogoutButton";
 import { useAuth } from "@/hooks/useAuth";
-import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { TbNavigationDown } from "react-icons/tb";
 import { IoFootstepsSharp } from "react-icons/io5";
 
 export type DashboardLink = {
