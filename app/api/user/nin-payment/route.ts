@@ -34,7 +34,6 @@ export const POST = withDb(async (request: Request) => {
       purpose: "NIN Verification",
       status: "success",
     });
-    // console.log("Existing transaction:", { existingTransaction });
 
     if (existingTransaction) {
       // && existingTransaction.provider !== "flutterwave"

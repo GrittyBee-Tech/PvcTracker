@@ -11,6 +11,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { showToast } from "@/utils/constants/toast";
+import VerifyNinComponent from "./verify-nin/VerifyNinComponent";
+import useNinStatusHook from "@/hooks/useNinStatus";
 
 const links = [
   { href: "/dashboard/user", label: "Dashboard", icon: "LayoutDashboard" },
@@ -33,19 +35,24 @@ const links = [
   },
 ];
 
+const NO_NIN_MODAL_ROUTES = [
+  "/dashboard/user/verify-nin",
+  "/dashboard/user/report-issues",
+];
+
 export default function UserLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const { user } = useAuth();
-  const isUnverified = user && user.ninStatus !== "verified";
   const [nin, setNin] = useState(user?.nin || "");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isVerifying, setIsVerifying] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ninError, setNinError] = useState<string | null>(null);
   const [agreedToPolicy, setAgreedToPolicy] = useState(false);
+  const { paid, verified, isLoading } = useNinStatusHook(user);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -68,61 +75,76 @@ export default function UserLayout({
       <DashboardLayout links={links} role="User">
         {children}
         {/* Modal Overlay - NIN verification */}
-        {isUnverified && pathname !== "/dashboard/user/verify-nin" && (
-          <Modal
-            isOpen={isUnverified}
-            containerClassName="fixed top-16 pt-4 right-0 bottom-0 left-0 md:left-60 z-20"
-            title="Verify Your Information"
-            closeButton={false}
-            actions={
-              <>
-                <button
-                  className="md:px-6 md:py-2 py-2 px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60 cursor-pointer"
-                  onClick={handleVerify}
-                  disabled={isVerifying || !agreedToPolicy}
+        <VerifyNinComponent
+          isOpen={!verified && paid && !NO_NIN_MODAL_ROUTES.includes(pathname)}
+        />
+        {!isLoading &&
+          !verified &&
+          !paid &&
+          !NO_NIN_MODAL_ROUTES.includes(pathname) && (
+            <Modal
+              isOpen={!verified}
+              containerClassName="fixed top-16 pt-4 right-0 bottom-0 left-0 md:left-60 z-20"
+              title="Verify Your Information"
+              closeButton={false}
+              actions={
+                <>
+                  <button
+                    className="md:px-6 md:py-2 py-2 px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60 cursor-pointer"
+                    onClick={handleVerify}
+                    disabled={isVerifying || !agreedToPolicy}
+                  >
+                    {isVerifying ? (
+                      <SpinnerLoader text="Processing..." />
+                    ) : (
+                      "Pay and Verify"
+                    )}
+                  </button>
+                  {/* <button
+                  className="md:px-6 md:py-2 py-2 px-4 md:text-lg font-bold rounded bg-red-300 border border-red-300 text-white disabled:opacity-60 cursor-pointer"
+                  onClick={() => {
+                    setIsVerifying(false);
+                  }}
                 >
-                  {isVerifying ? (
-                    <SpinnerLoader text="Processing..." />
-                  ) : (
-                    "Pay and Verify"
-                  )}
-                </button>
-              </>
-            }
-          >
-            <div className="space-y-4">
-              <p className="font-bold">
-                Hello, {user?.lastName} {user?.firstName}
-              </p>
-              <p className="text-primary">
-                To complete your profile setup kindly verify your NIN
-              </p>
-              <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
-                <p className="font-semibold">Verification Fee</p>
-                <p>₦200 will be charged for this NIN verification request.</p>
-              </div>
-              <p className="text-primary font-dm-sans -mt-3">
-                Please enter your NIN and continue to pay the verification fee.
-              </p>
-              <InputGroup
-                label="NIN"
-                name="nin"
-                onChange={(field, value) => setNin(value)}
-                placeholder="Enter your NIN"
-                type="text"
-                value={nin}
-              />
-              {ninError && <p className="text-sm text-red-400">{ninError}</p>}
+                  Cancel
+                </button> */}
+                </>
+              }
+            >
+              <div className="space-y-4">
+                <p className="font-bold">
+                  Hello, {user?.lastName} {user?.firstName}
+                </p>
+                <p className="text-primary">
+                  To complete your profile setup kindly verify your NIN
+                </p>
+                <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
+                  <p className="font-semibold">Verification Fee</p>
+                  <p>₦200 will be charged for this NIN verification request.</p>
+                </div>
+                <p className="text-primary font-dm-sans -mt-3">
+                  Please enter your NIN and continue to pay the verification
+                  fee.
+                </p>
+                <InputGroup
+                  label="NIN"
+                  name="nin"
+                  onChange={(field, value) => setNin(value)}
+                  placeholder="Enter your NIN"
+                  type="text"
+                  value={nin}
+                />
+                {ninError && <p className="text-sm text-red-400">{ninError}</p>}
 
-              <NoRefundPolicy
-                id="nin-no-refund-agreement"
-                agreed={agreedToPolicy}
-                onAgreedChange={setAgreedToPolicy}
-                disabled={isVerifying}
-              />
-            </div>
-          </Modal>
-        )}
+                <NoRefundPolicy
+                  id="nin-no-refund-agreement"
+                  agreed={agreedToPolicy}
+                  onAgreedChange={setAgreedToPolicy}
+                  disabled={isVerifying}
+                />
+              </div>
+            </Modal>
+          )}
       </DashboardLayout>
     </>
   );

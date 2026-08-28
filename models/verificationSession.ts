@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+export interface IVerificationMismatch {
+  field: string;
+  dbValue: string;
+  ninValue: string;
+}
+
 export interface IVerificationSession extends Document {
   user_id: string;
   transaction_id: string;
@@ -7,6 +13,7 @@ export interface IVerificationSession extends Document {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   provider_response: Record<string, any>;
   status_reason: string;
+  mismatches?: IVerificationMismatch[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -26,6 +33,13 @@ const VerificationSessionSchema: Schema<IVerificationSession> = new Schema(
       default: {},
     },
     status_reason: { type: String, default: "" },
+    mismatches: [
+      {
+        field: { type: String },
+        dbValue: { type: String },
+        ninValue: { type: String },
+      },
+    ],
   },
   { timestamps: true },
 );
