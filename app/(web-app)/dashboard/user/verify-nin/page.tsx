@@ -12,6 +12,9 @@ import Modal from "@/components/ui/modal";
 import NoRefundPolicy, {
   NIN_POLICY_CONSENT_KEY,
 } from "@/components/ui/NoRefundPolicy";
+import useNinStatusHook from "@/hooks/useNinStatus";
+import { SpinnerLoader } from "@/components/ui/Loader";
+import VerifyNinComponent from "./VerifyNinComponent";
 
 export default function VerifyNin() {
   const router = useRouter();
@@ -20,10 +23,10 @@ export default function VerifyNin() {
 
   const isInitialized = useRef(false);
   const paymentVerifiedRef = useRef(false);
+  const { paid, verified, isLoading, refetch } = useNinStatusHook(user);
 
   const [loading, setLoading] = useState(true);
   const [verifyNin, setVerifyNin] = useState(false);
-  const [verifying, setVerifying] = useState(false);
   const [showPolicy, setShowPolicy] = useState(false);
   const [agreedToPolicy, setAgreedToPolicy] = useState(false);
   const [flutterwaveModalOpen, setFlutterwaveModalOpen] = useState(false);
@@ -41,7 +44,6 @@ export default function VerifyNin() {
   } | null>(null);
 
   const paymentProvider: "flutterwave" | "paystack" = "flutterwave";
-  const [nin, setNin] = useState(user?.nin || "");
 
   const verifyPayment = async (
     reference: string | number,
@@ -74,6 +76,7 @@ export default function VerifyNin() {
       setShowPolicy(false);
       setFlutterwaveModalOpen(false);
       setVerifyNin(true);
+      await refetch();
       showToast(
         "success",
         verifyData.message || "Payment verified successfully",
@@ -105,43 +108,6 @@ export default function VerifyNin() {
     },
   });
 
-  const verifyNinNumber = async () => {
-    if (!nin.trim()) {
-      showToast("error", "Please enter your NIN");
-      return;
-    }
-
-    try {
-      setVerifying(true);
-
-      const res = await fetch("/api/user/verify-nin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nin: nin.trim(),
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        showToast("error", data.message || "Verification failed");
-        return;
-      }
-
-      setVerifyNin(false);
-      showToast("success", "NIN verified successfully. Redirecting");
-      router.push("/dashboard/user");
-    } catch (error) {
-      console.error("Error verifying NIN:", error);
-      showToast("error", "Failed to verify NIN");
-    } finally {
-      setVerifying(false);
-    }
-  };
-
   const startPayment = async () => {
     try {
       setLoading(true);
@@ -162,7 +128,6 @@ export default function VerifyNin() {
           "error",
           data.message || data.error || "Unable to start payment",
         );
-        // router.push("/dashboard/user");
         return;
       }
 
@@ -172,6 +137,7 @@ export default function VerifyNin() {
         setLoading(false);
         setShowPolicy(false);
         setVerifyNin(true);
+        await refetch();
         return;
       }
 
@@ -227,15 +193,22 @@ export default function VerifyNin() {
     if (isInitialized.current) return;
 
     isInitialized.current = true;
-    if (user?.ninStatus === "verified") return;
+    if (user?.ninStatus === "verified") {
+      router.push("/dashboard/user");
+      return;
+    }
 
-    // Returning from a payment redirect — the reference effect handles it.
-    const hasPaymentReference =
-      searchParams.get("transaction_id") ||
-      searchParams.get("tx_ref") ||
-      searchParams.get("trxref");
+    // Handle return from payment gateway redirect
+    const transactionId = searchParams.get("transaction_id");
+    const txRef = searchParams.get("tx_ref");
+    const trxref = searchParams.get("trxref");
 
-    if (hasPaymentReference) return;
+    if (transactionId || txRef || trxref) {
+      const reference = transactionId || txRef || trxref;
+      const provider = trxref ? "paystack" : "flutterwave";
+      void verifyPayment(reference!, provider);
+      return;
+    }
 
     // Already accepted on the dashboard modal — go straight to payment.
     if (sessionStorage.getItem(NIN_POLICY_CONSENT_KEY) === "true") {
@@ -244,11 +217,19 @@ export default function VerifyNin() {
       return;
     }
 
-    // Nothing is charged until the user accepts the no refund policy.
+    // If payment was already completed, open NIN verification directly
+    if (paid) {
+      setLoading(false);
+      setShowPolicy(false);
+      setVerifyNin(true);
+      return;
+    }
+
+    // Otherwise show policy modal before initiating payment
     setLoading(false);
     setShowPolicy(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [paid, user?.ninStatus]);
 
   useEffect(() => {
     if (!flutterwaveModalOpen || !flutterwaveConfig) return;
@@ -269,20 +250,15 @@ export default function VerifyNin() {
       },
     });
     setFlutterwaveModalOpen(false);
-  }, [
-    flutterwaveConfig,
-    flutterwaveModalOpen,
-    handleFlutterwavePayment,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flutterwaveConfig, flutterwaveModalOpen]);
 
   return (
     <section className="-ml-6">
-      {loading && (
+      {(loading || isLoading) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="mx-auto grid">
-            <div className="grid w-max grid-flow-col gap-2 font-bold text-white">
-              <h1 className="text-xl sm:text-2xl md:text-7xl">PVC WAKA</h1>
-            </div>
+            <SpinnerLoader border="border-7" size="size-20" />
 
             <p className="mt-6 animate-ping text-center text-xl text-white">
               Opening payment...
@@ -290,8 +266,7 @@ export default function VerifyNin() {
           </div>
         </div>
       )}
-
-      {showPolicy && (
+      {showPolicy && !paid && !isLoading && !verifyNin && (
         <Modal
           isOpen
           containerClassName="fixed top-16 right-0 bottom-0 left-0 md:left-60 z-20"
@@ -330,55 +305,7 @@ export default function VerifyNin() {
         </Modal>
       )}
 
-      {verifyNin && (
-        <Modal
-          isOpen
-          containerClassName="fixed top-16 right-0 bottom-0 left-0 md:left-60 z-20"
-          title="Verify Your Information"
-          closeButton={false}
-          actions={
-            <button
-              onClick={verifyNinNumber}
-              disabled={verifying}
-              className="rounded border border-green-700 bg-primary px-4 py-2 font-bold text-white disabled:opacity-60 md:px-6 md:py-2 md:text-lg"
-            >
-              {verifying ? "Verifying..." : "Verify NIN"}
-            </button>
-          }
-        >
-          <div className="space-y-4">
-            <p className="font-bold">You are almost there {user?.firstName}</p>
-
-            <p className="text-primary">
-              To complete your profile setup kindly verify your NIN.
-            </p>
-
-            <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
-              <p className="font-semibold">Verification Fee has been Paid</p>
-              <p>Payment was Successful</p>
-            </div>
-
-            <div className="space-y-2">
-              <label className="font-medium">
-                National Identification Number
-              </label>
-
-              <input
-                type="text"
-                value={nin}
-                maxLength={11}
-                onChange={(e) => setNin(e.target.value)}
-                placeholder="Enter your 11-digit NIN"
-                className="w-full rounded-lg border p-3 outline-none focus:ring-2"
-              />
-            </div>
-
-            <p className="text-sm text-gray-500">
-              Make sure the NIN matches your official NIN record.
-            </p>
-          </div>
-        </Modal>
-      )}
+      <VerifyNinComponent isOpen={verifyNin || (!verified && paid)} />
     </section>
   );
 }
