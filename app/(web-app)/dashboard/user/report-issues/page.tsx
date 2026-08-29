@@ -152,6 +152,7 @@ export default function ReportIssuePage() {
               </option>
               <option value="technical">Technical Issue</option>
               <option value="registration">Registration Problem</option>
+              <option value="nin-verification">NIN Verification</option>
               <option value="pvc-collection">PVC Collection Issue</option>
               <option value="user-experience">User Experience</option>
               <option value="other">Other</option>

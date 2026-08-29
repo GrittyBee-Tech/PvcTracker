@@ -23,7 +23,7 @@ export default function AuditLogsPage() {
       total: totalCount,
       totalPages,
     }),
-    [currentPage, totalCount, totalPages]
+    [currentPage, totalCount, totalPages],
   );
 
   const fetchLogs = async () => {
@@ -35,7 +35,9 @@ export default function AuditLogsPage() {
         ...(filters.action !== "all" && { action: filters.action }),
       });
 
-      const response = await fetch(`/api/admin/audit-logs?${queryParams.toString()}`);
+      const response = await fetch(
+        `/api/admin/audit-logs?${queryParams.toString()}`,
+      );
       const data = await response.json();
 
       if (response.ok) {
@@ -52,6 +54,7 @@ export default function AuditLogsPage() {
 
   useEffect(() => {
     fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, filters.action]);
 
   return (
@@ -62,7 +65,7 @@ export default function AuditLogsPage() {
           Track platform actions for non-repudiation and security monitoring.
         </p>
       </div>
-      
+
       <DataTable
         columns={columns}
         data={logs}
