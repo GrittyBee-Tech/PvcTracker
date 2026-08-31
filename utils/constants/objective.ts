@@ -7,35 +7,60 @@ import {
 
 type ObjectiveType = {
   title: string;
-  icon: IconType;
+  slug: string;
   description: string;
   btntext?: string;
   btnLink?: string;
 };
 
+export const HOWITWORKS_SCHEMA = [
+  {
+    title: "01 — CREATE YOUR ACCOUNT",
+    slug: "Start for free",
+    description:
+      "Sign up and provide your basic information.",
+    
+  },
+  {
+    title: "02 — ADD YOUR PVC DETAILS",
+  slug: "Connect your journey",
+    description:
+      "Connect your registration information so you can begin tracking your journey.",
+  },
+  {
+    title: "03 — STAY INFORMED",
+   slug: "Know what comes next",
+    description:
+      "Get relevant information, updates and support to help you move forward.",
+   },
+];
+
+
 export const OBJECTIVE_SCHEMA: ObjectiveType[] = [
   {
-    title: "Check and manage your PVC journey online",
-    icon: BsFillGlobeAmericasFill as IconType,
+    title: "Know where you stand",
+    slug: "01",
     description:
-      "Find accurate registration and collection information, locate nearby INEC centres in your local government area, and track your progress from one place.",
-    btntext: "Create User Account",
+      "Keep your PVC journey in one place. Track your registration and collection progress and understand what comes next.",
+    btntext: "Track My PVC",
     btnLink: "/auth/register",
   },
   {
-    title: "Support your community as a PVC WAKA Volunteer",
-    icon: BsFillPostcardHeartFill as IconType,
+    title: "Support as a PVC WAKA Ambassador",
+  slug: "02",
     description:
       "Help people navigate PVC registration, provide trusted guidance, and assist multiple users under your dashboard so no eligible voter is left behind.",
-    btntext: "Become a Volunteer",
+    btntext: "Become an Ambassador",
     btnLink: "/volunteer",
   },
   {
-    title: "Report delays and escalate unresolved PVC issues",
-    icon: BsPcDisplayHorizontal as IconType,
+    title: "Get help when things go wrong",
+   slug: "03",
     description:
-      "Monitor your registration status, submit complaints when issues occur, and get support while cases are tracked and escalated for accountability.",
-    btntext: "Report an Issue",
+      "Facing a delay, missing information or another challenge? Report an issue, seek guidance and find the right channel for support.",
+    btntext: "Get Support",
     btnLink: "/contact",
   },
 ];
+
+

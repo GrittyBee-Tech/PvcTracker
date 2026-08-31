@@ -26,11 +26,11 @@ const Faq = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-2xl lg:mt-20 mx-auto md:text-4xl font-bold font-space-grotesk bg-clip-text text-[#4B6F52] mb-6"
+          className="text-2xl lg:mt-20 mx-auto md:text-4xl font-bold font-space-grotesk  mb-6"
         >
-          Frequently asked questions
+          Questions? Start here.
         </motion.p>
-        <div className="grid w-full mt-3 lg:px-60 gap-3">
+        <div className="grid w-full mt-1 lg:px-60 gap-3">
           {FAQ_SCHEMA.map((schema, index) => {
             const { id, question, answer } = schema;
             return (
@@ -41,10 +41,10 @@ const Faq = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.35, delay: index * 0.08 }}
-                className="grid mt-4 cursor-pointer border border-[#DDE3DE] rounded-2xl p-4 md:p-6 bg-white shadow-sm "
+                className="grid mt-3 cursor-pointer border border-[#DDE3DE] rounded-2xl p-4 md:p-4 bg-white shadow-sm "
               >
                 <div className="grid grid-flow-col justify-between">
-                  <p className="text-md font-space-grotesk md:text-xl bg-clip-text font-bold text-[#0A140F] ">
+                  <p className="text-md md:text-lg bg-clip-text font-bold text-[#0A140F] ">
                     {question}
                   </p>
                   <motion.span
