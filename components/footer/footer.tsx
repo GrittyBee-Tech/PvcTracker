@@ -16,9 +16,9 @@ const Footer = () => {
           </p>
           <Link
             href="/auth/register"
-            className="inline-block bg-primary text-white font-dm-sans font-semibold px-5 py-2 rounded-lg hover:bg-[#c9a84c] transition-colors"
+            className="inline-block bg-primary text-white font-dm-sans font-semibold px-5 py-2 rounded-lg mt-4 hover:bg-[#c9a84c] transition-colors"
           >
-            Become a Volunteer
+            Become a WAKA Ambassador
           </Link>
 
           <div className="flex items-center gap-3 pt-1">
