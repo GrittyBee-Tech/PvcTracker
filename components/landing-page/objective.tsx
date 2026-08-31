@@ -2,21 +2,23 @@
 
 import { OBJECTIVE_SCHEMA } from "@/utils/constants/objective";
 import Link from "next/link";
+import HowItWorks from "./howItWorks";
 
 const Objective = () => {
   return (
     <section className="lg:px-20 md:py-20 py-12 px-6 border-b border-border">
       <header className="max-w-3xl mb-8 md:mb-10">
-        <p className="font-dm-sans font-bold tracking-[0.14em] text-xs uppercase text-primary">
+        <p className="font-dm-sans font-bold tracking-[0.14em] text-sm uppercase text-primary">
+          <hr className="inline-block w-10 md:mb-1 font-space-grotesk  mb-2 md:border-[1.25px] uppercase" />{" "}
           Core Objectives
         </p>
-        <h2 className="font-space-grotesk text-3xl md:text-4xl font-extrabold text-[#0A140F] mt-2">
-          Three practical ways PVC WAKA supports voters
+        <h2 className="text-3xl  font-space-grotesk md:text-2xl font-extrabold text-[#0A140F] mt-2">
+          Everything you need to move your PVC journey forward.
         </h2>
-        <p className="font-dm-sans text-[#4B5B4F] mt-3 leading-8">
-          Whether you are registering for the first time, supporting others as a
-          volunteer, or resolving delays, these tools keep your civic journey
-          simple and actionable.
+        <p className="font-dm-sans text-[#4B5B4F] mt-3 ">
+          Whether you're checking your own progress, helping someone in your
+          community, or reporting a problem, PVC WAKA gives you a clearer path
+          from registration to participation.
         </p>
       </header>
 
@@ -28,15 +30,15 @@ const Objective = () => {
           >
             <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[#3fbcaa]/10 blur-xl" />
 
-            <span className="relative text-3xl text-[#1A5C38] mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-[#EAF5ED] border border-[#D4E3D7]">
-              <item.icon />
+            <span className="relative text-xl font-bold mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#EAF5ED] border border-[#D4E3D7]">
+              {item.slug}
             </span>
 
-            <h3 className="relative text-xl md:text-2xl font-space-grotesk text-[#0A140F] font-bold leading-tight">
+            <h3 className="relative text-xl md:text-xl font-space-grotesk h-4 text-[#0A140F] font-bold">
               {item.title}
             </h3>
 
-            <p className="relative text-[#27362C] font-dm-sans mt-4 leading-8 flex-1">
+            <p className="relative text-[#27362C] font-dm-sans md:mt-8 mt-4 flex-1">
               {item.description}
             </p>
 
@@ -51,6 +53,7 @@ const Objective = () => {
           </article>
         ))}
       </div>
+      <HowItWorks />
     </section>
   );
 };
