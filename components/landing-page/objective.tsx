@@ -16,9 +16,9 @@ const Objective = () => {
           Everything you need to move your PVC journey forward.
         </h2>
         <p className="font-dm-sans text-[#4B5B4F] mt-3 ">
-          Whether you're checking your own progress, helping someone in your
-          community, or reporting a problem, PVC WAKA gives you a clearer path
-          from registration to participation.
+          Whether you&apos;re checking your own progress, helping someone in
+          your community, or reporting a problem, PVC WAKA gives you a clearer
+          path from registration to participation.
         </p>
       </header>
 

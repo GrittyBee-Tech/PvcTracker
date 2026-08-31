@@ -14,7 +14,7 @@ const HowItWorks = () => {
           Getting started is simple.
         </h2>
         <p className="font-dm-sans text-lg  mt-3 ">
-          Your journey doesn't have to be confusing.
+          Your journey doesn&apos;t have to be confusing.
         </p>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -38,7 +38,7 @@ const HowItWorks = () => {
       <article className="rounded-3xl border border-[#DDE3DE] bg-[#F5FBF7] p-7 md:p-9 flex flex-col md:flex-row md:items-center md:justify-between mt-7 gap-4">
         <div>
           <p className="font-space-grotesk text-2xl font-bold text-[#0A140F]">
-            Don't just register. Be ready to vote.
+            Don&apos;t just register. Be ready to vote.
           </p>
           <p className="font-dm-sans text-[#4E5E52] mt-2">
             Get the information, updates and support you need to move from

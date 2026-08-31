@@ -12,8 +12,8 @@ const LandingPage = () => {
         Your PVC, Your voice. Your next step.
       </h1>
       <p className="text-lg text-[#0A140F] font-dm-sans md:w-6/12 md:mt-6 mt-3 ">
-        Your voter journey shouldn't end after registration. PVC WAKA helps you
-        track your PVC progress, find the right INEC centre, get reliable
+        Your voter journey shouldn&apos;t end after registration. PVC WAKA helps
+        you track your PVC progress, find the right INEC centre, get reliable
         information, and know what to do when something goes wrong.
       </p>
       <div className="flex flex-col sm:flex-row gap-3 mt-7">
@@ -53,7 +53,7 @@ const LandingPage = () => {
         </article>
         <article className="lg:col-span-2 rounded-2xl bg-[#103724] border border-[#1A5C38] p-6 md:p-8 text-white">
           <p className="text-2xl md:w-9/12 font-bold font-space-grotesk">
-            Don't get stuck after registration.
+            Don&apos;t get stuck after registration.
           </p>
           <p className="font-dm-sans text-[#DCF1E3] mt-3 leading-8">
             Track your journey, find relevant INEC centres, stay informed and
