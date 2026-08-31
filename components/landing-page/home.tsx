@@ -8,7 +8,7 @@ const LandingPage = () => {
         <hr className="inline-block w-10 md:mb-1 font-space-grotesk  mb-1 md:border-[1.25px] uppercase" />{" "}
         Permanent Voter&apos;s Card Action Movement
       </div>
-      <h1 className="md:text-7xl font-space-grotesk text-2xl font-extrabold md:w-7/12 md:mt-5 mt-3  text-[#0A140F] ">
+      <h1 className="md:text-7xl font-space-grotesk text-2xl font-extrabold md:w-7/12 md:mt-5 mt-3  text-[#0A140F] leading-16 ">
         Your PVC, Your voice. Your next step.
       </h1>
       <p className="text-lg text-[#0A140F] font-dm-sans md:w-6/12 md:mt-6 mt-3 ">
