@@ -2,7 +2,6 @@
 
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import InputGroup from "@/components/ui/InputGroup";
-import { SpinnerLoader } from "@/components/ui/Loader";
 import Modal from "@/components/ui/modal";
 import NoRefundPolicy, {
   NIN_POLICY_CONSENT_KEY,
@@ -12,7 +11,7 @@ import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { showToast } from "@/utils/constants/toast";
 import VerifyNinComponent from "./verify-nin/VerifyNinComponent";
-import useNinStatusHook from "@/hooks/useNinStatus";
+import useNinStatus from "@/hooks/useNinStatus";
 
 const links = [
   { href: "/dashboard/user", label: "Dashboard", icon: "LayoutDashboard" },
@@ -47,12 +46,8 @@ export default function UserLayout({
 }) {
   const { user } = useAuth();
   const [nin, setNin] = useState(user?.nin || "");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isVerifying, setIsVerifying] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [ninError, setNinError] = useState<string | null>(null);
   const [agreedToPolicy, setAgreedToPolicy] = useState(false);
-  const { paid, verified, isLoading } = useNinStatusHook(user);
+  const { paid, verified, isLoading } = useNinStatus(user);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -92,26 +87,14 @@ export default function UserLayout({
                   <button
                     className="md:px-6 md:py-2 py-2 px-4 md:text-lg font-bold rounded bg-primary border border-green-700 text-white disabled:opacity-60 cursor-pointer"
                     onClick={handleVerify}
-                    disabled={isVerifying || !agreedToPolicy}
+                    disabled={!agreedToPolicy}
                   >
-                    {isVerifying ? (
-                      <SpinnerLoader text="Processing..." />
-                    ) : (
-                      "Pay and Verify"
-                    )}
+                    Pay and Verify
                   </button>
-                  {/* <button
-                  className="md:px-6 md:py-2 py-2 px-4 md:text-lg font-bold rounded bg-red-300 border border-red-300 text-white disabled:opacity-60 cursor-pointer"
-                  onClick={() => {
-                    setIsVerifying(false);
-                  }}
-                >
-                  Cancel
-                </button> */}
                 </>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <p className="font-bold">
                   Hello, {user?.lastName} {user?.firstName}
                 </p>
@@ -126,21 +109,11 @@ export default function UserLayout({
                   Please enter your NIN and continue to pay the verification
                   fee.
                 </p>
-                <InputGroup
-                  label="NIN"
-                  name="nin"
-                  onChange={(field, value) => setNin(value)}
-                  placeholder="Enter your NIN"
-                  type="text"
-                  value={nin}
-                />
-                {ninError && <p className="text-sm text-red-400">{ninError}</p>}
 
                 <NoRefundPolicy
                   id="nin-no-refund-agreement"
                   agreed={agreedToPolicy}
                   onAgreedChange={setAgreedToPolicy}
-                  disabled={isVerifying}
                 />
               </div>
             </Modal>

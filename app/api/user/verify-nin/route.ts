@@ -3,6 +3,8 @@ import { withDb } from "@/lib/withDb";
 import UserModel from "@/models/users";
 import VerificationSessionModel from "@/models/verificationSession";
 import { verifyNIN } from "@/services/ninService";
+import { User } from "better-auth/types";
+import { NextResponse } from "next/server";
 
 const normalizeName = (name?: string) => (name || "").trim().toLowerCase();
 
@@ -14,18 +16,99 @@ const normalizeGender = (gender?: string): "male" | "female" | "" => {
   return "";
 };
 
+const compareNinInfoToDbInfo = async (
+  ninData: Record<string, any>,
+  user: User,
+  sessionId: string,
+) => {
+  const mismatchFields: string[] = [];
+  const detailedMismatches: Array<{
+    field: string;
+    dbValue: string;
+    ninValue: string;
+  }> = [];
+
+  const dbFirstName = normalizeName(user.firstName);
+  const ninFirstName = normalizeName(ninData?.firstname);
+  if (dbFirstName && ninFirstName && dbFirstName !== ninFirstName) {
+    mismatchFields.push("first name");
+    detailedMismatches.push({
+      field: "firstName",
+      dbValue: user.firstName,
+      ninValue: ninData?.firstname || "",
+    });
+  }
+
+  const dbLastName = normalizeName(user.lastName);
+  const ninLastName = normalizeName(ninData?.lastname);
+  if (dbLastName && ninLastName && dbLastName !== ninLastName) {
+    mismatchFields.push("last name");
+    detailedMismatches.push({
+      field: "lastName",
+      dbValue: user.lastName,
+      ninValue: ninData?.lastname || "",
+    });
+  }
+
+  const dbGender = normalizeGender(user.gender);
+  const ninGender = normalizeGender(ninData?.gender);
+  if (dbGender && ninGender && dbGender !== ninGender) {
+    mismatchFields.push("gender");
+    detailedMismatches.push({
+      field: "gender",
+      dbValue: user.gender,
+      ninValue: ninData?.gender || "",
+    });
+  }
+
+  const mismatchMessage = `Your profile information (${mismatchFields.join(
+    ", ",
+  )}) does not match your official NIN record.`;
+
+  if (mismatchFields.length > 0) {
+    await VerificationSessionModel.updateOne(
+      { _id: sessionId },
+      {
+        mismatches: detailedMismatches,
+        status: "rejected",
+        status_reason: mismatchMessage,
+      },
+    );
+    return { mismatchMessage, detailedMismatches, mismatchFields };
+  }
+  await VerificationSessionModel.updateOne(
+    { _id: sessionId },
+    {
+      mismatches: [],
+      status: "verified",
+      status_reason: "Your profile information matches your NIN",
+    },
+  );
+
+  return {
+    mismatchMessage: "Your profile information matches your NIN",
+    detailedMismatches: [],
+    mismatchFields: [],
+  };
+};
+
 export const POST = withDb(async (request: Request) => {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session?.user?.id) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    const { nin } = body;
+    const { nin, firstName, lastName } = body;
+    console.log("Received NIN verification request:", {
+      nin,
+      firstName,
+      lastName,
+    });
 
     if (!nin || typeof nin !== "string") {
-      return Response.json(
+      return NextResponse.json(
         { success: false, message: "Valid ID number is required" },
         { status: 400 },
       );
@@ -33,158 +116,135 @@ export const POST = withDb(async (request: Request) => {
 
     const user = await UserModel.findById(session.user.id);
     if (!user) {
-      return Response.json(
+      return NextResponse.json(
         { success: false, message: "User not found" },
         { status: 404 },
       );
     }
 
+    if (firstName || lastName || nin) {
+      console.log("Updating user profile fields before NIN verification");
+      const updateFields: Record<string, string> = {};
+
+      if (typeof firstName === "string") {
+        const trimmedFirstName = firstName.trim();
+        if (trimmedFirstName && trimmedFirstName !== user.firstName) {
+          updateFields.firstName = trimmedFirstName;
+          updateFields.name =
+            `${trimmedFirstName} ${updateFields?.lastName || user.lastName}`.trim();
+        }
+      }
+
+      if (typeof lastName === "string") {
+        const trimmedLastName = lastName.trim();
+        if (trimmedLastName && trimmedLastName !== user.lastName) {
+          updateFields.lastName = trimmedLastName;
+          updateFields.name =
+            `${updateFields?.firstName || user.firstName} ${trimmedLastName}`.trim();
+        }
+      }
+
+      if (typeof nin === "string") {
+        const trimmedNin = nin.trim();
+        if (trimmedNin && trimmedNin !== user.nin) {
+          updateFields.nin = trimmedNin;
+        }
+      }
+
+      if (Object.keys(updateFields).length > 0) {
+        await UserModel.updateOne({ _id: user._id }, updateFields);
+      }
+    }
+
     const activeSession = await VerificationSessionModel.findOne({
       user_id: session.user.id,
-      status: "pending",
     });
 
     if (!activeSession) {
-      return Response.json(
+      return NextResponse.json(
         {
           success: false,
-          message: "No active verification session found. Please pay first.",
+          message: "Please pay for NIN verification",
         },
         { status: 403 },
       );
     }
 
-    const data = await verifyNIN(nin);
+    let statusReason;
+    let status;
+    if (activeSession?.status === "rejected") {
+      await compareNinInfoToDbInfo(
+        activeSession.provider_response,
+        user,
+        activeSession?._id,
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          message: activeSession?.status_reason || "NIN Verification rejected",
+        },
+        { status: 403 },
+      );
+    } else if (activeSession.status === "pending") {
+      const data = await verifyNIN(nin);
 
-    if (!data.success || !data.summary?.verified) {
-      const failureReason = data.message || "NIN verification was unsuccessful";
+      if (!data.success || !data.summary?.verified) {
+        statusReason = data?.message || "NIN verification was unsuccessful";
+        status = "rejected";
+        await UserModel.updateOne({ _id: user._id }, { ninStatus: "rejected" });
+
+        return NextResponse.json(
+          {
+            success: false,
+            message: statusReason,
+            code: data.code,
+          },
+          { status: 400 },
+        );
+      } else if (data.success && data.summary?.verified) {
+        statusReason = "NIN verified successfully";
+        status = "verified";
+      }
 
       await VerificationSessionModel.updateOne(
         { _id: activeSession._id },
         {
-          status: "rejected",
+          status,
+          status_reason: statusReason,
           provider_response: data,
-          status_reason: failureReason,
         },
       );
 
-      await UserModel.updateOne(
-        { _id: user._id },
-        { ninStatus: "rejected" },
-      );
+      // Compare database info against official NIN record
+      const { detailedMismatches, mismatchFields, mismatchMessage } =
+        await compareNinInfoToDbInfo(
+          data.data,
+          user,
+          activeSession._id.toString(),
+        );
 
-      return Response.json(
-        {
-          success: false,
-          message: failureReason,
-          code: data.code,
-        },
-        { status: 400 },
-      );
+      if (mismatchFields.length > 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: mismatchMessage,
+            mismatches: detailedMismatches,
+          },
+          { status: 400 },
+        );
+      }
     }
 
-    // Compare database info against official NIN record
-    const ninData = data.data;
-    const mismatchFields: string[] = [];
-    const detailedMismatches: Array<{
-      field: string;
-      dbValue: string;
-      ninValue: string;
-    }> = [];
-
-    const dbFirstName = normalizeName(user.firstName);
-    const ninFirstName = normalizeName(ninData?.firstname);
-    if (dbFirstName && ninFirstName && dbFirstName !== ninFirstName) {
-      mismatchFields.push("first name");
-      detailedMismatches.push({
-        field: "firstName",
-        dbValue: user.firstName,
-        ninValue: ninData?.firstname || "",
-      });
-    }
-
-    const dbLastName = normalizeName(user.lastName);
-    const ninLastName = normalizeName(ninData?.lastname);
-    if (dbLastName && ninLastName && dbLastName !== ninLastName) {
-      mismatchFields.push("last name");
-      detailedMismatches.push({
-        field: "lastName",
-        dbValue: user.lastName,
-        ninValue: ninData?.lastname || "",
-      });
-    }
-
-    const dbGender = normalizeGender(user.gender);
-    const ninGender = normalizeGender(ninData?.gender);
-    if (dbGender && ninGender && dbGender !== ninGender) {
-      mismatchFields.push("gender");
-      detailedMismatches.push({
-        field: "gender",
-        dbValue: user.gender,
-        ninValue: ninData?.gender || "",
-      });
-    }
-
-    if (detailedMismatches.length > 0) {
-      const mismatchMessage = `Your profile information (${mismatchFields.join(
-        ", ",
-      )}) does not match your official NIN record.`;
-
-      await VerificationSessionModel.updateOne(
-        { _id: activeSession._id },
-        {
-          status: "rejected",
-          provider_response: data,
-          status_reason: mismatchMessage,
-          mismatches: detailedMismatches,
-        },
-      );
-
-      await UserModel.updateOne(
-        { _id: user._id },
-        { ninStatus: "rejected" },
-      );
-
-      return Response.json(
-        {
-          success: false,
-          message: mismatchMessage,
-          mismatches: detailedMismatches,
-        },
-        { status: 400 },
-      );
-    }
-
-    // Everything matches and is verified
-    await VerificationSessionModel.updateOne(
-      { _id: activeSession._id },
+    return NextResponse.json(
       {
-        status: "verified",
-        provider_response: data,
-        status_reason: "NIN verification and profile match successful",
+        success: status === "verified",
+        message: statusReason || "NIN verification completed",
       },
-    );
-
-    await UserModel.updateOne(
-      { _id: user._id },
-      {
-        ninStatus: "verified",
-        nin: nin.trim(),
-      },
-    );
-
-    return Response.json(
-      {
-        success: true,
-        summary: { verified: true, verification_type: "NIN" },
-        data: { success: true, message: "NIN and profile verified successfully" },
-      },
-      { status: 200 },
+      { status: status === "verified" ? 200 : 400 },
     );
   } catch (error) {
     console.error("NIN verification error:", error);
-
-    return Response.json(
+    return NextResponse.json(
       {
         success: false,
         message: "Internal server error",
@@ -193,4 +253,3 @@ export const POST = withDb(async (request: Request) => {
     );
   }
 });
-

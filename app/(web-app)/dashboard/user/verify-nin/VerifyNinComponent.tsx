@@ -11,6 +11,8 @@ const VerifyNinComponent = ({ isOpen }: { isOpen: boolean }) => {
   const { user } = useAuth();
   const router = useRouter();
   const [nin, setNin] = useState(user?.nin || "");
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
 
   const verifyNinNumber = async (nin: string) => {
     if (!nin.trim()) {
@@ -28,17 +30,18 @@ const VerifyNinComponent = ({ isOpen }: { isOpen: boolean }) => {
         },
         body: JSON.stringify({
           nin: nin.trim(),
+          ...(firstName !== user?.firstName ? { firstName } : {}),
+          ...(lastName !== user?.lastName ? { lastName } : {}),
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        showToast("error", data.message || "Verification failed");
+        showToast("error", data.message || "Verification failed", 5000);
         return;
       }
 
-      //   setVerifyNin(false);
       showToast("success", "NIN verified successfully. Redirecting");
       router.push("/dashboard/user");
     } catch (error) {
@@ -73,7 +76,34 @@ const VerifyNinComponent = ({ isOpen }: { isOpen: boolean }) => {
 
         <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
           <p className="font-semibold">Verification Fee has been Paid</p>
-          <p>Payment was Successful</p>
+          <p>
+            Please confirm your information before verifying. It will be
+            confirmed with the NIN info
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <label className="font-medium">Confirm your First Name</label>
+
+          <input
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value.trim())}
+            placeholder="Confirm your first name"
+            className="w-full rounded-lg border p-3 outline-none focus:ring-2"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="font-medium">Confirm your Last Name</label>
+
+          <input
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value.trim())}
+            placeholder="Confirm your last name"
+            className="w-full rounded-lg border p-3 outline-none focus:ring-2"
+          />
         </div>
 
         <div className="space-y-2">
@@ -83,7 +113,7 @@ const VerifyNinComponent = ({ isOpen }: { isOpen: boolean }) => {
             type="text"
             value={nin}
             maxLength={11}
-            onChange={(e) => setNin(e.target.value)}
+            onChange={(e) => setNin(e.target.value.trim())}
             placeholder="Enter your 11-digit NIN"
             className="w-full rounded-lg border p-3 outline-none focus:ring-2"
           />

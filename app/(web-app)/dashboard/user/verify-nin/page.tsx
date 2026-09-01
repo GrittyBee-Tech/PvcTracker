@@ -12,7 +12,7 @@ import Modal from "@/components/ui/modal";
 import NoRefundPolicy, {
   NIN_POLICY_CONSENT_KEY,
 } from "@/components/ui/NoRefundPolicy";
-import useNinStatusHook from "@/hooks/useNinStatus";
+import useNinStatus from "@/hooks/useNinStatus";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import VerifyNinComponent from "./VerifyNinComponent";
 
@@ -23,7 +23,7 @@ export default function VerifyNin() {
 
   const isInitialized = useRef(false);
   const paymentVerifiedRef = useRef(false);
-  const { paid, verified, isLoading, refetch } = useNinStatusHook(user);
+  const { paid, verified, isLoading, refetch } = useNinStatus(user);
 
   const [loading, setLoading] = useState(true);
   const [verifyNin, setVerifyNin] = useState(false);
@@ -80,6 +80,7 @@ export default function VerifyNin() {
       showToast(
         "success",
         verifyData.message || "Payment verified successfully",
+        3500
       );
     } catch (error) {
       setLoading(false);
@@ -245,7 +246,8 @@ export default function VerifyNin() {
         setLoading(false);
         setFlutterwaveModalOpen(false);
         if (!paymentVerifiedRef.current) {
-          router.push("/dashboard/user");
+          void verifyPayment(flutterwaveConfig.tx_ref, "flutterwave");
+          // router.push("/dashboard/user");
         }
       },
     });

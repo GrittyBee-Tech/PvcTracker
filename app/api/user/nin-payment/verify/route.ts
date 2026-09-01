@@ -35,7 +35,7 @@ export const POST = withDb(async (request: Request) => {
 
     if (existingTransaction.status === "success") {
       return NextResponse.json(
-        { message: "Payment verified for NIN verification." },
+        { message: "Payment verified for NIN verification" },
         { status: 200 },
       );
     }

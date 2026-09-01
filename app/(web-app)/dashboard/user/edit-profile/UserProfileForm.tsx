@@ -105,7 +105,7 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
       }
     }
     setUpdateProfileData((prev) => {
-      const newData = { ...prev, [field]: value };
+      const newData = { ...prev, [field]: value.trim() };
       if (field === "stateOfOrigin") {
         newData.lgaOfOrigin = "";
       }
@@ -125,14 +125,10 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
 
   const handleUpdateProfileAPICall = async (data: UpdateProfileFormType) => {
     await authClient.updateUser(
-      data,
-      // {
-      //   ...data,
-      // ...(data.dateOfBirth && { dateOfBirth: new Date(data.dateOfBirth) }),
-      // ...(data.datePvcCollected && {
-      //   datePvcCollected: new Date(data.datePvcCollected),
-      // }),
-      // },
+      {
+        ...data,
+        name: `${data.firstName} ${data.lastName}`,
+      },
       {
         onSuccess() {
           showToast("success", "Profile updated successfully");

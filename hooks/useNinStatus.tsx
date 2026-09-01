@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { User } from "better-auth";
+import { showToast } from "@/utils/constants/toast";
 
 export interface NinStatus {
   paid: boolean;
@@ -68,12 +69,16 @@ export const useNinStatus = (user: UserWithNinStatus) => {
         setNinStatus({
           paid: resolvedPaymentStatus === "success",
           verified: data.ninStatus === "verified",
-          reason: data.reason || "",
+          reason: data.message || "",
           ninStatus: data.ninStatus || initialNinStatus || "pending",
           paymentStatus: resolvedPaymentStatus,
           isLoading: false,
           error: null,
         });
+        showToast(
+          data.ninStatus === "rejected" ? "error" : "info",
+          data.message || "NIN verification status updated",
+        );
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
           return;

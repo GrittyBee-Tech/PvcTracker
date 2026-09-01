@@ -35,13 +35,20 @@ export const GET = withDb(async (request: Request) => {
       }
     }
     const reason = latestSession?.status_reason || "";
-    console.log({ ninStatus, paymentStatus });
 
     return NextResponse.json(
       {
         paymentStatus,
         ninStatus,
-        reason,
+        message:
+          reason ||
+          (paymentStatus === "success"
+            ? "Payment completed"
+            : paymentStatus === "pending"
+              ? "Payment is pending"
+              : paymentStatus === "failed"
+                ? "Payment failed"
+                : "NIN verification pending"),
       },
       { status: 200 },
     );
