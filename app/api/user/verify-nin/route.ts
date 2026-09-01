@@ -160,7 +160,7 @@ export const POST = withDb(async (request: Request) => {
       user_id: session.user.id,
     });
 
-    if (!activeSession) {
+    if (!activeSession?.id) {
       return NextResponse.json(
         {
           success: false,
@@ -173,11 +173,6 @@ export const POST = withDb(async (request: Request) => {
     let statusReason;
     let status;
     if (activeSession?.status === "rejected") {
-      await compareNinInfoToDbInfo(
-        activeSession.provider_response,
-        user,
-        activeSession?._id,
-      );
       return NextResponse.json(
         {
           success: false,
