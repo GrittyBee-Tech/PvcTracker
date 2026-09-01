@@ -21,15 +21,15 @@ const HowItWorks = () => {
         {HOWITWORKS_SCHEMA.map((item, index) => (
           <article
             key={index}
-            className="relative overflow-hidden rounded-3xl border border-[#DDE6DF] bg-linear-to-b from-white to-[#F5FBF7] p-6 md:p-7 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
+            className="relative overflow-hidden rounded-3xl border border-[#DDE6DF] bg-linear-to-b from-white to-[#F5FBF7] p-6 md:p-7 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col gap-4"
           >
-            <h3 className="relative text-primary text-xl md:text-sm font-space-grotesk h-4  font-bold">
+            <h3 className="relative text-primary text-xl md:text-sm font-space-grotesk sm:h-4.5 font-bold">
               {item.title}
             </h3>
-            <h3 className="relative text-xl  md:mt-6 md:text-xl font-space-grotesk h-4 text-[#0A140F] font-bold">
+            <h3 className="relative text-xl md:mt-6 md:text-xl font-space-grotesk sm:h-4.5 text-[#0A140F] font-bold">
               {item.slug}
             </h3>
-            <p className="relative text-[#27362C] font-dm-sans md:mt-4 mt-4 flex-1">
+            <p className="relative text-[#27362C] font-dm-sans mt-1 flex-1">
               {item.description}
             </p>
           </article>

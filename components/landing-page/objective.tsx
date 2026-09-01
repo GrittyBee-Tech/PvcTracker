@@ -26,26 +26,26 @@ const Objective = () => {
         {OBJECTIVE_SCHEMA.map((item, index) => (
           <article
             key={index}
-            className="relative overflow-hidden rounded-3xl border border-[#DDE6DF] bg-linear-to-b from-white to-[#F5FBF7] p-6 md:p-7 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col"
+            className="relative overflow-hidden rounded-3xl border border-[#DDE6DF] bg-linear-to-b from-white to-[#F5FBF7] p-6 md:p-7 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col gap-4"
           >
             <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[#3fbcaa]/10 blur-xl" />
 
-            <span className="relative text-xl font-bold mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#EAF5ED] border border-[#D4E3D7]">
+            <span className="relative text-xl font-bold mb-2 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#EAF5ED] border border-[#D4E3D7]">
               {item.slug}
             </span>
 
-            <h3 className="relative text-xl md:text-xl font-space-grotesk h-4 text-[#0A140F] font-bold">
+            <h3 className="relative text-xl md:text-xl font-space-grotesk sm:h-5 text-[#0A140F] font-bold">
               {item.title}
             </h3>
 
-            <p className="relative text-[#27362C] font-dm-sans md:mt-8 mt-4 flex-1">
+            <p className="relative text-[#27362C] font-dm-sans flex-1">
               {item.description}
             </p>
 
             {item.btnLink && item.btntext ? (
               <Link
                 href={item.btnLink}
-                className="relative mt-6 inline-flex items-center justify-center rounded-lg bg-[#1A5C38] px-5 py-3 text-white font-dm-sans font-bold hover:bg-[#c9a84c] transition-colors"
+                className="relative mt-2 inline-flex items-center justify-center rounded-lg bg-[#1A5C38] px-5 py-3 text-white font-dm-sans font-bold hover:bg-[#c9a84c] transition-colors"
               >
                 {item.btntext}
               </Link>
