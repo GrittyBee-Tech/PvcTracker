@@ -1,10 +1,3 @@
-import { IconType } from "react-icons";
-import {
-  BsFillGlobeAmericasFill,
-  BsFillPostcardHeartFill,
-  BsPcDisplayHorizontal,
-} from "react-icons/bs";
-
 type ObjectiveType = {
   title: string;
   slug: string;
