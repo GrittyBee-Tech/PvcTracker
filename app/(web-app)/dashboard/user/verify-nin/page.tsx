@@ -80,7 +80,7 @@ export default function VerifyNin() {
       showToast(
         "success",
         verifyData.message || "Payment verified successfully",
-        3500
+        3500,
       );
     } catch (error) {
       setLoading(false);
@@ -245,9 +245,10 @@ export default function VerifyNin() {
       onClose: () => {
         setLoading(false);
         setFlutterwaveModalOpen(false);
-        if (!paymentVerifiedRef.current) {
-          void verifyPayment(flutterwaveConfig.tx_ref, "flutterwave");
-        }
+        invalidateNinStatus();
+        // if (!paymentVerifiedRef.current) {
+        //   void verifyPayment(flutterwaveConfig?.tx_ref, "flutterwave");
+        // }
       },
     });
     setFlutterwaveModalOpen(false);

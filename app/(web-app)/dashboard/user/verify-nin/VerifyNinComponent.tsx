@@ -58,7 +58,7 @@ const VerifyNinComponent = ({ isOpen }: { isOpen: boolean }) => {
     <Modal
       isOpen={isOpen}
       containerClassName="fixed top-16 right-0 bottom-0 left-0 md:left-60 z-20"
-      title="Verify Your Information"
+      title="Verification Payment Successful"
       closeButton={false}
       actions={
         <button
@@ -72,10 +72,6 @@ const VerifyNinComponent = ({ isOpen }: { isOpen: boolean }) => {
     >
       <div className="space-y-4">
         <p className="font-bold">You are almost there {user?.firstName}</p>
-
-        <p className="text-primary">
-          To complete your profile setup kindly verify your NIN.
-        </p>
 
         <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
           <p className="font-semibold">Verification Fee has been Paid</p>
