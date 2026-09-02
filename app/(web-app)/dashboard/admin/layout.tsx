@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { notFound, usePathname } from "next/navigation";
 
 const adminLinks: DashboardLink[] = [
-  // { href: "/dashboard/admin", label: "Dashboard", icon: "LayoutDashboard" },
+  { href: "/dashboard/admin", label: "Dashboard", icon: "LayoutDashboard" },
   // { href: "/dashboard/admin/admins", label: "Admins", icon: "ShieldCheck" },
   { href: "/dashboard/admin/users", label: "Users", icon: "Users" },
   // { href: "/dashboard/admin/volunteers", label: "Volunteers", icon: "UserCheck" },
@@ -17,6 +17,7 @@ const adminLinks: DashboardLink[] = [
 ];
 
 const ALLOWED_ADMIN_PATHS = [
+  "/dashboard/admin",
   "/dashboard/admin/users",
   "/dashboard/admin/admins",
 ];

@@ -107,12 +107,12 @@ export default function AdminPage() {
             </div>
 
             {/* Charts Grid */}
-            <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
                 <Card className="shadow-sm border-gray-100 transition-all duration-300 hover:shadow-lg">
                     <CardHeader>
                         <CardTitle className="text-lg">PVC Collection Status</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[250px] sm:h-[300px]">
+                    <CardContent className="h-63 sm:h-75">
                         <StatusPieChart data={data.charts.pvcStatus} colors={COLORS} />
                     </CardContent>
                 </Card>
@@ -121,7 +121,7 @@ export default function AdminPage() {
                     <CardHeader>
                         <CardTitle className="text-lg">NIN Verification Status</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[250px] sm:h-[300px]">
+                    <CardContent className="h-63 sm:h-72">
                         <StatusPieChart data={data.charts.ninStatus} colors={COLORS} />
                     </CardContent>
                 </Card>
@@ -130,7 +130,7 @@ export default function AdminPage() {
                     <CardHeader>
                         <CardTitle className="text-lg">Top 10 States by Registration</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[280px] sm:h-[350px] w-full pt-4">
+                    <CardContent className="h-70 sm:h-88 w-full pt-4">
                         <StateDistributionChart data={data.charts.stateDistribution} />
                     </CardContent>
                 </Card>

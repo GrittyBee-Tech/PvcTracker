@@ -50,13 +50,13 @@ export default function Login() {
       return;
     }
 
-    const callbackURL = searchParams?.get("callbackUrl") ?? undefined;
+    // const callbackURL = searchParams?.get("callbackUrl") ?? undefined;
     await authClient.signIn.email(
       {
         email: formData.email,
         password: formData.password,
         rememberMe: true,
-        callbackURL,
+        // callbackURL,
       },
       {
         onRequest: () => {
@@ -72,6 +72,7 @@ export default function Login() {
             timerProgressBar: true,
             showConfirmButton: false,
           });
+          console.log(data.user?.role);
           router.push(`/dashboard/${data.user?.role || "user"}`);
         },
         onError: (ctx) => {
