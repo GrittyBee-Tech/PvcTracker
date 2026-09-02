@@ -12,7 +12,7 @@ import Modal from "@/components/ui/modal";
 import NoRefundPolicy, {
   NIN_POLICY_CONSENT_KEY,
 } from "@/components/ui/NoRefundPolicy";
-import useNinStatus from "@/hooks/useNinStatus";
+import useNinStatus, { useInvalidateNinStatus } from "@/hooks/useNinStatus";
 import { SpinnerLoader } from "@/components/ui/Loader";
 import VerifyNinComponent from "./VerifyNinComponent";
 
@@ -21,9 +21,9 @@ export default function VerifyNin() {
   const searchParams = useSearchParams();
   const { user } = useAuth();
 
-  const isInitialized = useRef(false);
   const paymentVerifiedRef = useRef(false);
-  const { paid, verified, isLoading, refetch } = useNinStatus(user);
+  const { paid, verified, isLoading } = useNinStatus(user);
+  const invalidateNinStatus = useInvalidateNinStatus();
 
   const [loading, setLoading] = useState(true);
   const [verifyNin, setVerifyNin] = useState(false);
@@ -76,7 +76,7 @@ export default function VerifyNin() {
       setShowPolicy(false);
       setFlutterwaveModalOpen(false);
       setVerifyNin(true);
-      await refetch();
+      await invalidateNinStatus();
       showToast(
         "success",
         verifyData.message || "Payment verified successfully",
@@ -138,7 +138,7 @@ export default function VerifyNin() {
         setLoading(false);
         setShowPolicy(false);
         setVerifyNin(true);
-        await refetch();
+        await invalidateNinStatus();
         return;
       }
 
@@ -190,11 +190,11 @@ export default function VerifyNin() {
     void startPayment();
   };
 
+  // Determine initial page state based on query params and status
   useEffect(() => {
-    if (isInitialized.current) return;
+    if (isLoading) return;
 
-    isInitialized.current = true;
-    if (user?.ninStatus === "verified") {
+    if (verified) {
       router.push("/dashboard/user");
       return;
     }
@@ -230,7 +230,7 @@ export default function VerifyNin() {
     setLoading(false);
     setShowPolicy(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paid, user?.ninStatus]);
+  }, [paid, verified, isLoading]);
 
   useEffect(() => {
     if (!flutterwaveModalOpen || !flutterwaveConfig) return;
@@ -247,7 +247,6 @@ export default function VerifyNin() {
         setFlutterwaveModalOpen(false);
         if (!paymentVerifiedRef.current) {
           void verifyPayment(flutterwaveConfig.tx_ref, "flutterwave");
-          // router.push("/dashboard/user");
         }
       },
     });

@@ -1,7 +1,6 @@
 "use client";
 
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import InputGroup from "@/components/ui/InputGroup";
 import Modal from "@/components/ui/modal";
 import NoRefundPolicy, {
   NIN_POLICY_CONSENT_KEY,
@@ -45,17 +44,12 @@ export default function UserLayout({
   children: React.ReactNode;
 }) {
   const { user } = useAuth();
-  const [nin, setNin] = useState(user?.nin || "");
   const [agreedToPolicy, setAgreedToPolicy] = useState(false);
   const { paid, verified, isLoading } = useNinStatus(user);
   const router = useRouter();
   const pathname = usePathname();
 
   const handleVerify = () => {
-    if (!nin.trim()) {
-      showToast("error", "Please enter your NIN");
-      return;
-    }
     if (!agreedToPolicy) {
       showToast("error", "Please accept the no refund policy to continue");
       return;
@@ -69,7 +63,7 @@ export default function UserLayout({
     <>
       <DashboardLayout links={links} role="User">
         {children}
-        {/* Modal Overlay - NIN verification */}
+        {/* Modal Overlay - NIN verification (paid but not yet verified) */}
         <VerifyNinComponent
           isOpen={!verified && paid && !NO_NIN_MODAL_ROUTES.includes(pathname)}
         />

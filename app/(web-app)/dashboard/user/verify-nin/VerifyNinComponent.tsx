@@ -5,11 +5,13 @@ import { showToast } from "@/utils/constants/toast";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import { useInvalidateNinStatus } from "@/hooks/useNinStatus";
 
 const VerifyNinComponent = ({ isOpen }: { isOpen: boolean }) => {
   const [verifying, setVerifying] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
+  const invalidateNinStatus = useInvalidateNinStatus();
   const [nin, setNin] = useState(user?.nin || "");
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
@@ -43,6 +45,7 @@ const VerifyNinComponent = ({ isOpen }: { isOpen: boolean }) => {
       }
 
       showToast("success", "NIN verified successfully. Redirecting");
+      await invalidateNinStatus();
       router.push("/dashboard/user");
     } catch (error) {
       console.error("Error verifying NIN:", error);

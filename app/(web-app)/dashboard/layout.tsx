@@ -1,6 +1,7 @@
 "use client";
 
 import { SpinnerLoader } from "@/components/ui/Loader";
+import QueryProvider from "@/components/providers/QueryProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -44,5 +45,5 @@ export default function DashboardAuthLayout({
     );
   }
 
-  return <>{children}</>;
+  return <QueryProvider>{children}</QueryProvider>;
 }

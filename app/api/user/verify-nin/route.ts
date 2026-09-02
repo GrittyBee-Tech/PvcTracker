@@ -3,6 +3,7 @@ import { withDb } from "@/lib/withDb";
 import UserModel from "@/models/users";
 import VerificationSessionModel from "@/models/verificationSession";
 import { verifyNIN } from "@/services/ninService";
+import { UserType } from "@/types";
 import { User } from "better-auth/types";
 import { NextResponse } from "next/server";
 
@@ -76,14 +77,18 @@ const compareNinInfoToDbInfo = async (
     );
     return { mismatchMessage, detailedMismatches, mismatchFields };
   }
-  await VerificationSessionModel.updateOne(
-    { _id: sessionId },
-    {
-      mismatches: [],
-      status: "verified",
-      status_reason: "Your profile information matches your NIN",
-    },
-  );
+
+  await Promise.all([
+    VerificationSessionModel.updateOne(
+      { _id: sessionId },
+      {
+        mismatches: [],
+        status: "verified",
+        status_reason: "Your profile information matches your NIN",
+      },
+    ),
+    UserModel.updateOne({ _id: user.id }, { ninStatus: "verified" }),
+  ]);
 
   return {
     mismatchMessage: "Your profile information matches your NIN",
@@ -101,11 +106,6 @@ export const POST = withDb(async (request: Request) => {
 
     const body = await request.json();
     const { nin, firstName, lastName } = body;
-    console.log("Received NIN verification request:", {
-      nin,
-      firstName,
-      lastName,
-    });
 
     if (!nin || typeof nin !== "string") {
       return NextResponse.json(
@@ -123,15 +123,17 @@ export const POST = withDb(async (request: Request) => {
     }
 
     if (firstName || lastName || nin) {
-      console.log("Updating user profile fields before NIN verification");
-      const updateFields: Record<string, string> = {};
+      const updateFields: {
+        name?: string;
+        firstName?: string;
+        lastName?: string;
+        nin?: string;
+      } = {};
 
       if (typeof firstName === "string") {
         const trimmedFirstName = firstName.trim();
         if (trimmedFirstName && trimmedFirstName !== user.firstName) {
           updateFields.firstName = trimmedFirstName;
-          updateFields.name =
-            `${trimmedFirstName} ${updateFields?.lastName || user.lastName}`.trim();
         }
       }
 
@@ -139,9 +141,14 @@ export const POST = withDb(async (request: Request) => {
         const trimmedLastName = lastName.trim();
         if (trimmedLastName && trimmedLastName !== user.lastName) {
           updateFields.lastName = trimmedLastName;
-          updateFields.name =
-            `${updateFields?.firstName || user.firstName} ${trimmedLastName}`.trim();
         }
+      }
+
+      const nextName =
+        `${updateFields?.firstName || user?.firstName} ${updateFields?.lastName || user.lastName}`.trim();
+
+      if (nextName !== user.name) {
+        updateFields.name = nextName;
       }
 
       if (typeof nin === "string") {
@@ -152,7 +159,10 @@ export const POST = withDb(async (request: Request) => {
       }
 
       if (Object.keys(updateFields).length > 0) {
-        await UserModel.updateOne({ _id: user._id }, updateFields);
+        await auth.api.updateUser({
+          body: updateFields,
+          headers: request.headers,
+        });
       }
     }
 
@@ -211,10 +221,11 @@ export const POST = withDb(async (request: Request) => {
       );
 
       // Compare database info against official NIN record
+      const updatedUser = await UserModel.findById(session.user.id);
       const { detailedMismatches, mismatchFields, mismatchMessage } =
         await compareNinInfoToDbInfo(
           data.data,
-          user,
+          updatedUser as User,
           activeSession._id.toString(),
         );
 
