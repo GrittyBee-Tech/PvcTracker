@@ -15,6 +15,7 @@ export type Permission = (typeof PERMISSIONS)[number];
 export interface UserType {
   id: string;
   email: string;
+  name: string;
   firstName: string;
   lastName: string;
   dateOfBirth: Date;

@@ -25,7 +25,6 @@ const client = new MongoClient(MONGODB_URI);
 const db = client.db();
 
 export const auth = betterAuth({
-  //...
   database: mongodbAdapter(db, {
     client,
   }),
@@ -99,12 +98,19 @@ export const auth = betterAuth({
             });
           }
         } else {
+          // Allow update profile from verify-nin page if 24 hours have not passed since last update
+          const isFromVerifyNinPage = ctx
+            .getHeader("referer")
+            ?.includes("/dashboard/user/verify-nin");
           const lastUpdatedTime = new Date(
             session.user.updatedAt || session.user.createdAt,
           ).getTime();
           const twentyFourHours = 24 * 60 * 60 * 1000;
 
-          if (Date.now() - lastUpdatedTime < twentyFourHours) {
+          if (
+            Date.now() - lastUpdatedTime < twentyFourHours &&
+            !isFromVerifyNinPage
+          ) {
             throw new APIError("TOO_MANY_REQUESTS", {
               message: "Profile can only be updated once every 24 hours.",
             });
