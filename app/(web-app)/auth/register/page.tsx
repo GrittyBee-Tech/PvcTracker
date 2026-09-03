@@ -79,12 +79,17 @@ export default function Register() {
 
     if (!signupDetails.nin.trim()) {
       errors.push({ field: "nin", message: "NIN is required." });
+    } else if (!/^\d{10}$/.test(signupDetails.nin)) {
+      errors.push({
+        field: "nin",
+        message: "NIN must be exactly 10 digits.",
+      });
     }
 
     if (!signupDetails.dateOfBirth.trim()) {
       errors.push({
         field: "dateOfBirth",
-        message: "Date of birth is required.",
+        message: "Date of birth is required",
       });
     }
 
@@ -256,10 +261,13 @@ export default function Register() {
             <InputGroup
               label="National Identification Number (NIN)"
               name="nin"
-              onChange={handleChange}
+              onChange={(field, value) =>
+                handleChange(field, value.replace(/\D/g, "").slice(0, 10))
+              }
               placeholder="Enter your NIN"
               type="text"
               value={signupDetails.nin}
+              maxLength={10}
             />
             {getFieldError("nin") && (
               <p className="text-red-400 text-xs mt-1">

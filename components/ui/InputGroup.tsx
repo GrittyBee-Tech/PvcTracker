@@ -9,6 +9,7 @@ interface InputGroupProps<T extends string> {
   inputClassName?: string;
   disabled?: boolean;
   prefix?: string;
+  maxLength?: number;
 }
 
 const InputGroup = <T extends string>({
@@ -22,6 +23,7 @@ const InputGroup = <T extends string>({
   inputClassName = "text-black border-primary/50",
   disabled = false,
   prefix,
+  maxLength,
 }: InputGroupProps<T>) => {
   const inputValue =
     prefix && value.startsWith(prefix) ? value.slice(prefix.length) : value;
@@ -45,6 +47,7 @@ const InputGroup = <T extends string>({
           type={type}
           value={inputValue}
           placeholder={placeholder}
+          maxLength={maxLength}
           onChange={(e) => {
             if (!prefix) {
               onChange(name, e.target.value);
