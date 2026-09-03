@@ -7,7 +7,7 @@ type CustomUserFields = Omit<
 >;
 
 declare module "better-auth" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface User extends CustomUserFields {}
   interface Session {
     user: User;
@@ -15,7 +15,7 @@ declare module "better-auth" {
 }
 
 declare module "better-auth/types" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface User extends CustomUserFields {}
   interface Session {
     user: User;
