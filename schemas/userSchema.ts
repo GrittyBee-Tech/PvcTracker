@@ -15,7 +15,9 @@ export const createUserSchema = z.object({
   phoneNumber: z
     .string()
     .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format"),
-  nin: z.string({error: "You must provide your NIN"}),
+  nin: z
+    .string({ error: "You must provide your NIN" })
+    .regex(/^\d{10}$/, "NIN must be exactly 10 digits."),
 });
 
 export type CreateUserRequestData = z.infer<typeof createUserSchema>;
