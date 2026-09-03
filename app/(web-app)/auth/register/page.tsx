@@ -237,7 +237,7 @@ export default function Register() {
 
           <div>
             <InputGroup
-              label="Phone Number (234 format)"
+              label="Phone Number"
               name="phoneNumber"
               onChange={handleChange}
               placeholder="8012345678"
