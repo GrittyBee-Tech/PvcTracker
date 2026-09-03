@@ -31,7 +31,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
-    autoSignIn: true,
+    autoSignIn: false,
     revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }: { user: User; url: string }) => {
       const name = `${user?.firstName} ${user?.lastName}` || "User";

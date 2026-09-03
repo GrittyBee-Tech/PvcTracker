@@ -246,6 +246,12 @@ const UserActionsCell = ({
               </p>
             </div>
             <div>
+              <p className="text-gray-500 text-sm">Disability</p>
+              <p className="font-medium text-gray-900 text-lg">
+                {user.isDisabled ? "Yes" : "No"}
+              </p>
+            </div>
+            <div>
               <p className="text-gray-500 text-sm">State of Origin</p>
               <p className="font-medium text-gray-900 text-lg">
                 {user.stateOfOrigin}
@@ -445,6 +451,24 @@ export const columns = (refresh: () => void): ColumnDef<User>[] => [
     cell: ({ row }) => {
       const gender = row.getValue("gender") as string;
       return <span className="capitalize">{gender}</span>;
+    },
+  },
+  {
+    accessorKey: "isDisabled",
+    header: "Disability",
+    cell: ({ row }) => {
+      const isDisabled = row.getValue("isDisabled") as boolean;
+      return (
+        <span
+          className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            isDisabled
+              ? "bg-yellow-100 text-yellow-800"
+              : "bg-green-100 text-green-800"
+          }`}
+        >
+          {isDisabled ? "Yes" : "No"}
+        </span>
+      );
     },
   },
   {

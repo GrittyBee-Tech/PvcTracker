@@ -25,6 +25,7 @@ export default function Register() {
     dateOfBirth: "",
     nin: "",
     gender: "",
+    isDisabled: "",
     password: "",
   });
   const [status, setStatus] = useState<
@@ -146,6 +147,7 @@ export default function Register() {
         role: "user",
         name: `${signupDetails.firstName} ${signupDetails.lastName}`,
         dateOfBirth: new Date(signupDetails.dateOfBirth),
+        isDisabled: signupDetails.isDisabled === "yes",
         callbackURL: "/dashboard/user",
       },
       {
@@ -301,6 +303,17 @@ export default function Register() {
             ]}
             value={signupDetails.gender}
             placeholder="Gender"
+          />
+          <Select
+            label="Do you have a disability?"
+            name="isDisabled"
+            onChange={handleChange}
+            options={[
+              { name: "No", value: "no" },
+              { name: "Yes", value: "yes" },
+            ]}
+            value={signupDetails.isDisabled}
+            placeholder="Select"
           />
 
           <div>
