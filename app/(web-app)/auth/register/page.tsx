@@ -154,7 +154,7 @@ export default function Register() {
             title: "Registration Successful",
             text: "Account created. Check your inbox for a verification link.",
             showConfirmButton: false,
-            timer: 3000
+            timer: 3000,
           });
         },
         onError: (ctx: Record<string, any>) => {
@@ -240,9 +240,10 @@ export default function Register() {
               label="Phone Number (234 format)"
               name="phoneNumber"
               onChange={handleChange}
-              placeholder="eg. 2348012345678"
+              placeholder="8012345678"
               type="tel"
               value={signupDetails.phoneNumber}
+              prefix="234"
             />
             {getFieldError("phoneNumber") && (
               <p className="text-red-400 text-xs mt-1">
