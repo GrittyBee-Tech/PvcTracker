@@ -89,7 +89,7 @@ export default function Register() {
     if (!signupDetails.dateOfBirth.trim()) {
       errors.push({
         field: "dateOfBirth",
-        message: "Date of birth is required.",
+        message: "Date of birth is required",
       });
     }
 
