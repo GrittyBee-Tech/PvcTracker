@@ -5,6 +5,7 @@ interface InputGroupProps<T extends string> {
   value: string;
   onChange: (field: T, value: string) => void;
   placeholder: string;
+  required?: boolean;
   labelClassName?: string;
   inputClassName?: string;
   disabled?: boolean;
@@ -19,6 +20,7 @@ const InputGroup = <T extends string>({
   placeholder,
   value,
   onChange,
+  required = false,
   labelClassName,
   inputClassName = "text-black border-primary/50",
   disabled = false,
@@ -36,31 +38,16 @@ const InputGroup = <T extends string>({
       >
         {label}
       </label>
-      <div className="flex mt-1.5">
-        {prefix && (
-          <span className="flex items-center px-3 text-sm font-dm-sans font-medium text-black bg-gray-100 border border-r-0 border-border rounded-l-lg">
-            {prefix}
-          </span>
-        )}
-        <input
-          id={name}
-          type={type}
-          value={inputValue}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          onChange={(e) => {
-            if (!prefix) {
-              onChange(name, e.target.value);
-              return;
-            }
-
-            const digits = e.target.value.replace(/\D/g, "").replace(/^0+/, "");
-            onChange(name, digits ? `${prefix}${digits}` : "");
-          }}
-          disabled={disabled}
-          className={`w-full p-2 text-sm font-dm-sans font-medium border outline-none ${prefix ? "rounded-r-lg" : "rounded-lg"} bg-white border-border text-black placeholder:text-gray-400 focus:border-green-500 disabled:opacity-60 disabled:cursor-not-allowed ${inputClassName}`}
-        />
-      </div>
+      <input
+        id={name}
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        required={required}
+        onChange={(e) => onChange(name, e.target.value)}
+        disabled={disabled}
+        className={`w-full mt-1.5 p-2 text-sm font-dm-sans font-medium border outline-none rounded-lg bg-white border-border text-black placeholder:text-gray-400 disabled:opacity-60 disabled:cursor-not-allowed ${inputClassName}`}
+      />
     </div>
   );
 };

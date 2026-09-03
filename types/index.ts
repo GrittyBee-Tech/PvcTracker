@@ -85,3 +85,9 @@ export interface UserType {
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
+
+export type ApiResponse<T> = {
+  message: string;
+  success: boolean;
+  data?: T;
+};
