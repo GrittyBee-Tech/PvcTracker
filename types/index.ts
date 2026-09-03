@@ -33,6 +33,7 @@ export interface UserType {
   votingLga?: string;
   lgaOfOrigin?: string;
   homeAddress?: string;
+  isDisabled?: boolean;
   status: "active" | "restricted" | "deleted";
   createdAt?: Date | string;
   updatedAt?: Date | string;

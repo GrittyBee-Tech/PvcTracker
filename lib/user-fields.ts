@@ -74,6 +74,12 @@ export const userAdditionalFields = {
     input: true,
     required: false,
   },
+  isDisabled: {
+    type: "boolean",
+    input: true,
+    required: false,
+    defaultValue: false,
+  },
   status: {
     type: "string",
     defaultValue: "active",

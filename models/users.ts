@@ -62,6 +62,10 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       required: false,
     },
+    isDisabled: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       enum: ["active", "restricted", "deleted"],
