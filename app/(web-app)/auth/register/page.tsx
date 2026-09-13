@@ -264,12 +264,12 @@ export default function Register() {
               label="National Identification Number (NIN)"
               name="nin"
               onChange={(field, value) =>
-                handleChange(field, value.replace(/\D/g, "").slice(0, 10))
+                handleChange(field, value.replace(/\D/g, "").slice(0, 11))
               }
               placeholder="Enter your NIN"
               type="text"
               value={signupDetails.nin}
-              maxLength={10}
+              maxLength={11}
             />
             {getFieldError("nin") && (
               <p className="text-red-400 text-xs mt-1">
