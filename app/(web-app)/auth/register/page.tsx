@@ -80,11 +80,6 @@ export default function Register() {
 
     if (!signupDetails.nin.trim()) {
       errors.push({ field: "nin", message: "NIN is required." });
-    } else if (!/^\d{10,11}$/.test(signupDetails.nin)) {
-      errors.push({
-        field: "nin",
-        message: "NIN must be exactly 10 digits.",
-      });
     }
 
     if (!signupDetails.dateOfBirth.trim()) {
@@ -267,7 +262,6 @@ export default function Register() {
               placeholder="Enter your NIN"
               type="text"
               value={signupDetails.nin}
-              maxLength={11}
             />
             {getFieldError("nin") && (
               <p className="text-red-400 text-xs mt-1">
