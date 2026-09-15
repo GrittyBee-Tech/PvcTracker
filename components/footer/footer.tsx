@@ -106,7 +106,7 @@ const Footer = () => {
             </li>
             <li>
               <a
-                href="/PVC_Tracker_Terms_and_Conditions.pdf"
+                href="/PVC-Tracker.pdf"
                 target="_blank"
                 className="hover:text-primary transition-colors"
               >
