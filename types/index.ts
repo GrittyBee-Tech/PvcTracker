@@ -8,9 +8,53 @@ export const PERMISSIONS = [
   "manage:centres",
   "view:audit_logs",
   "view:analytics",
+  "view:verification_sessions",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
+
+export interface VerificationSessionUser {
+  _id?: string;
+  id?: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  nin?: string;
+  ninStatus?: string;
+  stateOfOrigin?: string;
+  lgaOfOrigin?: string;
+}
+
+export interface VerificationSessionTransaction {
+  _id?: string;
+  reference?: string;
+  provider?: string;
+  amount?: number;
+  status?: string;
+  purpose?: string;
+}
+
+export interface VerificationMismatch {
+  field: string;
+  dbValue: string;
+  ninValue: string;
+}
+
+export interface VerificationSessionRecord {
+  _id: string;
+  user_id: string;
+  transaction_id: string;
+  status: "pending" | "verified" | "rejected";
+  status_reason?: string;
+  mismatches?: VerificationMismatch[];
+  provider_response?: Record<string, unknown>;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  user?: VerificationSessionUser | null;
+  transaction?: VerificationSessionTransaction | null;
+}
 
 export interface UserType {
   id: string;
