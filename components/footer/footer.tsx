@@ -106,7 +106,7 @@ const Footer = () => {
             </li>
             <li>
               <a
-                href="/PVC WAKA USER T & C.pdf"
+                href="/PVC_Tracker_Terms_and_Conditions.pdf"
                 target="_blank"
                 className="hover:text-primary transition-colors"
               >
