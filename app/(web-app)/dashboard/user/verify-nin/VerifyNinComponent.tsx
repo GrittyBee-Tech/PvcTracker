@@ -111,7 +111,6 @@ const VerifyNinComponent = ({ isOpen }: { isOpen: boolean }) => {
           <input
             type="text"
             value={nin}
-            maxLength={11}
             onChange={(e) => setNin(e.target.value.trim())}
             placeholder="Enter your 11-digit NIN"
             className="w-full rounded-lg border p-3 outline-none focus:ring-2"
