@@ -80,7 +80,7 @@ export default function Register() {
 
     if (!signupDetails.nin.trim()) {
       errors.push({ field: "nin", message: "NIN is required." });
-    } else if (!/^\d{10}$/.test(signupDetails.nin)) {
+    } else if (!/^\d{10,11}$/.test(signupDetails.nin)) {
       errors.push({
         field: "nin",
         message: "NIN must be exactly 10 digits.",
@@ -263,9 +263,7 @@ export default function Register() {
             <InputGroup
               label="National Identification Number (NIN)"
               name="nin"
-              onChange={(field, value) =>
-                handleChange(field, value.replace(/\D/g, "").slice(0, 11))
-              }
+              onChange={(field, value) => handleChange(field, value)}
               placeholder="Enter your NIN"
               type="text"
               value={signupDetails.nin}
