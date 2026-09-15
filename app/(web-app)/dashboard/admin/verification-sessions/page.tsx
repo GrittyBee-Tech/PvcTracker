@@ -1,30 +1,21 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback, useRef, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { columns, SessionDetailsModal } from "./columns";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { VerificationSessionRecord } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Clock, XCircle, ShieldCheck } from "lucide-react";
 
-function VerificationSessionsContent() {
-  const searchParams = useSearchParams();
-  const urlUserId = searchParams.get("userId") || "";
-  const urlSearch = searchParams.get("search") || urlUserId;
-  const shouldOpenLatest = searchParams.get("openLatest") === "true";
-
+export default function VerificationSessionsPage() {
   const [sessions, setSessions] = useState<VerificationSessionRecord[]>([]);
-  const [selectedSession, setSelectedSession] = useState<VerificationSessionRecord | null>(null);
-  const hasAutoOpenedRef = useRef(false);
-
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
 
   const [filters, setFilters] = useState({
     status: "all",
-    search: urlSearch,
+    search: "",
   });
 
   const [stats, setStats] = useState({
@@ -55,7 +46,6 @@ function VerificationSessionsContent() {
         limit: limit.toString(),
         ...(filters.status !== "all" && { status: filters.status }),
         ...(filters.search.trim() && { search: filters.search.trim() }),
-        ...(urlUserId && { userId: urlUserId }),
       });
 
       const response = await fetch(
@@ -72,22 +62,6 @@ function VerificationSessionsContent() {
           setTotalFiltered(data.pagination.total);
           setTotalPages(data.pagination.totalPages);
         }
-
-        // Auto-open modal if requested via URL
-        if (
-          shouldOpenLatest &&
-          !hasAutoOpenedRef.current &&
-          data.sessions &&
-          data.sessions.length > 0
-        ) {
-          hasAutoOpenedRef.current = true;
-          const target = urlUserId
-            ? data.sessions.find(
-                (s: VerificationSessionRecord) => s.user_id === urlUserId,
-              ) || data.sessions[0]
-            : data.sessions[0];
-          setSelectedSession(target);
-        }
       } else {
         console.error("Failed to fetch sessions:", data.message || data.error);
       }
@@ -96,7 +70,7 @@ function VerificationSessionsContent() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, limit, filters.status, filters.search, urlUserId, shouldOpenLatest]);
+  }, [currentPage, limit, filters.status, filters.search]);
 
   // Fetch when page or status filter changes
   useEffect(() => {
@@ -238,7 +212,7 @@ function VerificationSessionsContent() {
 
       {/* Main DataTable */}
       <DataTable
-        columns={columns(fetchSessions)}
+        columns={columns}
         data={sessions}
         loading={loading}
         pagination={pagination}
@@ -247,29 +221,6 @@ function VerificationSessionsContent() {
         onFiltersChange={setFilters}
         onRefresh={fetchSessions}
       />
-
-      {/* Auto-opened modal when navigated from users table */}
-      {selectedSession && (
-        <SessionDetailsModal
-          session={selectedSession}
-          isOpen={!!selectedSession}
-          onClose={() => setSelectedSession(null)}
-        />
-      )}
     </div>
-  );
-}
-
-export default function VerificationSessionsPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex h-64 items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      }
-    >
-      <VerificationSessionsContent />
-    </Suspense>
   );
 }
