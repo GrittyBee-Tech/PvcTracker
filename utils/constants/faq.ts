@@ -28,4 +28,23 @@ export const FAQ_SCHEMA = [
     question: 'Is my personal information safe?',
     answer: 'PVC WAKA is designed with data protection and security in mind. Your personal information is handled in accordance with applicable data protection requirements.' 
   },
+  {
+    id: 6,
+    question: 'Why do you require my NIN?',
+    answer: {
+      intro:
+        'We use your National Identification Number (NIN) to keep the PVC Tracker platform secure and reliable. Specifically, it helps us:',
+      bullets: [
+        'Prevent fraud: Confirm that every user is a real person, stopping bots and duplicate accounts.',
+        'Check eligibility: Ensure all users are Nigerian citizens aged 18 or older.',
+        'Strengthen advocacy: Maintain credible data to effectively hold electoral authorities accountable.',
+      ],
+    },
+  },
+  {
+    id: 7,
+    question: 'Is my data safe?',
+    answer:
+      'Yes. Your NIN is verified through secure channels and is never exposed, shared, or compromised. It is used strictly for verification.',
+  },
 ];

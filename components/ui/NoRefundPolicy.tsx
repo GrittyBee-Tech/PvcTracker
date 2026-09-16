@@ -19,42 +19,44 @@ export default function NoRefundPolicy({
     <div className="space-y-4">
       <div className="max-h-56 space-y-3 overflow-y-auto rounded-lg border border-green-900/30 bg-green-50/40 p-4 text-sm text-primary">
         <p className="font-heading text-base font-semibold">
-          No Refund Policy &mdash; NIN Verification Charges
+          Refund Policy: NIN Verification Services
         </p>
 
-        <p>
-          When you use PVC Tracker to verify your NIN, we pay a fixed fee to
-          check it the moment you submit your request &mdash; whether the result
-          comes back valid, invalid, or not found.
-        </p>
+        <ol className="list-decimal space-y-4 pl-5">
+          <li className="pl-1">
+            <p className="font-semibold">All Sales Are Final</p>
+            <p className="mt-1">
+              Because verification fees are paid immediately to third-party
+              validation providers upon submission, all fees on PVC Tracker are
+              strictly non-refundable.
+            </p>
+            <p className="mt-2">We cannot offer refunds for:</p>
+            <ul className="mt-1 list-disc space-y-1 pl-5">
+              <li>Invalid or &ldquo;not found&rdquo; NIN results</li>
+              <li>User typos or incorrect digits</li>
+              <li>Network disruptions after submission</li>
+              <li>Dissatisfaction with the result</li>
+            </ul>
+          </li>
 
-        <p>
-          Because we are charged this fee immediately, and it is not something
-          we can get back, we cannot refund your payment once a verification
-          request has been submitted &mdash; even if:
-        </p>
+          <li className="pl-1">
+            <p className="font-semibold">Exceptions</p>
+            <p className="mt-1">
+              Refunds are considered only if a transaction was successful but a
+              platform system error prevented the verification from processing
+              entirely. Contact our support team with your payment reference if
+              this occurs.
+            </p>
+          </li>
 
-        <ul className="list-disc space-y-1 pl-5">
-          <li>Your NIN comes back invalid or &ldquo;not found&rdquo;</li>
-          <li>You typed your NIN incorrectly</li>
-          <li>You are not happy with the result</li>
-          <li>Your internet disconnects after you hit submit</li>
-        </ul>
-
-        <p className="font-semibold">When We Will Look Into a Refund</p>
-
-        <p>
-          The only time we will look into a refund is if you were charged but
-          your request never actually went through, due to an error on our end.
-          If you think this happened, contact us with your payment details.
-        </p>
-
-        <p className="font-semibold">Before You Submit</p>
-
-        <p>
-          Please double-check that your NIN is correct. Once submitted, the fee
-          cannot be reversed.
-        </p>
+          <li className="pl-1">
+            <p className="font-semibold">User Responsibility</p>
+            <p className="mt-1">
+              Please double-check your NIN before submitting. Once processed,
+              transactions cannot be reversed.
+            </p>
+          </li>
+        </ol>
       </div>
 
       <Checkbox
@@ -65,8 +67,9 @@ export default function NoRefundPolicy({
         onChange={onAgreedChange}
         label={
           <>
-            I understand that PVC Tracker charges a fixed, non-refundable fee
-            for each NIN verification request, and I agree to proceed.
+            I understand that all PVC Tracker NIN verification fees are
+            non-refundable, except where a platform system error prevents
+            verification from processing entirely, and I agree to proceed.
           </>
         }
       />
