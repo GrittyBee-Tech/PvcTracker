@@ -67,9 +67,20 @@ const Faq = () => {
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <p className="text-[#0A140F] font-dm-sans opacity-100  mt-2 pb-1">
-                        {answer}
-                      </p>
+                      {typeof answer === "string" ? (
+                        <p className="text-[#0A140F] font-dm-sans opacity-100 mt-2 pb-1">
+                          {answer}
+                        </p>
+                      ) : (
+                        <div className="text-[#0A140F] font-dm-sans opacity-100 mt-2 pb-1">
+                          <p>{answer.intro}</p>
+                          <ul className="list-disc space-y-1 pl-5 mt-2">
+                            {answer.bullets.map((bullet) => (
+                              <li key={bullet}>{bullet}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
