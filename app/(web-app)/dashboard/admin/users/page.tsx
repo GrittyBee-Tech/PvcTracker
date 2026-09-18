@@ -14,8 +14,8 @@ export default function UsersPage() {
   // const [limit, setLimit] = useState(10);
   const limit = 10;
   const [filters, setFilters] = useState({
-    state: "",
-    lga: "",
+    ninStatus: "all",
+    pvcStatus: "all",
     search: "",
   });
 
@@ -39,8 +39,10 @@ export default function UsersPage() {
       const queryParams = new URLSearchParams({
         page: currentPage.toString(),
         limit: limit.toString(),
-        ...(filters.state && { state: filters.state }),
-        ...(filters.lga && { lga: filters.lga }),
+        ...(filters.ninStatus &&
+          filters.ninStatus !== "all" && { ninStatus: filters.ninStatus }),
+        ...(filters.pvcStatus &&
+          filters.pvcStatus !== "all" && { pvcStatus: filters.pvcStatus }),
         ...(filters.search && { search: filters.search }),
       });
 
@@ -68,7 +70,7 @@ export default function UsersPage() {
   useEffect(() => {
     fetchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, limit, filters.state, filters.lga]);
+  }, [currentPage, limit, filters.ninStatus, filters.pvcStatus]);
 
   // Debounced search
   useEffect(() => {
