@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback, Suspense } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { columns, SessionDetailsModal } from "./columns";
 import { DataTable } from "./data-table";
@@ -16,7 +16,7 @@ function VerificationSessionsContent() {
 
   const [sessions, setSessions] = useState<VerificationSessionRecord[]>([]);
   const [selectedSession, setSelectedSession] = useState<VerificationSessionRecord | null>(null);
-  const [autoOpened, setAutoOpened] = useState(false);
+  const hasAutoOpenedRef = useRef(false);
 
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -76,11 +76,11 @@ function VerificationSessionsContent() {
         // Auto-open modal if requested via URL
         if (
           shouldOpenLatest &&
-          !autoOpened &&
+          !hasAutoOpenedRef.current &&
           data.sessions &&
           data.sessions.length > 0
         ) {
-          setAutoOpened(true);
+          hasAutoOpenedRef.current = true;
           const target = urlUserId
             ? data.sessions.find(
                 (s: VerificationSessionRecord) => s.user_id === urlUserId,
@@ -96,7 +96,7 @@ function VerificationSessionsContent() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, limit, filters.status, filters.search, urlUserId, shouldOpenLatest, autoOpened]);
+  }, [currentPage, limit, filters.status, filters.search, urlUserId, shouldOpenLatest]);
 
   // Fetch when page or status filter changes
   useEffect(() => {
@@ -254,7 +254,6 @@ function VerificationSessionsContent() {
           session={selectedSession}
           isOpen={!!selectedSession}
           onClose={() => setSelectedSession(null)}
-          onRefresh={fetchSessions}
         />
       )}
     </div>
