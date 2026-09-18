@@ -31,9 +31,14 @@ export const GET = withDb(async (request: Request) => {
     const limit = Math.max(1, parseInt(searchParams.get("limit") || "10", 10));
     const status = searchParams.get("status");
     const search = searchParams.get("search")?.trim();
+    const userId = searchParams.get("userId")?.trim();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const query: Record<string, any> = {};
+
+    if (userId) {
+      query.user_id = userId;
+    }
 
     if (status && status !== "all") {
       query.status = status;

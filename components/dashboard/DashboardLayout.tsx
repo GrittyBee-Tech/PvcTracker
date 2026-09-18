@@ -65,7 +65,7 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <div className="flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-green-900/30 bg-primary/90 backdrop-blur-md sticky top-0 z-30 shadow-xs">
+        <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-green-900/30 bg-primary/90 backdrop-blur-md sticky top-0 z-20 shadow-xs">
           {/* Left: Mobile Menu Toggle & Mobile Brand Logo */}
           <div className="flex items-center gap-3">
             <button

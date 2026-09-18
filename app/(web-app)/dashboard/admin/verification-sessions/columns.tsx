@@ -48,7 +48,7 @@ const statusConfig: Record<
   },
 };
 
-const SessionDetailsModal = ({
+export const SessionDetailsModal = ({
   session,
   isOpen,
   onClose,
