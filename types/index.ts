@@ -9,9 +9,12 @@ export const PERMISSIONS = [
   "view:audit_logs",
   "view:analytics",
   "view:verification_sessions",
+  "manage:verification_sessions",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
+
+export type VerificationResolutionAction = "sync" | "approve" | "reset";
 
 export interface VerificationSessionUser {
   _id?: string;
