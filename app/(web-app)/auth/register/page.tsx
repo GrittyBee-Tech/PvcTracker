@@ -346,7 +346,7 @@ export default function Register() {
               <p className="">
                 I agree to the{" "}
                 <a
-                  href="/PVC WAKA USER T & C.pdf"
+                  href="/PVC-Tracker.pdf"
                   target="_blank"
                   className="text-green-500 hover:underline"
                 >
