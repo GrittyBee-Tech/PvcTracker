@@ -1,7 +1,7 @@
 "use client";
 
 import InputGroup from "@/components/ui/InputGroup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Select from "@/components/ui/Select";
 import Swal from "sweetalert2";
@@ -12,6 +12,11 @@ import Checkbox from "@/components/ui/checkbox";
 interface ValidationErrorDetail {
   field: string;
   message: string;
+}
+
+interface LocationOption {
+  name: string;
+  value: string;
 }
 
 export default function Register() {
@@ -26,19 +31,99 @@ export default function Register() {
     nin: "",
     gender: "",
     isDisabled: "",
+    votingState: "",
+    votingLga: "",
     password: "",
   });
+  const [states, setStates] = useState<LocationOption[]>([]);
+  const [votingLgas, setVotingLgas] = useState<LocationOption[]>([]);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingVotingLgas, setLoadingVotingLgas] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [fieldErrors, setFieldErrors] = useState<ValidationErrorDetail[]>([]);
   const [showPassword, setShowPassword] = useState(false);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadStates() {
+      setLoadingStates(true);
+      setLocationError(null);
+      try {
+        const response = await fetch("/api/locations/states", {
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error("Failed to load states.");
+        const payload = await response.json();
+        setStates(payload?.data ?? []);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setLocationError(
+            error instanceof Error ? error.message : "Unable to load states.",
+          );
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoadingStates(false);
+      }
+    }
+
+    loadStates();
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const state = signupDetails.votingState;
+    if (!state) {
+      setVotingLgas([]);
+      setLoadingVotingLgas(false);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    async function loadVotingLgas() {
+      setLoadingVotingLgas(true);
+      setLocationError(null);
+      setVotingLgas([]);
+      try {
+        const response = await fetch(
+          `/api/locations/lgas?state=${encodeURIComponent(state)}`,
+          { signal: controller.signal },
+        );
+        if (!response.ok) throw new Error("Failed to load local governments.");
+        const payload = await response.json();
+        setVotingLgas(
+          (payload?.data ?? []).map((lga: LocationOption) => ({
+            name: lga.name,
+            value: lga.name,
+          })),
+        );
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setLocationError(
+            error instanceof Error
+              ? error.message
+              : "Unable to load local governments.",
+          );
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoadingVotingLgas(false);
+      }
+    }
+
+    loadVotingLgas();
+    return () => controller.abort();
+  }, [signupDetails.votingState]);
+
   const handleChange = (field: string, value: string) => {
-    setSignupDetails({
-      ...signupDetails,
+    setSignupDetails((previous) => ({
+      ...previous,
       [field]: value,
-    });
+      ...(field === "votingState" ? { votingLga: "" } : {}),
+    }));
 
     setFieldErrors((prev) => prev.filter((err) => err.field !== field));
   };
@@ -307,6 +392,38 @@ export default function Register() {
             value={signupDetails.isDisabled}
             placeholder="Select"
           />
+
+          <Select
+            label="State you are registered to vote"
+            name="votingState"
+            onChange={handleChange}
+            options={states}
+            value={signupDetails.votingState}
+            placeholder={loadingStates ? "Loading states..." : "Select a state"}
+          />
+
+          <Select
+            label="LGA you are registered to vote in"
+            name="votingLga"
+            onChange={handleChange}
+            options={votingLgas}
+            value={signupDetails.votingLga}
+            disabled={loadingVotingLgas || !signupDetails.votingState}
+            placeholder={
+              signupDetails.votingState
+                ? loadingVotingLgas
+                  ? "Loading local governments..."
+                  : "Select an LGA"
+                : "Select a state first"
+            }
+            selectClassName={!signupDetails.votingState ? "opacity-60" : ""}
+          />
+
+          {locationError && (
+            <p className="text-red-400 text-xs sm:col-span-2">
+              {locationError}
+            </p>
+          )}
 
           <div>
             <div className="relative">
