@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import Logo from "../ui/Logo";
 import { SOCIAL_LINKS } from "@/utils/constants/socials";
@@ -135,10 +136,24 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="mt-10 pt-6 border-t border-border flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="mt-10 flex flex-col items-center justify-between gap-5 border-t border-border pt-6 text-center md:flex-row md:text-left">
         <p className="text-black font-dm-sans text-sm">
           © {year} PVC Waka. All rights reserved.
         </p>
+        <div className="flex items-center gap-3">
+          <p className="font-dm-sans text-xs font-semibold text-[#5C675D]">
+            In partnership with
+          </p>
+          <span className="flex h-16 w-32 items-center justify-center sm:w-36">
+            <Image
+              src="/NYFF-logo.png"
+              alt="Nigeria Youth Futures Fund"
+              width={220}
+              height={122}
+              className="h-full w-full object-contain"
+            />
+          </span>
+        </div>
         <p className="text-black font-dm-sans text-sm">
           Built by{" "}
           <a
