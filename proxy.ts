@@ -5,6 +5,11 @@ import { User } from "better-auth";
 export async function proxy(request: NextRequest) {
   const { nextUrl } = request;
 
+  // 0. Bypass webhooks (they are called by external payment providers and use signature verification)
+  if (nextUrl.pathname.includes("/webhook")) {
+    return NextResponse.next();
+  }
+
   // 1. Fetch the session
   const session = await auth.api.getSession({
     headers: request.headers,
