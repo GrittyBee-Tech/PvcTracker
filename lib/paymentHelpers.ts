@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 type PaymentProvider = "paystack" | "flutterwave";
 
 interface InitializeFlutterwaveParams {
@@ -35,7 +37,22 @@ interface VerificationResult {
   ok: boolean;
   status: number;
   error?: string;
-  raw?: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  raw?: any;
+}
+
+export function verifyFlutterwaveSignature(
+  receivedHash: string | null,
+): boolean {
+  const secretHash = process.env.FLW_SECRET_HASH;
+  if (!secretHash || !receivedHash) return false;
+
+  const bufA = Buffer.from(receivedHash);
+  const bufB = Buffer.from(secretHash);
+
+  if (bufA.length !== bufB.length) return false;
+
+  return crypto.timingSafeEqual(bufA, bufB);
 }
 
 export async function initializeFlutterwavePayment({
