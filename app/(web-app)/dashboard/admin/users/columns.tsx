@@ -1,7 +1,17 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import {
+  MoreHorizontal,
+  BadgeCheck,
+  ExternalLink,
+  Copy,
+  Check,
+  MapPin,
+  IdCard,
+  Phone,
+} from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -34,13 +44,16 @@ const UserActionsCell = ({
   user,
   refresh,
 }: {
-  user: User;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  user: any;
   refresh: () => void;
 }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isRestrictOpen, setIsRestrictOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isElevateOpen, setIsElevateOpen] = useState(false);
+  const [copiedUserId, setCopiedUserId] = useState(false);
+  const [copiedNin, setCopiedNin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
@@ -48,7 +61,7 @@ const UserActionsCell = ({
     setSelectedPermissions((prev) =>
       prev.includes(permission)
         ? prev.filter((p) => p !== permission)
-        : [...prev, permission]
+        : [...prev, permission],
     );
   };
 
@@ -58,7 +71,10 @@ const UserActionsCell = ({
       const response = await fetch(`/api/admin/users/${user.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: newRole, permissions: selectedPermissions }),
+        body: JSON.stringify({
+          role: newRole,
+          permissions: selectedPermissions,
+        }),
       });
 
       if (response.ok) {
@@ -184,15 +200,29 @@ const UserActionsCell = ({
             View user profile
           </DropdownMenuItem>
 
-          <DropdownMenuItem 
-            className="text-blue-600" 
+          {/* <DropdownMenuItem asChild>
+            <Link
+              href={`/dashboard/admin/verification-sessions?userId=${user.id}&openLatest=true`}
+              className="flex items-center gap-2 text-emerald-700 cursor-pointer"
+            >
+              <BadgeCheck className="w-4 h-4 text-emerald-600" />
+              <span>View verification session</span>
+              <ExternalLink className="w-3 h-3 opacity-60 ml-auto" />
+            </Link>
+          </DropdownMenuItem> */}
+
+          <DropdownMenuItem
+            className="text-blue-600"
             onClick={() => setIsElevateOpen(true)}
           >
             Make an Admin
           </DropdownMenuItem>
-          
+
           {user.status === "restricted" ? (
-            <DropdownMenuItem className="text-green-600" onClick={() => handleStatusUpdate("active")}>
+            <DropdownMenuItem
+              className="text-green-600"
+              onClick={() => handleStatusUpdate("active")}
+            >
               Activate account
             </DropdownMenuItem>
           ) : (
@@ -214,89 +244,84 @@ const UserActionsCell = ({
       </DropdownMenu>
 
       <Modal
+        containerClassName="z-50 fixed inset-0"
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
         title="User Profile"
         size="lg"
       >
         <div className="space-y-6 text-black">
-          <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-y-6 gap-x-4">
             <div>
-              <p className="text-gray-500 text-sm">First Name</p>
-              <p className="font-medium text-gray-900 text-lg">
+              <p className="text-gray-500 mb-1 text-sm">First Name</p>
+              <p className="font-medium text-gray-900 sm:text-lg">
                 {user.firstName}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 text-sm">Last Name</p>
-              <p className="font-medium text-gray-900 text-lg">
+              <p className="text-gray-500 mb-1 text-sm">Last Name</p>
+              <p className="font-medium text-gray-900 sm:text-lg">
                 {user.lastName}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 text-sm">Phone Number</p>
-              <p className="font-medium text-gray-900 text-lg">
+              <p className="text-gray-500 mb-1 text-sm">Phone Number</p>
+              <p className="font-medium text-gray-900 sm:text-lg">
                 {user.phoneNumber || "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 text-sm">Gender</p>
-              <p className="font-medium text-gray-900 text-lg capitalize">
+              <p className="text-gray-500 mb-1 text-sm">Gender</p>
+              <p className="font-medium text-gray-900 sm:text-lg capitalize">
                 {user.gender || "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 text-sm">Disability</p>
-              <p className="font-medium text-gray-900 text-lg">
-                {user.isDisabled ? "Yes" : "No"}
+              <p className="text-gray-500 mb-1 text-sm">State of Origin</p>
+              <p className="font-medium text-gray-900 sm:text-lg">
+                {user.stateOfOrigin || "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 text-sm">State of Origin</p>
-              <p className="font-medium text-gray-900 text-lg">
-                {user.stateOfOrigin}
+              <p className="text-gray-500 mb-1 text-sm">LGA of Origin</p>
+              <p className="font-medium text-gray-900 sm:text-lg">
+                {user.lgaOfOrigin || "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 text-sm">LGA of Origin</p>
-              <p className="font-medium text-gray-900 text-lg">
-                {user.lgaOfOrigin}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">NIN</p>
-              <p className="font-medium text-gray-900 text-lg">
+              <p className="text-gray-500 mb-1 text-sm">NIN</p>
+              <p className="font-medium text-gray-900 sm:text-lg">
                 {user.nin || "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 text-sm">VIN</p>
-              <p className="font-medium text-gray-900 text-lg">
+              <p className="text-gray-500 mb-1 text-sm">VIN</p>
+              <p className="font-medium text-gray-900 sm:text-lg">
                 {user.vin || "N/A"}
               </p>
             </div>
           </div>
 
           <div className="border-t border-gray-100 pt-4">
-            <p className="text-gray-500 text-sm">Home Address</p>
-            <p className="font-medium text-gray-900 text-lg">
+            <p className="text-gray-500 mb-1 text-sm">Home Address</p>
+            <p className="font-medium text-gray-900 sm:text-lg">
               {user.homeAddress || "N/A"}
             </p>
           </div>
 
           <div className="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4">
             <div>
-              <p className="text-gray-500 text-sm">NIN Status</p>
+              <p className="text-gray-500 mb-1 text-sm">NIN Status</p>
               <span
-                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full font-medium text-lg capitalize ${ninStatusStyles[user.ninStatus]}`}
+                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full font-medium sm:text-lg capitalize ${ninStatusStyles[user.ninStatus]}`}
               >
                 {user.ninStatus}
               </span>
             </div>
             <div>
-              <p className="text-gray-500 text-sm">PVC Status</p>
+              <p className="text-gray-500 mb-1 text-sm">PVC Status</p>
               <span
-                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full font-medium text-lg capitalize ${pvcStatusStyles[user.pvcStatus]}`}
+                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full font-medium sm:text-lg capitalize ${pvcStatusStyles[user.pvcStatus]}`}
               >
                 {user.pvcStatus}
               </span>
@@ -343,20 +368,35 @@ const UserActionsCell = ({
         size="lg"
         actions={
           <>
-            <Button variant="outline" onClick={() => setIsElevateOpen(false)}>Cancel</Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => handleRoleUpdate("admin")} disabled={loading || selectedPermissions.length === 0}>
+            <Button variant="outline" onClick={() => setIsElevateOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-primary hover:bg-primary/90 text-white"
+              onClick={() => handleRoleUpdate("admin")}
+              disabled={loading || selectedPermissions.length === 0}
+            >
               {loading ? "Processing..." : "Confirm Elevation"}
             </Button>
           </>
         }
       >
         <div className="space-y-4 text-black">
-          <p>You are about to make <strong>{user.firstName} {user.lastName}</strong> an administrator. Please select their permissions below:</p>
-          
+          <p>
+            You are about to make{" "}
+            <strong>
+              {user.firstName} {user.lastName}
+            </strong>{" "}
+            an administrator. Please select their permissions below:
+          </p>
+
           <div className="pt-2 border-t border-gray-100">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-4">
               {PERMISSIONS.map((permission) => (
-                <label key={permission} className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-50 p-2 rounded border border-gray-100 transition-colors">
+                <label
+                  key={permission}
+                  className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-50 p-2 rounded border border-gray-100 transition-colors"
+                >
                   <input
                     type="checkbox"
                     checked={selectedPermissions.includes(permission)}

@@ -5,13 +5,12 @@ import { SpinnerLoader } from "@/components/ui/Loader";
 import Modal from "@/components/ui/modal";
 import { authClient } from "@/lib/auth-client";
 import { Eye, EyeOff } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { ForgotPasswordForm } from "./ForgotPassword";
 
 export default function Login() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,13 +49,13 @@ export default function Login() {
       return;
     }
 
-    const callbackURL = searchParams?.get("callbackUrl") ?? undefined;
+    // const callbackURL = searchParams?.get("callbackUrl") ?? undefined;
     await authClient.signIn.email(
       {
         email: formData.email,
         password: formData.password,
         rememberMe: true,
-        callbackURL,
+        // callbackURL,
       },
       {
         onRequest: () => {
@@ -72,6 +71,7 @@ export default function Login() {
             timerProgressBar: true,
             showConfirmButton: false,
           });
+          console.log(data.user?.role);
           router.push(`/dashboard/${data.user?.role || "user"}`);
         },
         onError: (ctx) => {

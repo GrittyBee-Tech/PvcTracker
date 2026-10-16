@@ -3,8 +3,9 @@ import UserModel from "@/models/users";
 import AdminProfileModel from "@/models/adminProfile";
 import AuditLogModel from "@/models/auditLog";
 import { checkPermission } from "@/lib/permissions";
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { User } from "better-auth";
+import { User } from "better-auth/types";
 
 export const GET = withDb(async (request: Request) => {
   try {
@@ -85,10 +86,12 @@ export const POST = withDb(async (request: Request) => {
       email,
       phoneNumber,
       nin,
+      gender = "male",
+      dateOfBirth,
       permissions = [],
     } = body;
 
-    if (!email || !firstName || !lastName || !phoneNumber || !nin) {
+    if (!email || !firstName || !lastName || !nin || !permissions.length) {
       return NextResponse.json(
         { message: "Missing required fields" },
         { status: 400 },
@@ -108,11 +111,14 @@ export const POST = withDb(async (request: Request) => {
       existingUser.role = "admin";
       await existingUser.save();
 
-      await AdminProfileModel.create({
-        userId: existingUser._id,
-        permissions,
-        assignedBy: session!.user.id,
-      });
+      await AdminProfileModel.findOneAndUpdate(
+        { userId: existingUser._id },
+        {
+          permissions,
+          assignedBy: session!.user.id,
+        },
+        { upsert: true, new: true },
+      );
 
       await AuditLogModel.create({
         adminId: session!.user.id,
@@ -131,20 +137,30 @@ export const POST = withDb(async (request: Request) => {
       );
     }
 
-    const newAdmin = await UserModel.create({
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      nin,
-      role: "admin",
-      dateOfBirth: new Date("1970-01-01"), // Default placeholder
-      gender: "male", // Default placeholder
-      ninStatus: "verified",
+    const DEFAULT_ADMIN_PASSWORD = `${firstName}@12345`;
+
+    const signUpResult = await auth.api.signUpEmail({
+      body: {
+        email,
+        password: DEFAULT_ADMIN_PASSWORD,
+        name: `${firstName} ${lastName}`,
+        firstName,
+        lastName,
+        phoneNumber: phoneNumber || "00000000000",
+        nin,
+        gender,
+        dateOfBirth: dateOfBirth
+          ? new Date(dateOfBirth)
+          : new Date("1970-01-01"),
+        role: "admin",
+        ninStatus: "verified",
+      },
     });
 
+    const newAdmin = signUpResult.user;
+
     await AdminProfileModel.create({
-      userId: newAdmin._id,
+      userId: newAdmin.id,
       permissions,
       assignedBy: session!.user.id,
     });
@@ -152,7 +168,7 @@ export const POST = withDb(async (request: Request) => {
     await AuditLogModel.create({
       adminId: session!.user.id,
       action: "CREATE_ADMIN",
-      targetId: newAdmin._id.toString(),
+      targetId: newAdmin.id,
       targetModel: "User",
       details: `Created new admin account with permissions: ${permissions.join(", ")}`,
     });

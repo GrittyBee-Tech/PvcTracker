@@ -181,7 +181,7 @@ export async function verifyFlutterwavePayment(
   reference: string,
 ): Promise<VerificationResult> {
   const response = await fetch(
-    `https://api.flutterwave.com/v3/transactions/${reference}/verify`,
+    `https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=${reference}`,
     {
       method: "GET",
       headers: {

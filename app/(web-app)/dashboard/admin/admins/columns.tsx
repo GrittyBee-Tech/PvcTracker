@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Modal from "@/components/ui/modal";
+import Swal from "sweetalert2";
+import { PERMISSIONS } from "@/types";
 import { User } from "better-auth";
 
 type AdminRow = User & {
@@ -20,8 +22,67 @@ type AdminRow = User & {
   adminStatus?: string;
 };
 
-const AdminActionsCell = ({ admin }: { admin: AdminRow }) => {
+const AdminActionsCell = ({
+  admin,
+  onPermissionsUpdated,
+}: {
+  admin: AdminRow;
+  onPermissionsUpdated?: () => void;
+}) => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isEditPermissionsOpen, setIsEditPermissionsOpen] = useState(false);
+  const [editPermissions, setEditPermissions] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  const openEditPermissions = () => {
+    setEditPermissions(admin.permissions || []);
+    setIsEditPermissionsOpen(true);
+  };
+
+  const handlePermissionToggle = (permission: string) => {
+    setEditPermissions((prev) =>
+      prev.includes(permission)
+        ? prev.filter((p) => p !== permission)
+        : [...prev, permission],
+    );
+  };
+
+  const handleSavePermissions = async () => {
+    setSaving(true);
+    try {
+      const response = await fetch(`/api/admin/admins/${admin.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ permissions: editPermissions }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Permissions Updated",
+          text: data.message,
+          toast: true,
+          position: "top",
+          showConfirmButton: false,
+          timer: 3000,
+        });
+        setIsEditPermissionsOpen(false);
+        onPermissionsUpdated?.();
+      } else {
+        throw new Error(data.message || "Failed to update permissions");
+      }
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <>
@@ -36,6 +97,9 @@ const AdminActionsCell = ({ admin }: { admin: AdminRow }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => setIsDetailsOpen(true)}>
             View more
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={openEditPermissions}>
+            Edit Permissions
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -112,6 +176,51 @@ const AdminActionsCell = ({ admin }: { admin: AdminRow }) => {
           </div>
         </div>
       </Modal>
+
+      <Modal
+        isOpen={isEditPermissionsOpen}
+        onClose={() => setIsEditPermissionsOpen(false)}
+        title={`Edit Permissions — ${admin.firstName} ${admin.lastName}`}
+        size="lg"
+      >
+        <div className="space-y-4 text-black">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {PERMISSIONS.map((permission) => (
+              <label
+                key={permission}
+                className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-50 p-2 rounded border border-gray-100 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  checked={editPermissions.includes(permission)}
+                  onChange={() => handlePermissionToggle(permission)}
+                  className="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4"
+                />
+                <span>{permission}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsEditPermissionsOpen(false)}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSavePermissions}
+              disabled={saving}
+              className="bg-primary hover:bg-primary/90 text-white"
+            >
+              {saving ? "Saving..." : "Save Permissions"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };
@@ -171,6 +280,14 @@ export const columns: ColumnDef<AdminRow>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => <AdminActionsCell admin={row.original} />,
+    cell: ({ row, table }) => (
+      <AdminActionsCell
+        admin={row.original}
+        onPermissionsUpdated={
+          (table.options.meta as { onPermissionsUpdated?: () => void })
+            ?.onPermissionsUpdated
+        }
+      />
+    ),
   },
 ];
