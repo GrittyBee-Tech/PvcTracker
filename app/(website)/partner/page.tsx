@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const partnershipModels = [
@@ -53,8 +54,24 @@ export default function Partner() {
         </p>
       </section>
 
-      <section className="max-w-6xl mx-auto mt-6">
-        <div className="max-w-3xl"></div>
+      <section className="mx-auto mt-10 max-w-6xl px-6 lg:px-20">
+        <div className="flex flex-col items-center justify-between gap-5 rounded-2xl border border-[#DDE3DE] bg-white px-6 py-5 shadow-sm sm:flex-row sm:px-8">
+          <div className="text-center sm:text-left">
+            <p className="font-dm-sans text-xs font-bold uppercase tracking-[0.16em] text-[#64806B]">
+              Current partner
+            </p>
+            <h2 className="mt-1 font-space-grotesk text-lg font-bold text-[#103724]">
+              Nigeria Youth Futures Fund
+            </h2>
+          </div>
+          <Image
+            src="/NYFF-logo.png"
+            alt="Nigeria Youth Futures Fund (NYFF)"
+            width={250}
+            height={139}
+            className="h-20 w-auto object-contain"
+          />
+        </div>
       </section>
 
       <section className="md:px-20 mx-auto mt-16">
