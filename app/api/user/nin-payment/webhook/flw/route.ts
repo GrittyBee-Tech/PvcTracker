@@ -37,16 +37,18 @@ interface FlutterwaveWebhookPayload {
 
 export const POST = withDb(async (request: Request) => {
   try {
-    // const signature = request.headers.get("verif-hash");
+    const signature = request.headers.get("verif-hash");
 
-    // // 1. Verify Flutterwave signature header
-    // if (!verifyFlutterwaveSignature(signature)) {
-    //   console.warn("Flutterwave webhook rejected: invalid or missing verif-hash");
-    //   return NextResponse.json(
-    //     { message: "Invalid signature" },
-    //     { status: 401 },
-    //   );
-    // }
+    // 1. Verify Flutterwave signature header
+    if (!verifyFlutterwaveSignature(signature)) {
+      console.warn(
+        "Flutterwave webhook rejected: invalid or missing verif-hash",
+      );
+      return NextResponse.json(
+        { message: "Invalid signature" },
+        { status: 401 },
+      );
+    }
 
     // Read body ONCE (Request stream can only be read once)
     const payload = (await request.json().catch((e) => {
@@ -107,39 +109,16 @@ export const POST = withDb(async (request: Request) => {
     if (status === "successful") {
       // 5. Security best practice: re-query Flutterwave's verify API
       const verification = id
-        ? await verifyFlutterwavePayment(String(id))
+        ? await verifyFlutterwavePayment(String(tx_ref))
         : { ok: false, status: 400, raw: null };
 
       if (!verification.ok) {
         console.error(
-          `Flutterwave webhook: API verification failed for ID ${id}`,
+          `Flutterwave webhook: API verification failed for ref ${tx_ref}`,
           verification.raw,
         );
         return NextResponse.json(
           { message: "Transaction verification failed at provider" },
-          { status: 400 },
-        );
-      }
-
-      const verifiedData = verification.raw?.data;
-
-      // Validate transaction amount and reference match expectations
-      const amountMatches =
-        verifiedData &&
-        Number(verifiedData.amount) >= Number(transaction.amount);
-
-      const refMatches =
-        verifiedData && verifiedData.tx_ref === transaction.reference;
-
-      if (!amountMatches || !refMatches) {
-        console.error("Flutterwave webhook: Transaction details mismatch", {
-          expectedRef: transaction.reference,
-          actualRef: verifiedData?.tx_ref,
-          expectedAmount: transaction.amount,
-          actualAmount: verifiedData?.amount,
-        });
-        return NextResponse.json(
-          { message: "Transaction data mismatch" },
           { status: 400 },
         );
       }
