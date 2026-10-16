@@ -5,6 +5,7 @@ interface InputGroupProps<T extends string> {
   value: string;
   onChange: (field: T, value: string) => void;
   placeholder: string;
+  required?: boolean;
   labelClassName?: string;
   inputClassName?: string;
   disabled?: boolean;
@@ -19,6 +20,7 @@ const InputGroup = <T extends string>({
   placeholder,
   value,
   onChange,
+  required = false,
   labelClassName,
   inputClassName = "text-black border-primary/50",
   disabled = false,
@@ -48,6 +50,7 @@ const InputGroup = <T extends string>({
           value={inputValue}
           placeholder={placeholder}
           maxLength={maxLength}
+          required={required}
           onChange={(e) => {
             if (!prefix) {
               onChange(name, e.target.value);

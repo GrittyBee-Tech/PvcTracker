@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import AddAdminModal from "./AddAdminModal";
+import { showToast } from "@/utils/constants/toast";
 
 export default function AdminsPage() {
   const [admins, setAdmins] = useState<any[]>([]);
@@ -20,6 +21,8 @@ export default function AdminsPage() {
 
       if (response.ok) {
         setAdmins(data.admins);
+      } else {
+        showToast("error", data.message || "Failed to fetch admins.");
       }
     } catch (error) {
       console.error("Failed to fetch admins:", error);
@@ -50,7 +53,12 @@ export default function AdminsPage() {
         </Button>
       </div>
 
-      <DataTable columns={columns} data={admins} loading={loading} />
+      <DataTable
+        columns={columns}
+        data={admins}
+        loading={loading}
+        meta={{ onPermissionsUpdated: fetchAdmins }}
+      />
 
       <AddAdminModal
         isOpen={isAddModalOpen}

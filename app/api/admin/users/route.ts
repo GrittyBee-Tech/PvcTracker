@@ -14,6 +14,8 @@ export const GET = withDb(async (request: Request) => {
     const state = searchParams.get("state");
     const lga = searchParams.get("lga");
     const search = searchParams.get("search");
+    const ninStatus = searchParams.get("ninStatus");
+    const pvcStatus = searchParams.get("pvcStatus");
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const query: Record<string, any> = { 
@@ -21,14 +23,20 @@ export const GET = withDb(async (request: Request) => {
       status: { $ne: "deleted" }
     };
 
-    if (state) query.stateOfOrigin = state;
-    if (lga) query.lgaOfOrigin = lga;
+    if (state && state !== "all") query.stateOfOrigin = state;
+    if (lga && lga !== "all") query.lgaOfOrigin = lga;
+    if (ninStatus && ninStatus !== "all") query.ninStatus = ninStatus;
+    if (pvcStatus && pvcStatus !== "all") query.pvcStatus = pvcStatus;
+
     if (search) {
       query.$or = [
         { firstName: { $regex: search, $options: "i" } },
         { lastName: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
         { phoneNumber: { $regex: search, $options: "i" } },
+        { nin: { $regex: search, $options: "i" } },
+        { stateOfOrigin: { $regex: search, $options: "i" } },
+        { lgaOfOrigin: { $regex: search, $options: "i" } },
       ];
     }
 

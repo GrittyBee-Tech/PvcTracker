@@ -28,7 +28,7 @@ export const ScrollableSelect = <T extends string>({
   <Select.Root value={value} onValueChange={onValueChange} disabled={disabled}>
     <Select.Trigger
       id={id}
-      className={`w-full mt-1.5 p-2.5 text-sm border outline-none rounded-lg text-primary border-zinc-700 bg-white focus:border-green-500 flex items-center justify-between ${selectClassName}`}
+      className={`w-full mt-1.5 p-2.5 text-sm border outline-none rounded-lg text-black font-medium border-zinc-700 bg-white flex items-center justify-between ${selectClassName}`}
     >
       <Select.Value placeholder={placeholder || "Select an option..."} />
       <Select.Icon className="ml-2">▼</Select.Icon>
@@ -40,12 +40,12 @@ export const ScrollableSelect = <T extends string>({
           ▲
         </Select.ScrollUpButton>
 
-        <Select.Viewport className="h-[200px] overflow-y-auto p-2">
+        <Select.Viewport className="h-50 overflow-y-auto p-2">
           {options.map(({ name, value }) => (
             <Select.Item
               value={value}
               key={value}
-              className="relative flex items-center h-9 px-6 text-sm text-zinc-900 rounded-sm select-none data-[disabled]:text-zinc-400 data-[disabled]:pointer-events-none data-[highlighted]:bg-zinc-100 data-[highlighted]:outline-none cursor-pointer"
+              className="relative flex items-center h-9 px-6 text-sm text-zinc-900 rounded-sm select-none data-disabled:text-zinc-400 data-disabled:pointer-events-none data-highlighted:bg-zinc-100 data-highlighted:outline-none cursor-pointer"
             >
               <Select.ItemText>{name}</Select.ItemText>
             </Select.Item>

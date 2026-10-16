@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollableSelect } from "@/components/ui/scrollable-select";
 import Swal from "sweetalert2";
@@ -34,8 +34,8 @@ interface DataTableProps<TData, TValue> {
   };
   onPageChange: (page: number) => void;
   filters: {
-    state: string;
-    lga: string;
+    ninStatus: string;
+    pvcStatus: string;
     search: string;
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -113,28 +113,18 @@ export function DataTable<TData, TValue>({
 
   const table = useReactTable(options);
 
-  const [states, setStates] = useState<{ name: string; value: string }[]>([
-    { name: "All States", value: "all" },
-  ]);
+  const ninStatusOptions = [
+    { name: "All NIN Statuses", value: "all" },
+    { name: "Verified", value: "verified" },
+    { name: "Pending", value: "pending" },
+    { name: "Rejected", value: "rejected" },
+  ];
 
-  useEffect(() => {
-    const fetchStates = async () => {
-      try {
-        const response = await fetch("/api/locations/states");
-        const data = await response.json();
-        if (response.ok && Array.isArray(data)) {
-          const fetchedStates = data.map((state: string) => ({
-            name: state,
-            value: state,
-          }));
-          setStates([{ name: "All States", value: "all" }, ...fetchedStates]);
-        }
-      } catch (error) {
-        console.error("Failed to fetch states:", error);
-      }
-    };
-    fetchStates();
-  }, []);
+  const pvcStatusOptions = [
+    { name: "All PVC Statuses", value: "all" },
+    { name: "Collected", value: "collected" },
+    { name: "Not Collected", value: "not_collected" },
+  ];
 
   return (
     <div className="space-y-4">
@@ -142,7 +132,7 @@ export function DataTable<TData, TValue>({
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
             <input
-              placeholder="Search by name, email, phone..."
+              placeholder="Search by name, email, phone, NIN..."
               value={filters.search}
               onChange={(e) =>
                 onFiltersChange({ ...filters, search: e.target.value })
@@ -168,29 +158,34 @@ export function DataTable<TData, TValue>({
           </div>
           <div className="w-full sm:w-48">
             <ScrollableSelect
-              id="state-filter"
-              name="state"
-              placeholder="Filter by state..."
-              options={states}
-              value={filters.state || "all"}
+              id="nin-status-filter"
+              name="ninStatus"
+              placeholder="Filter by NIN status..."
+              options={ninStatusOptions}
+              value={filters.ninStatus || "all"}
               onValueChange={(value) => {
                 onFiltersChange({
                   ...filters,
-                  state: value === "all" ? "" : value,
-                  lga: "",
+                  ninStatus: value,
                 });
               }}
               selectClassName="h-10 mt-0 py-2 border-gray-300"
             />
           </div>
-          <div className="relative w-full sm:w-48">
-            <input
-              placeholder="Filter by LGA..."
-              value={filters.lga}
-              onChange={(e) =>
-                onFiltersChange({ ...filters, lga: e.target.value })
-              }
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+          <div className="w-full sm:w-48">
+            <ScrollableSelect
+              id="pvc-status-filter"
+              name="pvcStatus"
+              placeholder="Filter by PVC status..."
+              options={pvcStatusOptions}
+              value={filters.pvcStatus || "all"}
+              onValueChange={(value) => {
+                onFiltersChange({
+                  ...filters,
+                  pvcStatus: value,
+                });
+              }}
+              selectClassName="h-10 mt-0 py-2 border-gray-300"
             />
           </div>
         </div>

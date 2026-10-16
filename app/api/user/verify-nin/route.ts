@@ -168,7 +168,7 @@ export const POST = withDb(async (request: Request) => {
 
     const activeSession = await VerificationSessionModel.findOne({
       user_id: session.user.id,
-    });
+    }).sort({ createdAt: -1 });
 
     if (!activeSession?.id) {
       return NextResponse.json(

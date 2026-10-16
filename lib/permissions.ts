@@ -24,7 +24,7 @@ export async function checkPermission(
     return {
       authorized: false,
       response: NextResponse.json(
-        { message: "Forbidden: Admin access required" },
+        { message: "Forbidden: Admin access required", success: false },
         { status: 403 },
       ),
     };
@@ -62,6 +62,7 @@ export async function checkPermission(
       response: NextResponse.json(
         {
           message: `Forbidden: Missing required permission (${requiredPermission})`,
+          success: false,
         },
         { status: 403 },
       ),
