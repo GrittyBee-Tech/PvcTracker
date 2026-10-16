@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const impactStats = [
@@ -48,6 +49,27 @@ const About = () => {
             </p>
           </div>
         </header>
+
+        <section
+          aria-label="NYFF partnership"
+          className="flex flex-col items-center justify-between gap-5 rounded-2xl border border-[#DDE3DE] bg-white px-6 py-5 shadow-sm sm:flex-row sm:px-8"
+        >
+          <div className="text-center sm:text-left">
+            <p className="font-dm-sans text-xs font-bold uppercase tracking-[0.16em] text-[#64806B]">
+              Our partner
+            </p>
+            <h2 className="mt-1 font-space-grotesk text-lg font-bold text-[#103724]">
+              Nigeria Youth Futures Fund
+            </h2>
+          </div>
+          <Image
+            src="/NYFF-logo.png"
+            alt="Nigeria Youth Futures Fund (NYFF)"
+            width={250}
+            height={139}
+            className="h-20 w-auto object-contain"
+          />
+        </section>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {impactStats.map((item) => (
