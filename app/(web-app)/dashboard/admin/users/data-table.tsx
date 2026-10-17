@@ -20,6 +20,14 @@ import {
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollableSelect } from "@/components/ui/scrollable-select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Download, FileSpreadsheet, FileText } from "lucide-react";
 import Swal from "sweetalert2";
 
 interface DataTableProps<TData, TValue> {
@@ -41,6 +49,8 @@ interface DataTableProps<TData, TValue> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onFiltersChange: (filters: any) => void;
   refresh: () => void;
+  onExport: (format: "excel" | "pdf") => void;
+  exporting: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -52,6 +62,8 @@ export function DataTable<TData, TValue>({
   filters,
   onFiltersChange,
   refresh,
+  onExport,
+  exporting,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
@@ -189,6 +201,36 @@ export function DataTable<TData, TValue>({
             />
           </div>
         </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              disabled={loading || exporting || pagination.total === 0}
+              className="w-full sm:w-auto"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {exporting ? "Preparing export..." : "Export users"}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Download filtered users</DropdownMenuLabel>
+            <DropdownMenuItem
+              disabled={exporting}
+              onSelect={() => onExport("excel")}
+            >
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              Export as Excel
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              disabled={exporting}
+              onSelect={() => onExport("pdf")}
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Export as PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {Object.keys(rowSelection).length > 0 && (
           <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-start sm:justify-end">
