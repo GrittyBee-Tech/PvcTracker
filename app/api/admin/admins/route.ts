@@ -43,6 +43,7 @@ export const GET = withDb(async (request: Request) => {
       );
       return {
         ...user.toObject(),
+        id: user._id.toString(),
         permissions: profile ? profile.permissions : [],
         adminStatus: profile ? profile.status : "active",
       };

@@ -48,9 +48,19 @@ const AdminActionsCell = ({
   };
 
   const handleSavePermissions = async () => {
+    const adminId = admin.id || (admin as any)._id;
+    if (!adminId) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Admin ID is missing",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
-      const response = await fetch(`/api/admin/admins/${admin.id}`, {
+      const response = await fetch(`/api/admin/admins/${adminId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ permissions: editPermissions }),
