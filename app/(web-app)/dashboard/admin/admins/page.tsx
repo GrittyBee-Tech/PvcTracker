@@ -20,7 +20,13 @@ export default function AdminsPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setAdmins(data.admins);
+        const transformedAdmins = (data.admins || []).map(
+          (ad: Record<string, any>) => ({
+            ...ad,
+            id: ad.id || ad._id,
+          }),
+        );
+        setAdmins(transformedAdmins);
       } else {
         showToast("error", data.message || "Failed to fetch admins.");
       }

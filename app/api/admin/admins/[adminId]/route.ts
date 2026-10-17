@@ -4,6 +4,8 @@ import AuditLogModel from "@/models/auditLog";
 import { checkPermission } from "@/lib/permissions";
 import { NextResponse } from "next/server";
 
+import mongoose from "mongoose";
+
 // Update admin permissions
 export const PATCH = withDb(
   async (
@@ -18,6 +20,13 @@ export const PATCH = withDb(
       if (!authorized && response) return response;
 
       const { adminId } = await params;
+      if (!adminId || adminId === "undefined" || !mongoose.Types.ObjectId.isValid(adminId)) {
+        return NextResponse.json(
+          { message: "Invalid or missing admin ID" },
+          { status: 400 },
+        );
+      }
+
       const body = await request.json();
       const { permissions } = body;
 
@@ -29,25 +38,30 @@ export const PATCH = withDb(
       }
 
       const adminProfile = await AdminProfileModel.findOneAndUpdate(
-        { userId: adminId },
-        { permissions },
-        { new: true },
+        { userId: new mongoose.Types.ObjectId(adminId) },
+        { 
+          permissions,
+          assignedBy: mongoose.Types.ObjectId.isValid(session!.user.id)
+            ? new mongoose.Types.ObjectId(session!.user.id)
+            : undefined,
+          status: "active",
+        },
+        { new: true, upsert: true },
       );
 
-      if (!adminProfile) {
-        return NextResponse.json(
-          { message: "Admin profile not found" },
-          { status: 404 },
-        );
-      }
+      const auditAdminId = mongoose.Types.ObjectId.isValid(session!.user.id)
+        ? new mongoose.Types.ObjectId(session!.user.id)
+        : undefined;
 
-      await AuditLogModel.create({
-        adminId: session!.user.id,
-        action: "UPDATE_ADMIN_PERMISSIONS",
-        targetId: adminId,
-        targetModel: "User",
-        details: `Updated admin permissions to: ${permissions.join(", ")}`,
-      });
+      if (auditAdminId) {
+        await AuditLogModel.create({
+          adminId: auditAdminId,
+          action: "UPDATE_ADMIN_PERMISSIONS",
+          targetId: adminId,
+          targetModel: "User",
+          details: `Updated admin permissions to: ${permissions.join(", ")}`,
+        });
+      }
 
       return NextResponse.json(
         {
