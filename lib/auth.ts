@@ -14,6 +14,12 @@ import {
   getSessionFromCtx,
 } from "better-auth/api";
 import { userAdditionalFields } from "./user-fields";
+import UserModel from "@/models/users";
+import {
+  encryptAES256GCM,
+  generateBlindIndex,
+  normalizeIdentifier,
+} from "./crypto";
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -85,18 +91,89 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
+      // 1. Intercept user signup to normalize, hash, and encrypt NIN
+      if (ctx.path === "/sign-up/email") {
+        const body = ctx.body as Record<string, any> | undefined;
+        const nin = body?.nin;
+        if (nin && typeof nin === "string" && nin.trim() !== "") {
+          const normalizedNin = normalizeIdentifier(nin);
+          const ninHash = generateBlindIndex(normalizedNin);
+
+          // Enforce uniqueness via blind index or legacy field
+          const existingUser = await UserModel.findByNIN(normalizedNin);
+          if (existingUser) {
+            throw new APIError("CONFLICT", {
+              message: "A user with this NIN is already registered",
+            });
+          }
+
+          body.ninEncrypted = encryptAES256GCM(normalizedNin);
+          body.ninHash = ninHash;
+          body.nin = normalizedNin;
+          body.migrationStatus = "completed";
+        }
+      }
+
+      // 2. Intercept user profile updates
       if (ctx.path === "/update-user") {
         const session = await getSessionFromCtx(ctx);
         if (!session?.user) return;
 
-        const doesBodyHaveVIN = Object.keys(ctx?.body).includes("vin");
+        const body = ctx.body as Record<string, any> | undefined;
+        const doesBodyHaveVIN = Object.keys(body || {}).includes("vin");
         if (doesBodyHaveVIN) {
           if (session?.user?.vin) {
             throw new APIError("NOT_ACCEPTABLE", {
               message: "Your VIN cannot be updated",
             });
           }
-        } else {
+
+          const rawVin = body?.vin;
+          if (rawVin && typeof rawVin === "string" && rawVin.trim() !== "") {
+            const normalizedVin = normalizeIdentifier(rawVin);
+            const vinHash = generateBlindIndex(normalizedVin);
+
+            // Enforce uniqueness on VIN
+            const existingUser = await UserModel.findByVIN(normalizedVin);
+            const currentUserId = session.user.id || (session.user as any)._id?.toString();
+            if (existingUser && existingUser._id?.toString() !== currentUserId) {
+              throw new APIError("CONFLICT", {
+                message: "A user with this VIN is already registered",
+              });
+            }
+
+            body.vinEncrypted = encryptAES256GCM(normalizedVin);
+            body.vinHash = vinHash;
+            body.vin = normalizedVin;
+          }
+        }
+
+        const doesBodyHaveNIN = Object.keys(body || {}).includes("nin");
+        if (
+          doesBodyHaveNIN &&
+          body?.nin &&
+          typeof body.nin === "string" &&
+          body.nin.trim() !== ""
+        ) {
+          const normalizedNin = normalizeIdentifier(body.nin);
+          const ninHash = generateBlindIndex(normalizedNin);
+
+          const existingUser = await UserModel.findByNIN(normalizedNin);
+          const currentUserId =
+            session.user.id || (session.user as any)._id?.toString();
+          if (existingUser && existingUser._id?.toString() !== currentUserId) {
+            throw new APIError("CONFLICT", {
+              message: "A user with this NIN is already registered",
+            });
+          }
+
+          body.ninEncrypted = encryptAES256GCM(normalizedNin);
+          body.ninHash = ninHash;
+          body.nin = normalizedNin;
+          body.migrationStatus = "completed";
+        }
+
+        if (!doesBodyHaveVIN) {
           // Allow update profile from verify-nin page if 24 hours have not passed since last update
           const isFromVerifyNinPage = ctx
             .getHeader("referer")

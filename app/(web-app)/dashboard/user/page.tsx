@@ -15,7 +15,7 @@ export default function UserDashboardPage() {
 
   // Safely grab dynamic variables
   const isNinVerified = user?.ninStatus === "verified";
-  const hasVin = !!user?.vin;
+  const hasVin = !!user?.vin || !!(user as any)?.vinEncrypted;
   const isPvcCollected = user?.pvcStatus === "collected";
   const collectedOn = formatToDisplayDate(user?.datePvcCollected);
 

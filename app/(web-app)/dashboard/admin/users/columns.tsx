@@ -7,6 +7,8 @@ import {
   ExternalLink,
   Copy,
   Check,
+  Eye,
+  EyeOff,
   MapPin,
   IdCard,
   Phone,
@@ -54,8 +56,69 @@ const UserActionsCell = ({
   const [isElevateOpen, setIsElevateOpen] = useState(false);
   const [copiedUserId, setCopiedUserId] = useState(false);
   const [copiedNin, setCopiedNin] = useState(false);
+  const [copiedVin, setCopiedVin] = useState(false);
+  const [revealedNin, setRevealedNin] = useState<string | null>(null);
+  const [revealedVin, setRevealedVin] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+
+  const handleReveal = async (identifier: "nin" | "vin") => {
+    const label = identifier.toUpperCase();
+    const result = await Swal.fire({
+      title: `Reveal ${label}`,
+      text: `Are you sure you want to reveal this user's ${label}? This access is strictly audit-logged.`,
+      icon: "warning",
+      input: "text",
+      inputLabel: "Reason for viewing (optional):",
+      inputPlaceholder: "e.g. Identity resolution, voter compliance",
+      showCancelButton: true,
+      confirmButtonColor: "#059669",
+      confirmButtonText: "Reveal & Log Access",
+      cancelButtonText: "Cancel",
+      showLoaderOnConfirm: true,
+      preConfirm: async (reason) => {
+        try {
+          const targetId = user.id || user._id;
+          const res = await fetch(
+            `/api/admin/users/${targetId}/reveal-identifier`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ identifier, reason }),
+            }
+          );
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || "Failed to reveal identifier");
+          }
+          return await res.json();
+        } catch (error: any) {
+          Swal.showValidationMessage(`Request failed: ${error.message}`);
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    });
+
+    if (result.isConfirmed && result.value?.value) {
+      if (identifier === "nin") {
+        setRevealedNin(result.value.value);
+        setTimeout(() => setRevealedNin(null), 30000);
+      } else {
+        setRevealedVin(result.value.value);
+        setTimeout(() => setRevealedVin(null), 30000);
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: `${label} Revealed`,
+        text: "Access has been recorded in the audit log.",
+        toast: true,
+        position: "top",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+    }
+  };
 
   const handlePermissionToggle = (permission: string) => {
     setSelectedPermissions((prev) =>
@@ -246,7 +309,11 @@ const UserActionsCell = ({
       <Modal
         containerClassName="z-50 fixed inset-0"
         isOpen={isProfileOpen}
-        onClose={() => setIsProfileOpen(false)}
+        onClose={() => {
+          setIsProfileOpen(false);
+          setRevealedNin(null);
+          setRevealedVin(null);
+        }}
         title="User Profile"
         size="lg"
       >
@@ -290,15 +357,115 @@ const UserActionsCell = ({
             </div>
             <div>
               <p className="text-gray-500 mb-1 text-sm">NIN</p>
-              <p className="font-medium text-gray-900 sm:text-lg">
-                {user.nin || "N/A"}
-              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="font-medium text-gray-900 sm:text-lg font-mono">
+                  {revealedNin || user.nin || "N/A"}
+                </span>
+                {revealedNin ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(revealedNin);
+                        setCopiedNin(true);
+                        setTimeout(() => setCopiedNin(false), 2000);
+                        Swal.fire({
+                          icon: "success",
+                          position: "top",
+                          text: "NIN copied",
+                          toast: true,
+                          showConfirmButton: false,
+                          timer: 2000,
+                        });
+                      }}
+                      className="p-1 text-slate-500 hover:text-slate-800 transition-colors"
+                      title="Copy Plaintext NIN"
+                    >
+                      {copiedNin ? (
+                        <Check className="w-4 h-4 text-emerald-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRevealedNin(null)}
+                      className="p-1 text-slate-400 hover:text-slate-600"
+                      title="Hide NIN"
+                    >
+                      <EyeOff className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  (user.nin || user.hasNin) && (
+                    <button
+                      type="button"
+                      onClick={() => handleReveal("nin")}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors"
+                      title="Reveal NIN (Audit Logged)"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      Reveal
+                    </button>
+                  )
+                )}
+              </div>
             </div>
             <div>
               <p className="text-gray-500 mb-1 text-sm">VIN</p>
-              <p className="font-medium text-gray-900 sm:text-lg">
-                {user.vin || "N/A"}
-              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="font-medium text-gray-900 sm:text-lg font-mono">
+                  {revealedVin || user.vin || "N/A"}
+                </span>
+                {revealedVin ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(revealedVin);
+                        setCopiedVin(true);
+                        setTimeout(() => setCopiedVin(false), 2000);
+                        Swal.fire({
+                          icon: "success",
+                          position: "top",
+                          text: "VIN copied",
+                          toast: true,
+                          showConfirmButton: false,
+                          timer: 2000,
+                        });
+                      }}
+                      className="p-1 text-slate-500 hover:text-slate-800 transition-colors"
+                      title="Copy Plaintext VIN"
+                    >
+                      {copiedVin ? (
+                        <Check className="w-4 h-4 text-emerald-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRevealedVin(null)}
+                      className="p-1 text-slate-400 hover:text-slate-600"
+                      title="Hide VIN"
+                    >
+                      <EyeOff className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  (user.vin || user.hasVin) && (
+                    <button
+                      type="button"
+                      onClick={() => handleReveal("vin")}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors"
+                      title="Reveal VIN (Audit Logged)"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      Reveal
+                    </button>
+                  )
+                )}
+              </div>
             </div>
           </div>
 
