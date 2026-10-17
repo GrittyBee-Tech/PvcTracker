@@ -153,7 +153,8 @@ export const POST = withDb(async (request: Request) => {
 
       if (typeof nin === "string") {
         const trimmedNin = nin.trim();
-        if (trimmedNin && trimmedNin !== user.nin) {
+        const storedNin = user.getDecryptedIdentifiers?.()?.nin || user.nin;
+        if (trimmedNin && trimmedNin !== storedNin) {
           updateFields.nin = trimmedNin;
         }
       }

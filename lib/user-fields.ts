@@ -35,11 +35,36 @@ export const userAdditionalFields = {
     type: "string",
     input: true,
     required: false,
-    unique: true,
   },
   nin: {
     type: "string",
     input: true,
+    required: false,
+  },
+  ninEncrypted: {
+    type: "string",
+    required: false,
+    input: false,
+  },
+  ninHash: {
+    type: "string",
+    required: false,
+    input: false,
+  },
+  vinEncrypted: {
+    type: "string",
+    required: false,
+    input: false,
+  },
+  vinHash: {
+    type: "string",
+    required: false,
+    input: false,
+  },
+  migrationStatus: {
+    type: "string",
+    required: false,
+    input: false,
   },
   ninStatus: {
     type: "string",
