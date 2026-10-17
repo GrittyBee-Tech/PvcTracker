@@ -5,6 +5,7 @@ import { DataTable } from "./data-table";
 import { useEffect, useState, useMemo } from "react";
 import { User } from "better-auth";
 import Swal from "sweetalert2";
+import { Users } from "lucide-react";
 
 type ExportFormat = "excel" | "pdf";
 
@@ -230,12 +231,28 @@ export default function UsersPage() {
   }, [filters.search]);
 
   return (
-    <div className="text-black space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Manage Users</h1>
-        <p className="text-gray-600">
-          Here you can view, filter, and manage all the users on the platform.
-        </p>
+    <div className="space-y-6 text-gray-900">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Users className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Manage users</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Search, review, and manage platform user accounts.
+            </p>
+          </div>
+        </div>
+        <div
+          className="w-fit rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-600 shadow-sm"
+          aria-live="polite"
+        >
+          <span className="font-semibold text-gray-900">
+            {loading ? "…" : totalCount.toLocaleString()}
+          </span>{" "}
+          {totalCount === 1 ? "user" : "users"} found
+        </div>
       </div>
       <DataTable
         columns={columns(fetchUsers)}
