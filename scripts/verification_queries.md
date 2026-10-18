@@ -70,35 +70,44 @@ db.users.find({
 In MongoDB, a `sparse` index still indexes documents where the field value is explicitly `null`. To prevent `E11000 duplicate key error` on `null`, documents without a VIN must have the `vinHash` field completely absent (unset), never set to `null` or empty string `""`.
 
 ```javascript
+// NOTE: { field: null } also matches documents where the field is MISSING.
+// Use $type: "null" to match only an explicit null value.
+
 // 3.1 Verify NO documents contain literal null or empty string for vinHash
-db.users.find({
+db.users.countDocuments({
   $or: [
-    { vinHash: null },
+    { vinHash: { $type: "null" } },
     { vinHash: "" }
   ]
-}).count(); // MUST RETURN 0
+}); // MUST RETURN 0
 
 // 3.2 Verify NO documents contain literal null or empty string for ninHash
-db.users.find({
+db.users.countDocuments({
   $or: [
-    { ninHash: null },
+    { ninHash: { $type: "null" } },
     { ninHash: "" }
   ]
-}).count(); // MUST RETURN 0
+}); // MUST RETURN 0
 
-// 3.3 Verify documents without a plaintext VIN have NO vinHash or vinEncrypted fields
-db.users.find({
-  $or: [
-    { vin: { $exists: false } },
-    { vin: null },
-    { vin: "" }
-  ],
-  $or: [
-    { vinHash: { $exists: true } },
-    { vinEncrypted: { $exists: true } }
+// 3.3 Verify documents without a plaintext/encrypted VIN have NO vinHash or vinEncrypted.
+// Use $and: two top-level $or keys in one object would overwrite each other.
+db.users.countDocuments({
+  $and: [
+    { $or: [{ vin: { $exists: false } }, { vin: null }, { vin: "" }] },
+    { vinEncrypted: { $exists: false } },
+    { $or: [{ vinHash: { $exists: true } }] }
   ]
-}).count(); // MUST RETURN 0
+}); // MUST RETURN 0 (a vinHash must never exist without a vinEncrypted)
+
+// 3.4 Verify every vinHash has a matching vinEncrypted (and vice versa)
+db.users.countDocuments({
+  $or: [
+    { vinHash: { $exists: true }, vinEncrypted: { $exists: false } },
+    { vinHash: { $exists: false }, vinEncrypted: { $exists: true } }
+  ]
+}); // MUST RETURN 0
 ```
+
 
 ---
 

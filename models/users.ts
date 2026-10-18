@@ -180,14 +180,12 @@ UserSchema.methods.getDecryptedIdentifiers = function (
 };
 
 /**
- * STATIC METHOD: findByNIN
- * Provides a seamless zero-downtime lookup abstraction:
+ * Dual-read query helper for NIN:
  * 1. Computes deterministic blind index for normalized input.
  * 2. Attempts exact-match lookup on `ninHash`.
  * 3. Falls back to plaintext query on `nin` if not yet migrated.
  */
-UserSchema.statics.findByNIN = async function (
-  this: IUserModel,
+export async function findUserByNIN(
   plainNIN: string
 ): Promise<HydratedDocument<IUser, IUserMethods> | null> {
   if (!plainNIN || typeof plainNIN !== "string") {
@@ -197,24 +195,20 @@ UserSchema.statics.findByNIN = async function (
   const normalized = normalizeIdentifier(plainNIN);
   const blindIndex = generateBlindIndex(normalized);
 
-  // 1. Primary lookup via blind index
-  const migratedDoc = await this.findOne({ ninHash: blindIndex });
+  const migratedDoc = await UserModel.findOne({ ninHash: blindIndex });
   if (migratedDoc) {
     return migratedDoc;
   }
 
-  // 2. Fallback to legacy plaintext field during migration transition
-  return this.findOne({
+  return UserModel.findOne({
     $or: [{ nin: plainNIN }, { nin: normalized }],
   });
-};
+}
 
 /**
- * STATIC METHOD: findByVIN
  * Dual-read query helper for VIN.
  */
-UserSchema.statics.findByVIN = async function (
-  this: IUserModel,
+export async function findUserByVIN(
   plainVIN: string
 ): Promise<HydratedDocument<IUser, IUserMethods> | null> {
   if (!plainVIN || typeof plainVIN !== "string") {
@@ -224,19 +218,29 @@ UserSchema.statics.findByVIN = async function (
   const normalized = normalizeIdentifier(plainVIN);
   const blindIndex = generateBlindIndex(normalized);
 
-  const migratedDoc = await this.findOne({ vinHash: blindIndex });
+  const migratedDoc = await UserModel.findOne({ vinHash: blindIndex });
   if (migratedDoc) {
     return migratedDoc;
   }
 
-  return this.findOne({
+  return UserModel.findOne({
     $or: [{ vin: plainVIN }, { vin: normalized }],
   });
-};
+}
+
+UserSchema.statics.findByNIN = findUserByNIN;
+UserSchema.statics.findByVIN = findUserByVIN;
 
 // Export the model, preventing duplicate compilation errors during Next.js hot-reloads
 const UserModel: IUserModel =
   (mongoose.models.User as IUserModel) ||
   mongoose.model<IUser, IUserModel>("User", UserSchema);
+
+// If model was cached in Next.js development hot-reload without statics,
+// attach the statics directly so both UserModel.findByVIN and findUserByVIN work
+if (UserModel) {
+  UserModel.findByNIN = findUserByNIN;
+  UserModel.findByVIN = findUserByVIN;
+}
 
 export default UserModel;
