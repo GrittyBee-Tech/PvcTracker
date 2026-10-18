@@ -6,7 +6,7 @@ import NoRefundPolicy, {
   NIN_POLICY_CONSENT_KEY,
 } from "@/components/ui/NoRefundPolicy";
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { showToast } from "@/utils/constants/toast";
 import VerifyNinComponent from "./verify-nin/VerifyNinComponent";
@@ -59,7 +59,15 @@ export default function UserLayout({
     router.push(`/dashboard/user/verify-nin`);
   };
 
-  if (user?.role === "admin") return router.push("/dashboard/admin");
+  useEffect(() => {
+    if (user?.role === "admin") {
+      router.replace("/dashboard/admin");
+    }
+  }, [user?.role, router]);
+
+  if (user?.role === "admin") {
+    return null;
+  }
 
   return (
     <>
