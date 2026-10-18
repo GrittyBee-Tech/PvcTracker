@@ -168,8 +168,7 @@ export function DataTable<TData, TValue>({
               aria-hidden="true"
             />
             <input
-              aria-label="Search users"
-              placeholder="Search name, email, phone, or NIN"
+              placeholder="Search by name, email, phone, NIN..."
               value={filters.search}
               onChange={(e) =>
                 onFiltersChange({ ...filters, search: e.target.value })

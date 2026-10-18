@@ -14,8 +14,6 @@ export const PERMISSIONS = [
 
 export type Permission = (typeof PERMISSIONS)[number];
 
-export type VerificationResolutionAction = "sync" | "approve" | "reset";
-
 export interface VerificationSessionUser {
   _id?: string;
   id?: string;
@@ -70,11 +68,18 @@ export interface UserType {
   phoneNumber: string;
   emailVerified: boolean;
   role: "user" | "admin" | "volunteer";
-  nin: string;
+  nin?: string;
   vin?: string;
+  ninEncrypted?: string;
+  ninHash?: string;
+  vinEncrypted?: string;
+  vinHash?: string;
+  migrationStatus?: "pending" | "completed" | "failed";
+  migrationError?: string;
+  migrationAttemptedAt?: Date;
   ninStatus: "pending" | "rejected" | "verified";
   pvcStatus: "collected" | "not_collected";
-  datePvcCollected: Date;
+  datePvcCollected?: Date;
   stateOfOrigin?: string;
   votingState?: string;
   votingLga?: string;
