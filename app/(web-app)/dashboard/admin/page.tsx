@@ -114,7 +114,7 @@ export default function AdminPage() {
                     <CardHeader className="px-6 pb-3 pt-5">
                         <CardTitle className="text-base">PVC collection status</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[235px] px-4 pb-4 pt-0">
+                    <CardContent className="h-58.75 px-4 pb-4 pt-0">
                         <StatusPieChart data={data.charts.pvcStatus} colors={COLORS} />
                     </CardContent>
                 </Card>
