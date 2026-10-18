@@ -10,6 +10,8 @@ import {
   MapPin,
   IdCard,
   Phone,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -54,6 +56,9 @@ const UserActionsCell = ({
   const [isElevateOpen, setIsElevateOpen] = useState(false);
   const [copiedUserId, setCopiedUserId] = useState(false);
   const [copiedNin, setCopiedNin] = useState(false);
+  const [copiedVin, setCopiedVin] = useState(false);
+  const [revealedNin, setRevealedNin] = useState<string | null>(null);
+  const [revealedVin, setRevealedVin] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
@@ -434,32 +439,55 @@ const UserActionsCell = ({
                 <p className="text-slate-400 text-xs">NIN</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="font-mono font-medium text-slate-900">
-                    {user.nin || "—"}
+                    {revealedNin || user.nin || "—"}
                   </span>
-                  {user.nin && (
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(user.nin);
-                        setCopiedNin(true);
-                        setTimeout(() => setCopiedNin(false), 2000);
-                        Swal.fire({
-                          icon: "success",
-                          position: "top",
-                          text: "NIN copied",
-                          toast: true,
-                          showConfirmButton: false,
-                          timer: 2000,
-                        });
-                      }}
-                      className="text-slate-400 hover:text-slate-600 transition-colors"
-                      title="Copy NIN"
-                    >
-                      {copiedNin ? (
-                        <Check className="w-3 h-3 text-emerald-600" />
-                      ) : (
-                        <Copy className="w-3 h-3" />
-                      )}
-                    </button>
+                  {revealedNin ? (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(revealedNin);
+                          setCopiedNin(true);
+                          setTimeout(() => setCopiedNin(false), 2000);
+                          Swal.fire({
+                            icon: "success",
+                            position: "top",
+                            text: "NIN copied",
+                            toast: true,
+                            showConfirmButton: false,
+                            timer: 2000,
+                          });
+                        }}
+                        className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
+                        title="Copy Plaintext NIN"
+                      >
+                        {copiedNin ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRevealedNin(null)}
+                        className="p-1 text-slate-400 hover:text-slate-600"
+                        title="Hide NIN"
+                      >
+                        <EyeOff className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    (user.nin || user.hasNin) && (
+                      <button
+                        type="button"
+                        onClick={() => handleReveal("nin")}
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors"
+                        title="Reveal NIN (Audit Logged)"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Reveal</span>
+                      </button>
+                    )
                   )}
                 </div>
               </div>
@@ -485,9 +513,59 @@ const UserActionsCell = ({
               </div>
               <div>
                 <p className="text-slate-400 text-xs">VIN</p>
-                <p className="font-mono font-medium text-slate-900 mt-0.5 truncate">
-                  {user.vin || "—"}
-                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="font-mono font-medium text-slate-900 truncate">
+                    {revealedVin || user.vin || "—"}
+                  </span>
+                  {revealedVin ? (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(revealedVin);
+                          setCopiedVin(true);
+                          setTimeout(() => setCopiedVin(false), 2000);
+                          Swal.fire({
+                            icon: "success",
+                            position: "top",
+                            text: "VIN copied",
+                            toast: true,
+                            showConfirmButton: false,
+                            timer: 2000,
+                          });
+                        }}
+                        className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
+                        title="Copy Plaintext VIN"
+                      >
+                        {copiedVin ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRevealedVin(null)}
+                        className="p-1 text-slate-400 hover:text-slate-600"
+                        title="Hide VIN"
+                      >
+                        <EyeOff className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    (user.vin || user.hasVin) && (
+                      <button
+                        type="button"
+                        onClick={() => handleReveal("vin")}
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors"
+                        title="Reveal VIN (Audit Logged)"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Reveal</span>
+                      </button>
+                    )
+                  )}
+                </div>
               </div>
               <div>
                 <p className="text-slate-400 text-xs">Gender</p>
