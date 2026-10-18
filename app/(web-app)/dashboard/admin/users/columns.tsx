@@ -10,6 +10,8 @@ import {
   MapPin,
   IdCard,
   Phone,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -54,8 +56,69 @@ const UserActionsCell = ({
   const [isElevateOpen, setIsElevateOpen] = useState(false);
   const [copiedUserId, setCopiedUserId] = useState(false);
   const [copiedNin, setCopiedNin] = useState(false);
+  const [copiedVin, setCopiedVin] = useState(false);
+  const [revealedNin, setRevealedNin] = useState<string | null>(null);
+  const [revealedVin, setRevealedVin] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+
+  const handleReveal = async (identifier: "nin" | "vin") => {
+    const label = identifier.toUpperCase();
+    const result = await Swal.fire({
+      title: `Reveal ${label}`,
+      text: `Are you sure you want to reveal this user's ${label}? This access is strictly audit-logged.`,
+      icon: "warning",
+      input: "text",
+      inputLabel: "Reason for viewing (optional):",
+      inputPlaceholder: "e.g. Identity resolution, voter compliance",
+      showCancelButton: true,
+      confirmButtonColor: "#059669",
+      confirmButtonText: "Reveal & Log Access",
+      cancelButtonText: "Cancel",
+      showLoaderOnConfirm: true,
+      preConfirm: async (reason) => {
+        try {
+          const targetId = user.id || user._id;
+          const res = await fetch(
+            `/api/admin/users/${targetId}/reveal-identifier`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ identifier, reason }),
+            }
+          );
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || "Failed to reveal identifier");
+          }
+          return await res.json();
+        } catch (error: any) {
+          Swal.showValidationMessage(`Request failed: ${error.message}`);
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    });
+
+    if (result.isConfirmed && result.value?.value) {
+      if (identifier === "nin") {
+        setRevealedNin(result.value.value);
+        setTimeout(() => setRevealedNin(null), 30000);
+      } else {
+        setRevealedVin(result.value.value);
+        setTimeout(() => setRevealedVin(null), 30000);
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: `${label} Revealed`,
+        text: "Access has been recorded in the audit log.",
+        toast: true,
+        position: "top",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+    }
+  };
 
   const handlePermissionToggle = (permission: string) => {
     setSelectedPermissions((prev) =>
@@ -247,84 +310,355 @@ const UserActionsCell = ({
         containerClassName="z-50 fixed inset-0"
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
-        title="User Profile"
-        size="lg"
+        title="User Profile Details"
+        size="xl"
+        className="max-w-2xl sm:max-w-2xl"
+        actions={
+          <div className="flex flex-wrap items-center justify-between w-full gap-2">
+            <Link
+              href={`/dashboard/admin/verification-sessions?userId=${user.id}&openLatest=true`}
+              onClick={() => setIsProfileOpen(false)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-colors"
+            >
+              <BadgeCheck className="w-4 h-4 text-emerald-600" />
+              <span>Inspect Verification Session</span>
+              <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsProfileOpen(false)}
+            >
+              Close
+            </Button>
+          </div>
+        }
       >
-        <div className="space-y-6 text-black">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-y-6 gap-x-4">
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">First Name</p>
-              <p className="font-medium text-gray-900 sm:text-lg">
-                {user.firstName}
-              </p>
+        <div className="space-y-5 text-slate-800">
+          {/* User Header Profile Card */}
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 border-2 border-emerald-200 flex items-center justify-center text-base font-bold select-none shrink-0 shadow-xs">
+                {user.firstName?.[0]?.toUpperCase() || "U"}
+                {user.lastName?.[0]?.toUpperCase() || "N"}
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold text-slate-900 leading-tight truncate">
+                  {user.firstName} {user.lastName}
+                </h3>
+                <div className="text-xs text-slate-500 mt-0.5 flex flex-wrap items-center gap-1.5">
+                  <span className="truncate">{user.email || "No email provided"}</span>
+                  {user.emailVerified ? (
+                    <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700">
+                      Verified
+                    </span>
+                  ) : null}
+                </div>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <span className="font-mono text-[11px] text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded truncate max-w-[180px]">
+                    ID: {user.id}
+                  </span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(user.id);
+                      setCopiedUserId(true);
+                      setTimeout(() => setCopiedUserId(false), 2000);
+                      Swal.fire({
+                        icon: "success",
+                        position: "top",
+                        text: "User ID copied",
+                        toast: true,
+                        showConfirmButton: false,
+                        timer: 2000,
+                      });
+                    }}
+                    className="text-slate-400 hover:text-slate-600 transition-colors p-0.5"
+                    title="Copy User ID"
+                  >
+                    {copiedUserId ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">Last Name</p>
-              <p className="font-medium text-gray-900 sm:text-lg">
-                {user.lastName}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">Phone Number</p>
-              <p className="font-medium text-gray-900 sm:text-lg">
-                {user.phoneNumber || "N/A"}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">Gender</p>
-              <p className="font-medium text-gray-900 sm:text-lg capitalize">
-                {user.gender || "N/A"}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">State of Origin</p>
-              <p className="font-medium text-gray-900 sm:text-lg">
-                {user.stateOfOrigin || "N/A"}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">LGA of Origin</p>
-              <p className="font-medium text-gray-900 sm:text-lg">
-                {user.lgaOfOrigin || "N/A"}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">NIN</p>
-              <p className="font-medium text-gray-900 sm:text-lg">
-                {user.nin || "N/A"}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">VIN</p>
-              <p className="font-medium text-gray-900 sm:text-lg">
-                {user.vin || "N/A"}
-              </p>
+
+            <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-1.5 shrink-0">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize bg-primary/10 text-primary border border-primary/20">
+                {user.role || "user"}
+              </span>
+              <span
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${
+                  user.status === "restricted"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : user.status === "deleted"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-emerald-100 text-emerald-800"
+                }`}
+              >
+                {user.status || "active"}
+              </span>
             </div>
           </div>
 
-          <div className="border-t border-gray-100 pt-4">
-            <p className="text-gray-500 mb-1 text-sm">Home Address</p>
-            <p className="font-medium text-gray-900 sm:text-lg">
-              {user.homeAddress || "N/A"}
-            </p>
+          {/* Quick Verification Gateway Strip */}
+          <div className="p-3 rounded-lg border border-emerald-200 bg-emerald-50/50 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="p-2 rounded-md bg-emerald-100 text-emerald-700 shrink-0">
+                <BadgeCheck className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-slate-800">
+                  Verification Status & Discrepancies
+                </p>
+                <p className="text-[11px] text-slate-500 truncate">
+                  View raw provider responses, verification logs, and field mismatches.
+                </p>
+              </div>
+            </div>
+            <Link
+              href={`/dashboard/admin/verification-sessions?userId=${user.id}&openLatest=true`}
+              onClick={() => setIsProfileOpen(false)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-primary text-white hover:bg-primary/90 transition-colors shrink-0 shadow-2xs"
+            >
+              <span>View Modal</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
-          <div className="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">NIN Status</p>
-              <span
-                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full font-medium sm:text-lg capitalize ${ninStatusStyles[user.ninStatus]}`}
-              >
-                {user.ninStatus}
-              </span>
+          {/* Identity & Voter Status Card */}
+          <div className="rounded-xl border border-slate-200 p-4 space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <IdCard className="w-3.5 h-3.5 text-slate-500" />
+              <span>Identity & Voter Details</span>
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+              <div>
+                <p className="text-slate-400 text-xs">NIN</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="font-mono font-medium text-slate-900">
+                    {revealedNin || user.nin || "—"}
+                  </span>
+                  {revealedNin ? (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(revealedNin);
+                          setCopiedNin(true);
+                          setTimeout(() => setCopiedNin(false), 2000);
+                          Swal.fire({
+                            icon: "success",
+                            position: "top",
+                            text: "NIN copied",
+                            toast: true,
+                            showConfirmButton: false,
+                            timer: 2000,
+                          });
+                        }}
+                        className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
+                        title="Copy Plaintext NIN"
+                      >
+                        {copiedNin ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRevealedNin(null)}
+                        className="p-1 text-slate-400 hover:text-slate-600"
+                        title="Hide NIN"
+                      >
+                        <EyeOff className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    (user.nin || user.hasNin) && (
+                      <button
+                        type="button"
+                        onClick={() => handleReveal("nin")}
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors"
+                        title="Reveal NIN (Audit Logged)"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Reveal</span>
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">NIN Status</p>
+                <span
+                  className={`inline-flex mt-0.5 px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
+                    ninStatusStyles[user.ninStatus] || "bg-slate-100 text-slate-700"
+                  }`}
+                >
+                  {user.ninStatus || "pending"}
+                </span>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">PVC Status</p>
+                <span
+                  className={`inline-flex mt-0.5 px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
+                    pvcStatusStyles[user.pvcStatus] || "bg-slate-100 text-slate-700"
+                  }`}
+                >
+                  {(user.pvcStatus || "not_collected").replace(/_/g, " ")}
+                </span>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">VIN</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="font-mono font-medium text-slate-900 truncate">
+                    {revealedVin || user.vin || "—"}
+                  </span>
+                  {revealedVin ? (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(revealedVin);
+                          setCopiedVin(true);
+                          setTimeout(() => setCopiedVin(false), 2000);
+                          Swal.fire({
+                            icon: "success",
+                            position: "top",
+                            text: "VIN copied",
+                            toast: true,
+                            showConfirmButton: false,
+                            timer: 2000,
+                          });
+                        }}
+                        className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
+                        title="Copy Plaintext VIN"
+                      >
+                        {copiedVin ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRevealedVin(null)}
+                        className="p-1 text-slate-400 hover:text-slate-600"
+                        title="Hide VIN"
+                      >
+                        <EyeOff className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    (user.vin || user.hasVin) && (
+                      <button
+                        type="button"
+                        onClick={() => handleReveal("vin")}
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors"
+                        title="Reveal VIN (Audit Logged)"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Reveal</span>
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">Gender</p>
+                <p className="font-medium text-slate-900 mt-0.5 capitalize">
+                  {user.gender || "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">Disability</p>
+                <p className="font-medium text-slate-900 mt-0.5">
+                  {user.isDisabled ? "Yes" : "No"}
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">Date of Birth</p>
+                <p className="font-medium text-slate-900 mt-0.5">
+                  {user.dateOfBirth
+                    ? new Date(user.dateOfBirth).toLocaleDateString()
+                    : "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">PVC Collected Date</p>
+                <p className="font-medium text-slate-900 mt-0.5">
+                  {user.datePvcCollected
+                    ? new Date(user.datePvcCollected).toLocaleDateString()
+                    : "—"}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-gray-500 mb-1 text-sm">PVC Status</p>
-              <span
-                className={`inline-flex mt-1 px-2.5 py-0.5 rounded-full font-medium sm:text-lg capitalize ${pvcStatusStyles[user.pvcStatus]}`}
-              >
-                {user.pvcStatus}
-              </span>
+          </div>
+
+          {/* Location & Polling Info Card */}
+          <div className="rounded-xl border border-slate-200 p-4 space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-slate-500" />
+              <span>Location & Polling Information</span>
+            </h4>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p className="text-slate-400 text-xs">State & LGA of Origin</p>
+                <p className="font-medium text-slate-900 mt-0.5">
+                  {user.stateOfOrigin
+                    ? `${user.stateOfOrigin} / ${user.lgaOfOrigin || "—"}`
+                    : "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">Voting State & LGA</p>
+                <p className="font-medium text-slate-900 mt-0.5">
+                  {user.votingState
+                    ? `${user.votingState} / ${user.votingLga || "—"}`
+                    : "—"}
+                </p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-slate-400 text-xs">Home Address</p>
+                <p className="font-medium text-slate-900 mt-0.5">
+                  {user.homeAddress || "—"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact & Registration Card */}
+          <div className="rounded-xl border border-slate-200 p-4 space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5 text-slate-500" />
+              <span>Contact & Account Meta</span>
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+              <div>
+                <p className="text-slate-400 text-xs">Phone Number</p>
+                <p className="font-medium text-slate-900 mt-0.5">
+                  {user.phoneNumber || "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">Joined Date</p>
+                <p className="font-medium text-slate-900 mt-0.5">
+                  {user.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString()
+                    : "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs">Last Updated</p>
+                <p className="font-medium text-slate-900 mt-0.5">
+                  {user.updatedAt
+                    ? new Date(user.updatedAt).toLocaleDateString()
+                    : "—"}
+                </p>
+              </div>
             </div>
           </div>
         </div>
