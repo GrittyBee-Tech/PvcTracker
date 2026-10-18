@@ -2,7 +2,7 @@
 import { betterAuth, User } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { MONGODB_URI } from "./db";
+import connectDB, { MONGODB_URI } from "./db";
 import {
   sendPasswordResetEmail,
   sendWelcomeEmail,
@@ -14,8 +14,10 @@ import {
   getSessionFromCtx,
 } from "better-auth/api";
 import { userAdditionalFields } from "./user-fields";
-import UserModel from "@/models/users";
+import { findUserByNIN, findUserByVIN } from "@/models/users";
+import { customSession } from "better-auth/plugins";
 import {
+  decryptAES256GCM,
   encryptAES256GCM,
   generateBlindIndex,
   normalizeIdentifier,
@@ -91,6 +93,26 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/sign-up/email" || ctx.path === "/update-user") {
+        // The Better Auth route is not wrapped in withDb, so Mongoose must be
+        // connected explicitly before findUserByNIN / findUserByVIN run.
+        await connectDB();
+
+        // Derived fields are server-controlled: never trust client-supplied values.
+        const rawBody = ctx.body as Record<string, any> | undefined;
+        if (rawBody) {
+          for (const key of [
+            "ninEncrypted",
+            "ninHash",
+            "vinEncrypted",
+            "vinHash",
+            "migrationStatus",
+          ]) {
+            delete rawBody[key];
+          }
+        }
+      }
+
       // 1. Intercept user signup to normalize, hash, and encrypt NIN
       if (ctx.path === "/sign-up/email") {
         const body = ctx.body as Record<string, any> | undefined;
@@ -100,7 +122,7 @@ export const auth = betterAuth({
           const ninHash = generateBlindIndex(normalizedNin);
 
           // Enforce uniqueness via blind index or legacy field
-          const existingUser = await UserModel.findByNIN(normalizedNin);
+          const existingUser = await findUserByNIN(normalizedNin);
           if (existingUser) {
             throw new APIError("CONFLICT", {
               message: "A user with this NIN is already registered",
@@ -109,7 +131,7 @@ export const auth = betterAuth({
 
           body.ninEncrypted = encryptAES256GCM(normalizedNin);
           body.ninHash = ninHash;
-          body.nin = normalizedNin;
+          delete body.nin;
           body.migrationStatus = "completed";
         }
       }
@@ -122,7 +144,7 @@ export const auth = betterAuth({
         const body = ctx.body as Record<string, any> | undefined;
         const doesBodyHaveVIN = Object.keys(body || {}).includes("vin");
         if (doesBodyHaveVIN) {
-          if (session?.user?.vin) {
+          if (session?.user?.vin || session?.user?.vinEncrypted) {
             throw new APIError("NOT_ACCEPTABLE", {
               message: "Your VIN cannot be updated",
             });
@@ -134,7 +156,7 @@ export const auth = betterAuth({
             const vinHash = generateBlindIndex(normalizedVin);
 
             // Enforce uniqueness on VIN
-            const existingUser = await UserModel.findByVIN(normalizedVin);
+            const existingUser = await findUserByVIN(normalizedVin);
             const currentUserId = session.user.id || (session.user as any)._id?.toString();
             if (existingUser && existingUser._id?.toString() !== currentUserId) {
               throw new APIError("CONFLICT", {
@@ -144,7 +166,8 @@ export const auth = betterAuth({
 
             body.vinEncrypted = encryptAES256GCM(normalizedVin);
             body.vinHash = vinHash;
-            body.vin = normalizedVin;
+            // Never persist plaintext: Better Auth writes whatever is left in the body.
+            delete body.vin;
           }
         }
 
@@ -158,7 +181,7 @@ export const auth = betterAuth({
           const normalizedNin = normalizeIdentifier(body.nin);
           const ninHash = generateBlindIndex(normalizedNin);
 
-          const existingUser = await UserModel.findByNIN(normalizedNin);
+          const existingUser = await findUserByNIN(normalizedNin);
           const currentUserId =
             session.user.id || (session.user as any)._id?.toString();
           if (existingUser && existingUser._id?.toString() !== currentUserId) {
@@ -169,7 +192,7 @@ export const auth = betterAuth({
 
           body.ninEncrypted = encryptAES256GCM(normalizedNin);
           body.ninHash = ninHash;
-          body.nin = normalizedNin;
+          delete body.nin;
           body.migrationStatus = "completed";
         }
 
@@ -195,7 +218,34 @@ export const auth = betterAuth({
       }
     }),
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    // Runs on every get-session: decrypt the signed-in user's own NIN/VIN so the
+    // existing UI keeps reading user.nin / user.vin without plaintext in the DB.
+    customSession(async ({ user, session }) => {
+      const u = user as Record<string, any>;
+      let nin: string | undefined = u.nin;
+      let vin: string | undefined = u.vin;
+      try {
+        if (u.ninEncrypted) nin = decryptAES256GCM(u.ninEncrypted);
+        if (u.vinEncrypted) vin = decryptAES256GCM(u.vinEncrypted);
+      } catch (error) {
+        console.error("Failed to decrypt session identifiers", error);
+      }
+      // Keep ciphertext/hash fields out of the response; expose a boolean instead.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { ninEncrypted, ninHash, vinEncrypted, vinHash, ...rest } = u;
+      return {
+        user: {
+          ...(rest as typeof user),
+          nin,
+          vin,
+          hasVin: Boolean(vin),
+        },
+        session,
+      };
+    }),
+  ],
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   trustedOrigins: [
     "http://localhost:3000",

@@ -22,7 +22,7 @@ interface FailedRecord {
   errorCode?: number;
 }
 
-const BATCH_SIZE = parseInt(process.env.BATCH_SIZE || "500", 10);
+const BATCH_SIZE = parseInt(process.env.BATCH_SIZE || "50", 10);
 const MONGODB_URI = process.env.MONGODB_URI;
 
 /**

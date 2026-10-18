@@ -44,27 +44,29 @@ export const userAdditionalFields = {
   ninEncrypted: {
     type: "string",
     required: false,
-    input: false,
+    // input must be true so the server-side before hook can set it; client-supplied
+    // values are stripped in lib/auth.ts before the hook computes them.
+    input: true,
   },
   ninHash: {
     type: "string",
     required: false,
-    input: false,
+    input: true,
   },
   vinEncrypted: {
     type: "string",
     required: false,
-    input: false,
+    input: true,
   },
   vinHash: {
     type: "string",
     required: false,
-    input: false,
+    input: true,
   },
   migrationStatus: {
     type: "string",
     required: false,
-    input: false,
+    input: true,
   },
   ninStatus: {
     type: "string",
