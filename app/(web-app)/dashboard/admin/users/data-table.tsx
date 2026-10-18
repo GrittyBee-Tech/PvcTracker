@@ -146,6 +146,18 @@ export function DataTable<TData, TValue>({
     { name: "Not Collected", value: "not_collected" },
   ];
 
+  const hasActiveFilters =
+    filters.search.trim() !== "" ||
+    filters.ninStatus !== "all" ||
+    filters.pvcStatus !== "all";
+  const selectedCount = Object.keys(rowSelection).length;
+  const firstResult =
+    pagination.total === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1;
+  const lastResult = Math.min(
+    pagination.page * pagination.limit,
+    pagination.total,
+  );
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
       <div className="space-y-4 border-b border-gray-100 p-4 sm:p-5">
@@ -188,38 +200,65 @@ export function DataTable<TData, TValue>({
                 selectClassName="h-10 mt-0 rounded-lg border-gray-200 bg-gray-50"
               />
             </div>
+            <div className="min-w-0 sm:min-w-[190px]">
+              <ScrollableSelect
+                id="pvc-status-filter"
+                name="pvcStatus"
+                placeholder="Filter by PVC status..."
+                options={pvcStatusOptions}
+                value={filters.pvcStatus || "all"}
+                onValueChange={(value) => {
+                  onFiltersChange({ ...filters, pvcStatus: value });
+                }}
+                selectClassName="h-10 mt-0 rounded-lg border-gray-200 bg-gray-50"
+              />
+            </div>
           </div>
-          <div className="w-full sm:w-48">
-            <ScrollableSelect
-              id="nin-status-filter"
-              name="ninStatus"
-              placeholder="Filter by NIN status..."
-              options={ninStatusOptions}
-              value={filters.ninStatus || "all"}
-              onValueChange={(value) => {
-                onFiltersChange({
-                  ...filters,
-                  ninStatus: value,
-                });
-              }}
-              selectClassName="h-10 mt-0 py-2 border-gray-300"
-            />
-          </div>
-          <div className="w-full sm:w-48">
-            <ScrollableSelect
-              id="pvc-status-filter"
-              name="pvcStatus"
-              placeholder="Filter by PVC status..."
-              options={pvcStatusOptions}
-              value={filters.pvcStatus || "all"}
-              onValueChange={(value) => {
-                onFiltersChange({
-                  ...filters,
-                  pvcStatus: value,
-                });
-              }}
-              selectClassName="h-10 mt-0 py-2 border-gray-300"
-            />
+          <div className="flex flex-wrap items-center gap-2 lg:ml-auto">
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                className="h-10 text-gray-500 hover:text-gray-900"
+                onClick={() =>
+                  onFiltersChange({
+                    search: "",
+                    ninStatus: "all",
+                    pvcStatus: "all",
+                  })
+                }
+              >
+                Clear filters
+              </Button>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  disabled={loading || exporting || pagination.total === 0}
+                  className="h-10 flex-1 border-gray-200 sm:flex-none"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  {exporting ? "Preparing…" : "Export"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Export filtered users</DropdownMenuLabel>
+                <DropdownMenuItem
+                  disabled={exporting}
+                  onSelect={() => onExport("excel")}
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Download Excel
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={exporting}
+                  onSelect={() => onExport("pdf")}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Download PDF
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 

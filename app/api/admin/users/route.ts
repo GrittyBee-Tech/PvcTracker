@@ -38,14 +38,15 @@ export const GET = withDb(async (request: Request) => {
     if (pvcStatus && pvcStatus !== "all") query.pvcStatus = pvcStatus;
 
     if (search) {
-      query.$or = [
-        { firstName: { $regex: search, $options: "i" } },
-        { lastName: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-        { phoneNumber: { $regex: search, $options: "i" } },
-        { nin: { $regex: search, $options: "i" } },
-        { stateOfOrigin: { $regex: search, $options: "i" } },
-        { lgaOfOrigin: { $regex: search, $options: "i" } },
+      const trimmedSearch = search.trim();
+      const searchOr: Array<Record<string, any>> = [
+        { firstName: { $regex: trimmedSearch, $options: "i" } },
+        { lastName: { $regex: trimmedSearch, $options: "i" } },
+        { email: { $regex: trimmedSearch, $options: "i" } },
+        { phoneNumber: { $regex: trimmedSearch, $options: "i" } },
+        { nin: { $regex: trimmedSearch, $options: "i" } },
+        { stateOfOrigin: { $regex: trimmedSearch, $options: "i" } },
+        { lgaOfOrigin: { $regex: trimmedSearch, $options: "i" } },
       ];
 
       // Exact match via blind index for full NIN or VIN query

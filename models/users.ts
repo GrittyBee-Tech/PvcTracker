@@ -233,7 +233,7 @@ UserSchema.statics.findByVIN = findUserByVIN;
 
 // Export the model, preventing duplicate compilation errors during Next.js hot-reloads
 const UserModel: IUserModel =
-  (mongoose.models.User as IUserModel) ||
+  ((mongoose.models.User as unknown) as IUserModel) ||
   mongoose.model<IUser, IUserModel>("User", UserSchema);
 
 // If model was cached in Next.js development hot-reload without statics,
