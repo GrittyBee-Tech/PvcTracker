@@ -299,76 +299,77 @@ export function DataTable<TData, TValue>({
         )}
       </div>
 
-      <div className="relative overflow-x-auto">
-        <div className="min-w-[900px]">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
+      <div className="relative min-w-0 overflow-x-auto">
+        <Table
+          className="min-w-[1280px] [&_td]:whitespace-nowrap [&_th]:whitespace-nowrap"
+          wrapperClassName="w-max min-w-full overflow-visible"
+        >
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow
+                key={headerGroup.id}
+                className="border-b border-gray-100 bg-gray-50/70"
+              >
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="py-3 font-semibold text-gray-600"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
                 <TableRow
-                  key={headerGroup.id}
-                  className="border-b border-gray-100 bg-gray-50/70"
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="border-b border-gray-100 transition-colors hover:bg-gray-50/70 data-[state=selected]:bg-primary/[0.04]"
                 >
-                  {headerGroup.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className="py-3 font-semibold text-gray-600"
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className="py-3.5 text-gray-600"
                     >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="border-b border-gray-100 transition-colors hover:bg-gray-50/70 data-[state=selected]:bg-primary/[0.04]"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="py-3.5 text-gray-600"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-40 text-center"
-                  >
-                    <div className="mx-auto flex max-w-sm flex-col items-center gap-2 text-gray-500">
-                      <Search
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                      <span className="font-medium text-gray-700">
-                        No users found
-                      </span>
-                      <span className="text-sm">
-                        Try changing your search or clearing the filters.
-                      </span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-40 text-center"
+                >
+                  <div className="mx-auto flex max-w-sm flex-col items-center gap-2 text-gray-500">
+                    <Search
+                      className="h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                    <span className="font-medium text-gray-700">
+                      No users found
+                    </span>
+                    <span className="text-sm">
+                      Try changing your search or clearing the filters.
+                    </span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
         {loading && (
           <div
             className="absolute inset-0 flex items-center justify-center bg-white/75 backdrop-blur-[1px]"
