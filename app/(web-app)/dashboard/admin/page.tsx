@@ -34,7 +34,7 @@ export default function AdminPage() {
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center min-h-[400px]">
+            <div className="flex h-full items-center justify-center min-h-100">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
         );
@@ -54,7 +54,7 @@ export default function AdminPage() {
     const COLORS = ["#1A5C38", "#EAB308", "#EF4444", "#3B82F6"];
 
     return (
-        <div className="space-y-6 pb-8 text-gray-900">
+        <div className="space-y-8 pb-10 text-gray-900">
             <div className="flex items-end justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight">Platform overview</h1>
@@ -65,43 +65,43 @@ export default function AdminPage() {
             </div>
             
             {/* KPI Cards */}
-            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
                 <Card className="border-gray-200 shadow-sm transition-shadow hover:shadow-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-4 pb-1 pt-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-2 pt-5">
                         <CardTitle className="text-sm font-medium text-gray-500">Total users</CardTitle>
                         <Users className="h-4 w-4 text-primary" aria-hidden="true" />
                     </CardHeader>
-                    <CardContent className="px-4 pb-4 pt-1">
+                    <CardContent className="px-5 pb-5 pt-1">
                         <div className="text-2xl font-bold">{data.kpis.totalUsers.toLocaleString()}</div>
                         <p className="mt-1 text-xs text-gray-500">Registered voters</p>
                     </CardContent>
                 </Card>
                 <Card className="border-gray-200 shadow-sm transition-shadow hover:shadow-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-4 pb-1 pt-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-2 pt-5">
                         <CardTitle className="text-sm font-medium text-gray-500">Active volunteers</CardTitle>
                         <UserCheck className="h-4 w-4 text-green-600" aria-hidden="true" />
                     </CardHeader>
-                    <CardContent className="px-4 pb-4 pt-1">
+                    <CardContent className="px-5 pb-5 pt-1">
                         <div className="text-2xl font-bold">{data.kpis.totalVolunteers.toLocaleString()}</div>
                         <p className="mt-1 text-xs text-gray-500">Approved and working</p>
                     </CardContent>
                 </Card>
                 <Card className="border-gray-200 shadow-sm transition-shadow hover:shadow-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-4 pb-1 pt-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-2 pt-5">
                         <CardTitle className="text-sm font-medium text-gray-500">Pending volunteers</CardTitle>
                         <Clock className="h-4 w-4 text-yellow-500" aria-hidden="true" />
                     </CardHeader>
-                    <CardContent className="px-4 pb-4 pt-1">
+                    <CardContent className="px-5 pb-5 pt-1">
                         <div className="text-2xl font-bold">{data.kpis.pendingVolunteers.toLocaleString()}</div>
                         <p className="mt-1 text-xs text-gray-500">Awaiting approval</p>
                     </CardContent>
                 </Card>
                 <Card className="border-gray-200 shadow-sm transition-shadow hover:shadow-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-4 pb-1 pt-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-2 pt-5">
                         <CardTitle className="text-sm font-medium text-gray-500">Platform admins</CardTitle>
                         <ShieldCheck className="h-4 w-4 text-blue-500" aria-hidden="true" />
                     </CardHeader>
-                    <CardContent className="px-4 pb-4 pt-1">
+                    <CardContent className="px-5 pb-5 pt-1">
                         <div className="text-2xl font-bold">{data.kpis.totalAdmins.toLocaleString()}</div>
                         <p className="mt-1 text-xs text-gray-500">System administrators</p>
                     </CardContent>
@@ -109,30 +109,30 @@ export default function AdminPage() {
             </div>
 
             {/* Charts Grid */}
-            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+            <div className="grid grid-cols-1 items-start gap-5 sm:gap-6 lg:grid-cols-2">
                 <Card className="border-gray-200 shadow-sm">
-                    <CardHeader className="px-5 pb-2 pt-4">
+                    <CardHeader className="px-6 pb-3 pt-5">
                         <CardTitle className="text-base">PVC collection status</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[205px] px-3 pb-3 pt-0">
+                    <CardContent className="h-[235px] px-4 pb-4 pt-0">
                         <StatusPieChart data={data.charts.pvcStatus} colors={COLORS} />
                     </CardContent>
                 </Card>
 
                 <Card className="border-gray-200 shadow-sm">
-                    <CardHeader className="px-5 pb-2 pt-4">
+                    <CardHeader className="px-6 pb-3 pt-5">
                         <CardTitle className="text-base">NIN verification status</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[205px] px-3 pb-3 pt-0">
+                    <CardContent className="h-[235px] px-4 pb-4 pt-0">
                         <StatusPieChart data={data.charts.ninStatus} colors={COLORS} />
                     </CardContent>
                 </Card>
 
                 <Card className="border-gray-200 shadow-sm lg:col-span-2">
-                    <CardHeader className="px-5 pb-2 pt-4">
+                    <CardHeader className="px-6 pb-3 pt-5">
                         <CardTitle className="text-base">Top 10 states by registration</CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px] w-full px-3 pb-4 pt-1 sm:px-5">
+                    <CardContent className="h-[340px] w-full px-4 pb-5 pt-2 sm:px-6">
                         <StateDistributionChart data={data.charts.stateDistribution} />
                     </CardContent>
                 </Card>
