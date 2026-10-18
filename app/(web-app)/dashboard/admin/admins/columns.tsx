@@ -48,9 +48,19 @@ const AdminActionsCell = ({
   };
 
   const handleSavePermissions = async () => {
+    const adminId = admin.id || (admin as any)._id;
+    if (!adminId) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Admin ID is missing",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
-      const response = await fetch(`/api/admin/admins/${admin.id}`, {
+      const response = await fetch(`/api/admin/admins/${adminId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ permissions: editPermissions }),
@@ -184,21 +194,28 @@ const AdminActionsCell = ({
         size="lg"
       >
         <div className="space-y-4 text-black">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {PERMISSIONS.map((permission) => (
-              <label
-                key={permission}
-                className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-50 p-2 rounded border border-gray-100 transition-colors"
-              >
-                <input
-                  type="checkbox"
-                  checked={editPermissions.includes(permission)}
-                  onChange={() => handlePermissionToggle(permission)}
-                  className="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4"
-                />
-                <span>{permission}</span>
-              </label>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[60vh] overflow-y-auto p-1">
+            {PERMISSIONS.map((permission) => {
+              const isChecked = editPermissions.includes(permission);
+              return (
+                <label
+                  key={permission}
+                  className={`flex items-center gap-2.5 text-xs sm:text-sm cursor-pointer p-2.5 rounded-lg border transition-all select-none ${
+                    isChecked
+                      ? "border-emerald-600 bg-emerald-50/60 text-emerald-950 font-medium"
+                      : "border-gray-200 hover:bg-gray-50 text-gray-700"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => handlePermissionToggle(permission)}
+                    className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4 shrink-0"
+                  />
+                  <span className="break-all font-mono text-xs">{permission}</span>
+                </label>
+              );
+            })}
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
