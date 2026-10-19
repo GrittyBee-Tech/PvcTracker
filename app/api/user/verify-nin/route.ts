@@ -67,14 +67,20 @@ const compareNinInfoToDbInfo = async (
   )}) does not match your official NIN record.`;
 
   if (mismatchFields.length > 0) {
-    await VerificationSessionModel.updateOne(
-      { _id: sessionId },
-      {
-        mismatches: detailedMismatches,
-        status: "rejected",
-        status_reason: mismatchMessage,
-      },
-    );
+    await Promise.all([
+      VerificationSessionModel.updateOne(
+        { _id: sessionId },
+        {
+          mismatches: detailedMismatches,
+          status: "rejected",
+          status_reason: mismatchMessage,
+        },
+      ),
+      UserModel.updateOne(
+        { _id: user._id || user.id },
+        { ninStatus: "rejected" },
+      ),
+    ]);
     return { mismatchMessage, detailedMismatches, mismatchFields };
   }
 
