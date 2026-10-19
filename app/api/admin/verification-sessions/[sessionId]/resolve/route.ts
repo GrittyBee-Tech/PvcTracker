@@ -110,7 +110,7 @@ export const POST = withDb(
 
         // Create Audit Log
         await AuditLogModel.create({
-          adminId: adminSession!.user.id,
+          adminId: new mongoose.Types.ObjectId(adminSession!.user.id),
           action: "SYNC_PROFILE_WITH_NIN",
           targetId: user._id.toString(),
           targetModel: "User",
@@ -146,7 +146,7 @@ export const POST = withDb(
         await session.save();
 
         await AuditLogModel.create({
-          adminId: adminSession!.user.id,
+          adminId: new mongoose.Types.ObjectId(adminSession!.user.id),
           action: "MANUALLY_APPROVE_VERIFICATION",
           targetId: user._id.toString(),
           targetModel: "User",
@@ -182,7 +182,7 @@ export const POST = withDb(
         await user.save();
 
         await AuditLogModel.create({
-          adminId: adminSession!.user.id,
+          adminId: new mongoose.Types.ObjectId(adminSession!.user.id),
           action: "RESET_VERIFICATION_SESSION",
           targetId: user._id.toString(),
           targetModel: "User",
