@@ -1,21 +1,33 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { columns } from "./columns";
+import { useEffect, useState, useMemo, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { columns, SessionDetailsModal } from "./columns";
 import { DataTable } from "./data-table";
 import { VerificationSessionRecord } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Clock, XCircle, ShieldCheck } from "lucide-react";
+import Swal from "sweetalert2";
 
-export default function VerificationSessionsPage() {
+function VerificationSessionsContent() {
+  const searchParams = useSearchParams();
+  const urlUserId = searchParams.get("userId") || "";
+  const urlSearch = searchParams.get("search") || "";
+  const shouldOpenLatest = searchParams.get("openLatest") === "true";
+
   const [sessions, setSessions] = useState<VerificationSessionRecord[]>([]);
+  const [selectedSession, setSelectedSession] =
+    useState<VerificationSessionRecord | null>(null);
+  const [autoOpened, setAutoOpened] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
 
   const [filters, setFilters] = useState({
     status: "all",
-    search: "",
+    search: urlSearch,
   });
 
   const [stats, setStats] = useState({
@@ -46,6 +58,7 @@ export default function VerificationSessionsPage() {
         limit: limit.toString(),
         ...(filters.status !== "all" && { status: filters.status }),
         ...(filters.search.trim() && { search: filters.search.trim() }),
+        ...(urlUserId && { userId: urlUserId }),
       });
 
       const response = await fetch(
@@ -62,6 +75,34 @@ export default function VerificationSessionsPage() {
           setTotalFiltered(data.pagination.total);
           setTotalPages(data.pagination.totalPages);
         }
+
+        // Auto-open modal if requested via URL
+        if (shouldOpenLatest && !autoOpened) {
+          setAutoOpened(true);
+          if (data.sessions && data.sessions.length > 0) {
+            const target = urlUserId
+              ? data.sessions.find(
+                  (s: VerificationSessionRecord) =>
+                    s.user_id?.toString() === urlUserId ||
+                    s.user?._id?.toString() === urlUserId ||
+                    s.user?.id?.toString() === urlUserId,
+                ) || data.sessions[0]
+              : data.sessions[0];
+            if (target) {
+              setSelectedSession(target);
+            }
+          } else if (urlUserId) {
+            Swal.fire({
+              icon: "info",
+              title: "No Sessions Found",
+              text: `No verification session found for user ID: ${urlUserId}`,
+              toast: true,
+              position: "top",
+              showConfirmButton: false,
+              timer: 4000,
+            });
+          }
+        }
       } else {
         console.error("Failed to fetch sessions:", data.message || data.error);
       }
@@ -70,7 +111,15 @@ export default function VerificationSessionsPage() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, limit, filters.status, filters.search]);
+  }, [
+    currentPage,
+    limit,
+    filters.status,
+    filters.search,
+    urlUserId,
+    shouldOpenLatest,
+    autoOpened,
+  ]);
 
   // Fetch when page or status filter changes
   useEffect(() => {
@@ -210,9 +259,27 @@ export default function VerificationSessionsPage() {
         </Card>
       </div>
 
+      {/* User filter indicator */}
+      {urlUserId && (
+        <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">Filtered by User ID:</span>
+            <span className="font-mono bg-blue-100 px-2 py-0.5 rounded text-blue-800">
+              {urlUserId}
+            </span>
+          </div>
+          <Link
+            href="/dashboard/admin/verification-sessions"
+            className="font-medium underline hover:text-blue-700"
+          >
+            Clear user filter
+          </Link>
+        </div>
+      )}
+
       {/* Main DataTable */}
       <DataTable
-        columns={columns}
+        columns={columns(fetchSessions)}
         data={sessions}
         loading={loading}
         pagination={pagination}
@@ -221,6 +288,30 @@ export default function VerificationSessionsPage() {
         onFiltersChange={setFilters}
         onRefresh={fetchSessions}
       />
+
+      {/* Auto-opened modal when navigated from users table or direct link */}
+      {selectedSession && (
+        <SessionDetailsModal
+          session={selectedSession}
+          isOpen={!!selectedSession}
+          onClose={() => setSelectedSession(null)}
+          onRefresh={fetchSessions}
+        />
+      )}
     </div>
+  );
+}
+
+export default function VerificationSessionsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-64 items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      }
+    >
+      <VerificationSessionsContent />
+    </Suspense>
   );
 }

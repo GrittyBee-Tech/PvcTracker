@@ -5,12 +5,13 @@ interface SearchParams {
   callbackUrl?: string;
 }
 
-export default function AuthErrorPage({
+export default async function AuthErrorPage({
   searchParams,
 }: {
-  searchParams?: SearchParams;
+  searchParams?: Promise<SearchParams>;
 }) {
-  const err = searchParams?.error;
+  const resolvedParams = await searchParams;
+  const err = resolvedParams?.error;
   // const callback = searchParams?.callbackUrl;
 
   // Map auth error codes to friendly destinations

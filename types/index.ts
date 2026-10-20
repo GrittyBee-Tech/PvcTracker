@@ -14,6 +14,8 @@ export const PERMISSIONS = [
 
 export type Permission = (typeof PERMISSIONS)[number];
 
+export type VerificationResolutionAction = "sync" | "approve" | "reset";
+
 export interface VerificationSessionUser {
   _id?: string;
   id?: string;

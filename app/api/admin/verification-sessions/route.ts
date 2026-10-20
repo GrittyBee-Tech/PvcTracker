@@ -31,26 +31,45 @@ export const GET = withDb(async (request: Request) => {
     const limit = Math.max(1, parseInt(searchParams.get("limit") || "10", 10));
     const status = searchParams.get("status");
     const search = searchParams.get("search")?.trim();
+    const userId = searchParams.get("userId")?.trim();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const query: Record<string, any> = {};
+    const conditions: any[] = [];
+
+    if (userId) {
+      if (mongoose.Types.ObjectId.isValid(userId)) {
+        conditions.push({
+          $or: [
+            { user_id: userId },
+            { user_id: new mongoose.Types.ObjectId(userId) },
+          ],
+        });
+      } else {
+        conditions.push({ user_id: userId });
+      }
+    }
 
     if (status && status !== "all") {
-      query.status = status;
+      conditions.push({ status });
     }
 
     if (search) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const userSearchOr: any[] = [
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phoneNumber: { $regex: search, $options: "i" } },
+        { nin: { $regex: search, $options: "i" } },
+      ];
+
+      if (mongoose.Types.ObjectId.isValid(search)) {
+        userSearchOr.push({ _id: new mongoose.Types.ObjectId(search) });
+      }
+
       // Find matching users
       const matchingUsers = await UserModel.find(
-        {
-          $or: [
-            { firstName: { $regex: search, $options: "i" } },
-            { lastName: { $regex: search, $options: "i" } },
-            { email: { $regex: search, $options: "i" } },
-            { phoneNumber: { $regex: search, $options: "i" } },
-            { nin: { $regex: search, $options: "i" } },
-          ],
-        },
+        { $or: userSearchOr },
         "_id",
       ).lean();
 
@@ -82,8 +101,15 @@ export const GET = withDb(async (request: Request) => {
         orConditions.push({ _id: new mongoose.Types.ObjectId(search) });
       }
 
-      query.$or = orConditions;
+      conditions.push({ $or: orConditions });
     }
+
+    const query =
+      conditions.length === 1
+        ? conditions[0]
+        : conditions.length > 1
+          ? { $and: conditions }
+          : {};
 
     const skip = (page - 1) * limit;
 
