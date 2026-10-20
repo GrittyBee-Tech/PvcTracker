@@ -85,7 +85,7 @@ const UserActionsCell = ({
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ identifier, reason }),
-            }
+            },
           );
           if (!res.ok) {
             const err = await res.json();
@@ -347,7 +347,9 @@ const UserActionsCell = ({
                   {user.firstName} {user.lastName}
                 </h3>
                 <div className="text-xs text-slate-500 mt-0.5 flex flex-wrap items-center gap-1.5">
-                  <span className="truncate">{user.email || "No email provided"}</span>
+                  <span className="truncate">
+                    {user.email || "No email provided"}
+                  </span>
                   {user.emailVerified ? (
                     <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700">
                       Verified
@@ -414,7 +416,8 @@ const UserActionsCell = ({
                   Verification Status & Discrepancies
                 </p>
                 <p className="text-[11px] text-slate-500 truncate">
-                  View raw provider responses, verification logs, and field mismatches.
+                  View raw provider responses, verification logs, and field
+                  mismatches.
                 </p>
               </div>
             </div>
@@ -495,7 +498,8 @@ const UserActionsCell = ({
                 <p className="text-slate-400 text-xs">NIN Status</p>
                 <span
                   className={`inline-flex mt-0.5 px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
-                    ninStatusStyles[user.ninStatus] || "bg-slate-100 text-slate-700"
+                    ninStatusStyles[user.ninStatus] ||
+                    "bg-slate-100 text-slate-700"
                   }`}
                 >
                   {user.ninStatus || "pending"}
@@ -505,7 +509,8 @@ const UserActionsCell = ({
                 <p className="text-slate-400 text-xs">PVC Status</p>
                 <span
                   className={`inline-flex mt-0.5 px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
-                    pvcStatusStyles[user.pvcStatus] || "bg-slate-100 text-slate-700"
+                    pvcStatusStyles[user.pvcStatus] ||
+                    "bg-slate-100 text-slate-700"
                   }`}
                 >
                   {(user.pvcStatus || "not_collected").replace(/_/g, " ")}
@@ -743,7 +748,9 @@ const UserActionsCell = ({
                       onChange={() => handlePermissionToggle(permission)}
                       className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4 shrink-0"
                     />
-                    <span className="break-all font-mono text-xs">{permission}</span>
+                    <span className="break-all font-mono text-xs">
+                      {permission}
+                    </span>
                   </label>
                 );
               })}
@@ -859,6 +866,14 @@ export const columns = (refresh: () => void): ColumnDef<User>[] => [
   {
     accessorKey: "lgaOfOrigin",
     header: "LGA",
+  },
+  {
+    accessorKey: "votingState",
+    header: "Voting State",
+  },
+  {
+    accessorKey: "votingLga",
+    header: "Voting LGA",
   },
   {
     accessorKey: "ninStatus",
