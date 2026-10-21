@@ -16,8 +16,6 @@ type ExportUser = {
   phoneNumber?: string;
   gender?: string;
   isDisabled?: boolean;
-  stateOfOrigin?: string;
-  lgaOfOrigin?: string;
   votingState?: string;
   votingLga?: string;
   ninStatus?: string;
@@ -39,8 +37,6 @@ const exportHeaders = [
   "Phone",
   "Gender",
   "Disability",
-  "State",
-  "LGA",
   "Voting State",
   "Voting LGA",
   "NIN Status",
@@ -156,8 +152,6 @@ export default function UsersPage() {
         user.phoneNumber || "",
         user.gender || "",
         user.isDisabled ? "Yes" : "No",
-        user.stateOfOrigin || "",
-        user.lgaOfOrigin || "",
         user.votingState || "",
         user.votingLga || "",
         user.ninStatus || "",
@@ -200,13 +194,11 @@ export default function UsersPage() {
             3: { cellWidth: 24 },
             4: { cellWidth: 17 },
             5: { cellWidth: 22 },
-            6: { cellWidth: 22 },
-            7: { cellWidth: 26 },
-            8: { cellWidth: 26 },
-            9: { cellWidth: 30 },
-            10: { cellWidth: 23 },
-            11: { cellWidth: 23 },
-            12: { cellWidth: 26 },
+            6: { cellWidth: 26 },
+            7: { cellWidth: 30 },
+            8: { cellWidth: 23 },
+            9: { cellWidth: 23 },
+            10: { cellWidth: 26 },
           },
           headStyles: { fillColor: [31, 41, 55] },
         });
