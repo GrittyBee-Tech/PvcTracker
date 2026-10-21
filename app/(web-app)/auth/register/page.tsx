@@ -386,7 +386,7 @@ export default function Register() {
             name="isDisabled"
             onChange={handleChange}
             options={[
-              { name: "No (Default)", value: "no" },
+              { name: "No", value: "no" },
               { name: "Albinism", value: "albinism" },
               { name: "Physical impairment", value: "physical impairment" },
               { name: "Visual impairment", value: "visual impairment" },
