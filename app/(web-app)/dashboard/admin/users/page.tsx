@@ -18,6 +18,8 @@ type ExportUser = {
   isDisabled?: boolean;
   stateOfOrigin?: string;
   lgaOfOrigin?: string;
+  votingState?: string;
+  votingLga?: string;
   ninStatus?: string;
   pvcStatus?: string;
   createdAt?: string | Date;
@@ -39,6 +41,8 @@ const exportHeaders = [
   "Disability",
   "State",
   "LGA",
+  "Voting State",
+  "Voting LGA",
   "NIN Status",
   "PVC Status",
   "Registration Date",
@@ -154,6 +158,8 @@ export default function UsersPage() {
         user.isDisabled ? "Yes" : "No",
         user.stateOfOrigin || "",
         user.lgaOfOrigin || "",
+        user.votingState || "",
+        user.votingLga || "",
         user.ninStatus || "",
         user.pvcStatus || "",
         user.createdAt
