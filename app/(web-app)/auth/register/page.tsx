@@ -30,7 +30,7 @@ export default function Register() {
     dateOfBirth: "",
     nin: "",
     gender: "",
-    isDisabled: "",
+    isDisabled: "no",
     votingState: "",
     votingLga: "",
     password: "",
@@ -227,7 +227,7 @@ export default function Register() {
         role: "user",
         name: `${signupDetails.firstName} ${signupDetails.lastName}`,
         dateOfBirth: new Date(signupDetails.dateOfBirth),
-        isDisabled: signupDetails.isDisabled === "yes",
+        isDisabled: signupDetails.isDisabled !== "no",
         callbackURL: "/dashboard/user",
       },
       {
@@ -386,8 +386,11 @@ export default function Register() {
             name="isDisabled"
             onChange={handleChange}
             options={[
-              { name: "No", value: "no" },
-              { name: "Yes", value: "yes" },
+              { name: "No (Default)", value: "no" },
+              { name: "Albinism", value: "albinism" },
+              { name: "Physical impairment", value: "physical impairment" },
+              { name: "Visual impairment", value: "visual impairment" },
+              { name: "Hearing impairment", value: "hearing impairment" },
             ]}
             value={signupDetails.isDisabled}
             placeholder="Select"
