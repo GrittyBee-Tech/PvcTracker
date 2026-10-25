@@ -178,6 +178,20 @@ export default function Register() {
       errors.push({ field: "gender", message: "Gender is required." });
     }
 
+    if (!signupDetails.votingState.trim()) {
+      errors.push({
+        field: "votingState",
+        message: "State you are registered to vote in is required.",
+      });
+    }
+
+    if (!signupDetails.votingLga.trim()) {
+      errors.push({
+        field: "votingLga",
+        message: "Local government you are registered to vote in is required.",
+      });
+    }
+
     if (!signupDetails.password.trim()) {
       errors.push({ field: "password", message: "Password is required." });
     } else if (signupDetails.password.length < 8) {
@@ -396,31 +410,47 @@ export default function Register() {
             placeholder="Select"
           />
 
-          <Select
-            label="State you are registered to vote"
-            name="votingState"
-            onChange={handleChange}
-            options={states}
-            value={signupDetails.votingState}
-            placeholder={loadingStates ? "Loading states..." : "Select a state"}
-          />
+          <div>
+            <Select
+              label="State you are registered to vote (Required)"
+              name="votingState"
+              onChange={handleChange}
+              options={states}
+              value={signupDetails.votingState}
+              placeholder={
+                loadingStates ? "Loading states..." : "Select a state"
+              }
+            />
+            {getFieldError("votingState") && (
+              <p className="text-red-400 text-xs mt-1">
+                {getFieldError("votingState")}
+              </p>
+            )}
+          </div>
 
-          <Select
-            label="LGA you are registered to vote in"
-            name="votingLga"
-            onChange={handleChange}
-            options={votingLgas}
-            value={signupDetails.votingLga}
-            disabled={loadingVotingLgas || !signupDetails.votingState}
-            placeholder={
-              signupDetails.votingState
-                ? loadingVotingLgas
-                  ? "Loading local governments..."
-                  : "Select an LGA"
-                : "Select a state first"
-            }
-            selectClassName={!signupDetails.votingState ? "opacity-60" : ""}
-          />
+          <div>
+            <Select
+              label="LGA you are registered to vote in (Required)"
+              name="votingLga"
+              onChange={handleChange}
+              options={votingLgas}
+              value={signupDetails.votingLga}
+              disabled={loadingVotingLgas || !signupDetails.votingState}
+              placeholder={
+                signupDetails.votingState
+                  ? loadingVotingLgas
+                    ? "Loading local governments..."
+                    : "Select an LGA"
+                  : "Select a state first"
+              }
+              selectClassName={!signupDetails.votingState ? "opacity-60" : ""}
+            />
+            {getFieldError("votingLga") && (
+              <p className="text-red-400 text-xs mt-1">
+                {getFieldError("votingLga")}
+              </p>
+            )}
+          </div>
 
           {locationError && (
             <p className="text-red-400 text-xs sm:col-span-2">
