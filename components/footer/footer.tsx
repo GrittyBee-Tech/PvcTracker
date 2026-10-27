@@ -125,9 +125,9 @@ const Footer = () => {
             <a href="mailto:info@abenolfoundation.org">
               info@abenolfoundation.org
             </a>
-            <a href="mailto:support@pvcwaka.org" className="">
+            {/* <a href="mailto:support@pvcwaka.org" className="">
               support@pvcwaka.org
-            </a>
+            </a> */}
             <p>
               <a href="tel:+2347055066284">+234 (0) 705 506 6284</a>
             </p>
