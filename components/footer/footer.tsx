@@ -125,9 +125,9 @@ const Footer = () => {
             <a href="mailto:info@abenolfoundation.org">
               info@abenolfoundation.org
             </a>
-            <a href="mailto:support@pvcwaka.org" className="">
+            {/* <a href="mailto:support@pvcwaka.org" className="">
               support@pvcwaka.org
-            </a>
+            </a> */}
             <p>
               <a href="tel:+2347055066284">+234 (0) 705 506 6284</a>
             </p>
@@ -140,20 +140,7 @@ const Footer = () => {
         <p className="text-black font-dm-sans text-sm">
           © {year} PVC Waka. All rights reserved.
         </p>
-        <div className="flex items-center gap-3">
-          <p className="font-dm-sans text-xs font-semibold text-[#5C675D]">
-            In partnership with
-          </p>
-          <span className="flex h-16 w-32 items-center justify-center sm:w-36">
-            <Image
-              src="/NYFF-logo.png"
-              alt="Nigeria Youth Futures Fund"
-              width={220}
-              height={122}
-              className="h-full w-full object-contain"
-            />
-          </span>
-        </div>
+
         <p className="text-black font-dm-sans text-sm">
           Built by{" "}
           <a
