@@ -11,8 +11,8 @@ const Partners = () => {
           <p className="font-dm-sans text-xs font-bold uppercase tracking-[0.18em] text-[#64806B]">
             Our partners
           </p>
-          <h2 className="mt-1 font-space-grotesk text-xl font-bold text-[#103724]">
-            In partnership with
+          <h2 className="mt-1 font-montserrat text-xl font-bold text-[#103724]">
+            NYFF
           </h2>
         </div>
         <div className="flex items-center justify-center rounded-xl border border-[#EEF2EE] bg-[#FAFCFA] px-5 py-2">
