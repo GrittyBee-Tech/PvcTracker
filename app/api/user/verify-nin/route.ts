@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { withDb } from "@/lib/withDb";
-import UserModel from "@/models/users";
+import UserModel, { findUserByNIN } from "@/models/users";
 import VerificationSessionModel from "@/models/verificationSession";
 import { verifyNIN } from "@/services/ninService";
 import { User } from "better-auth/types";
@@ -181,6 +181,20 @@ export const POST = withDb(async (request: Request) => {
         const storedNin = user.getDecryptedIdentifiers?.()?.nin || user.nin;
         if (trimmedNin && trimmedNin !== storedNin) {
           updateFields.nin = trimmedNin;
+        }
+        const existingUser = await findUserByNIN(trimmedNin);
+        if (
+          existingUser &&
+          existingUser._id.toString() !== user._id.toString()
+        ) {
+          return NextResponse.json(
+            {
+              success: false,
+              message:
+                "This NIN is already associated with another account. Please use a different NIN.",
+            },
+            { status: 400 },
+          );
         }
       }
 
