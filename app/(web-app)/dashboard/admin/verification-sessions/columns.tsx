@@ -10,7 +10,6 @@ import {
   Check,
   AlertTriangle,
   FileCode2,
-  RefreshCw,
   RotateCcw,
   ShieldAlert,
 } from "lucide-react";
@@ -95,112 +94,80 @@ export const SessionDetailsModal = ({
     });
   };
 
-  const handleResolveAction = async (action: "sync" | "approve" | "reset") => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const providerData: Record<string, any> =
-      currentSession.provider_response?.data ||
-      currentSession.provider_response ||
-      {};
-    const ninFullName =
-      `${providerData?.firstname || ""} ${providerData?.lastname || ""}`.trim();
+  // const handleResolveAction = async (action: "reset") => {
+  //   const title = "Reset Session for User Retry?";
+  //   const text =
+  //     "This will reset the session to pending and lift any lockout, allowing the user to re-attempt verification on their dashboard without paying again.";
+  //   const confirmButtonText = "Yes, Reset Session";
+  //   const confirmButtonColor = "#d97706";
 
-    let title = "";
-    let text = "";
-    let confirmButtonText = "";
-    let confirmButtonColor = "";
-    let showInput = false;
+  //   const confirmResult = await Swal.fire({
+  //     title,
+  //     text,
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor,
+  //     cancelButtonColor: "#6b7280",
+  //     confirmButtonText,
+  //     cancelButtonText: "Cancel",
+  //   });
 
-    if (action === "sync") {
-      title = "Sync Profile with Official NIN?";
-      text = `This will update the user's registered name to "${ninFullName || "official NIN record"}" and mark their NIN verification as verified.`;
-      confirmButtonText = "Yes, Sync & Verify";
-      confirmButtonColor = "#059669";
-    } else if (action === "approve") {
-      title = "Manually Approve Verification?";
-      text =
-        "This will override any mismatches and mark the user's NIN verification as verified. You can provide an optional note for the audit log:";
-      confirmButtonText = "Yes, Approve";
-      confirmButtonColor = "#2563eb";
-      showInput = true;
-    } else if (action === "reset") {
-      title = "Reset Session for User Retry?";
-      text =
-        "This will reset the session to pending and lift any lockout, allowing the user to re-attempt verification on their dashboard without paying again.";
-      confirmButtonText = "Yes, Reset Session";
-      confirmButtonColor = "#d97706";
-    }
+  //   if (!confirmResult.isConfirmed) return;
 
-    const confirmResult = await Swal.fire({
-      title,
-      text: showInput ? undefined : text,
-      input: showInput ? "text" : undefined,
-      inputPlaceholder: showInput
-        ? "e.g., Verified via phone call/marriage certificate"
-        : undefined,
-      inputLabel: showInput ? text : undefined,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor,
-      confirmButtonText,
-      cancelButtonText: "Cancel",
-    });
+  //   const reason =
+  //     typeof confirmResult.value === "string" ? confirmResult.value : undefined;
 
-    if (!confirmResult.isConfirmed) return;
+  //   setActionLoading(action);
+  //   try {
+  //     const response = await fetch(
+  //       `/api/admin/verification-sessions/${currentSession._id}/resolve`,
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ action, reason }),
+  //       },
+  //     );
 
-    const reason =
-      typeof confirmResult.value === "string" ? confirmResult.value : undefined;
+  //     const data = await response.json();
 
-    setActionLoading(action);
-    try {
-      const response = await fetch(
-        `/api/admin/verification-sessions/${currentSession._id}/resolve`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action, reason }),
-        },
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        Swal.fire({
-          icon: "success",
-          title: "Action Succeeded",
-          text: data.message,
-          toast: true,
-          position: "top",
-          showConfirmButton: false,
-          timer: 3500,
-        });
-        if (data.session) {
-          setCurrentSession({
-            ...currentSession,
-            ...data.session,
-            user: data.user
-              ? {
-                  ...currentSession.user,
-                  ...data.user,
-                }
-              : currentSession.user,
-          });
-        }
-        onRefresh?.();
-      } else {
-        throw new Error(
-          data.message || "Failed to resolve verification session",
-        );
-      }
-    } catch (err: any) {
-      Swal.fire({
-        icon: "error",
-        title: "Action Failed",
-        text: err.message || "Failed to resolve verification session",
-      });
-    } finally {
-      setActionLoading(null);
-    }
-  };
+  //     if (response.ok) {
+  //       Swal.fire({
+  //         icon: "success",
+  //         title: "Action Succeeded",
+  //         text: data.message,
+  //         toast: true,
+  //         position: "top",
+  //         showConfirmButton: false,
+  //         timer: 3500,
+  //       });
+  //       if (data.session) {
+  //         setCurrentSession({
+  //           ...currentSession,
+  //           ...data.session,
+  //           user: data.user
+  //             ? {
+  //                 ...currentSession.user,
+  //                 ...data.user,
+  //               }
+  //             : currentSession.user,
+  //         });
+  //       }
+  //       onRefresh?.();
+  //     } else {
+  //       throw new Error(
+  //         data.message || "Failed to resolve verification session",
+  //       );
+  //     }
+  //   } catch (err: any) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Action Failed",
+  //       text: err.message || "Failed to resolve verification session",
+  //     });
+  //   } finally {
+  //     setActionLoading(null);
+  //   }
+  // };
 
   return (
     <Modal
@@ -262,7 +229,9 @@ export const SessionDetailsModal = ({
               <p className="font-semibold text-xs uppercase tracking-wide opacity-80">
                 Status Reason
               </p>
-              <p className="mt-0.5 font-medium">{currentSession.status_reason}</p>
+              <p className="mt-0.5 font-medium">
+                {currentSession.status_reason}
+              </p>
             </div>
           </div>
         )}
@@ -343,10 +312,14 @@ export const SessionDetailsModal = ({
                         {mismatch.field}
                       </td>
                       <td className="py-2 px-3 text-slate-800">
-                        {mismatch.dbValue || <span className="text-slate-400">empty</span>}
+                        {mismatch.dbValue || (
+                          <span className="text-slate-400">empty</span>
+                        )}
                       </td>
                       <td className="py-2 px-3 font-medium text-rose-700">
-                        {mismatch.ninValue || <span className="text-slate-400">empty</span>}
+                        {mismatch.ninValue || (
+                          <span className="text-slate-400">empty</span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -370,7 +343,7 @@ export const SessionDetailsModal = ({
             </span>
           </div>
 
-          {currentSession.status === "verified" ? (
+          {/* {currentSession.status === "verified" ? (
             <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
               <div className="flex items-center gap-2 text-xs font-medium text-emerald-800">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -393,46 +366,15 @@ export const SessionDetailsModal = ({
           ) : (
             <>
               <p className="text-xs text-amber-800">
-                Resolve this verification discrepancy to unblock the user without requiring them to pay the verification fee again.
+                Reset this verification discrepancy to unblock the user and allow them to re-attempt verification without paying the fee again.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-                {/* 1. Sync Profile with NIN */}
-                <button
-                  type="button"
-                  disabled={actionLoading !== null}
-                  onClick={() => handleResolveAction("sync")}
-                  className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all disabled:opacity-50 cursor-pointer"
-                >
-                  {actionLoading === "sync" ? (
-                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white" />
-                  ) : (
-                    <RefreshCw className="w-3.5 h-3.5" />
-                  )}
-                  <span>Sync Profile with NIN</span>
-                </button>
-
-                {/* 2. Manually Approve */}
-                <button
-                  type="button"
-                  disabled={actionLoading !== null}
-                  onClick={() => handleResolveAction("approve")}
-                  className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-all disabled:opacity-50 cursor-pointer"
-                >
-                  {actionLoading === "approve" ? (
-                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white" />
-                  ) : (
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                  )}
-                  <span>Manually Approve</span>
-                </button>
-
-                {/* 3. Reset for Retry */}
+              <div className="pt-1">
                 <button
                   type="button"
                   disabled={actionLoading !== null}
                   onClick={() => handleResolveAction("reset")}
-                  className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white shadow-xs transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {actionLoading === "reset" ? (
                     <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white" />
@@ -443,7 +385,7 @@ export const SessionDetailsModal = ({
                 </button>
               </div>
             </>
-          )}
+          )} */}
         </div>
 
         {/* Payment / Transaction Details */}
@@ -494,37 +436,38 @@ export const SessionDetailsModal = ({
         </div>
 
         {/* Raw Provider Response */}
-        {currentSession.provider_response && Object.keys(currentSession.provider_response).length > 0 && (
-          <div className="border-t border-slate-200 pt-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-600">
-                <FileCode2 className="w-4 h-4 text-slate-500" />
-                <span>Provider Response (LumiID / External)</span>
+        {currentSession.provider_response &&
+          Object.keys(currentSession.provider_response).length > 0 && (
+            <div className="border-t border-slate-200 pt-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-600">
+                  <FileCode2 className="w-4 h-4 text-slate-500" />
+                  <span>Provider Response (LumiID / External)</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs gap-1.5"
+                  onClick={() =>
+                    copyToClipboard(
+                      JSON.stringify(currentSession.provider_response, null, 2),
+                      "json",
+                    )
+                  }
+                >
+                  {copiedJson ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                  <span>{copiedJson ? "Copied" : "Copy JSON"}</span>
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 text-xs gap-1.5"
-                onClick={() =>
-                  copyToClipboard(
-                    JSON.stringify(currentSession.provider_response, null, 2),
-                    "json",
-                  )
-                }
-              >
-                {copiedJson ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-                <span>{copiedJson ? "Copied" : "Copy JSON"}</span>
-              </Button>
+              <pre className="max-h-64 overflow-auto rounded-lg bg-slate-900 p-3.5 text-slate-100 text-xs font-mono leading-relaxed">
+                {JSON.stringify(currentSession.provider_response, null, 2)}
+              </pre>
             </div>
-            <pre className="max-h-64 overflow-auto rounded-lg bg-slate-900 p-3.5 text-slate-100 text-xs font-mono leading-relaxed">
-              {JSON.stringify(currentSession.provider_response, null, 2)}
-            </pre>
-          </div>
-        )}
+          )}
       </div>
     </Modal>
   );
@@ -605,13 +548,19 @@ export const columns = (
     cell: ({ row }) => {
       const user = row.original.user;
       const userName = user
-        ? `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.name || "Unknown"
+        ? `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+          user.name ||
+          "Unknown"
         : "Unknown User";
 
       return (
         <div className="flex flex-col">
-          <span className="font-semibold text-slate-900 text-sm">{userName}</span>
-          <span className="text-xs text-slate-500">{user?.email || "No email"}</span>
+          <span className="font-semibold text-slate-900 text-sm">
+            {userName}
+          </span>
+          <span className="text-xs text-slate-500">
+            {user?.email || "No email"}
+          </span>
           {user?.phoneNumber && (
             <span className="text-xs text-slate-400">{user.phoneNumber}</span>
           )}

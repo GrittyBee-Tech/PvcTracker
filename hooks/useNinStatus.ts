@@ -4,6 +4,7 @@ import { User } from "better-auth";
 export interface NinStatusData {
   paid: boolean;
   verified: boolean;
+  isRejected: boolean;
   reason: string;
   ninStatus: string;
   paymentStatus: string;
@@ -41,12 +42,16 @@ export const useNinStatus = (user: User | null) => {
   });
 
   // Derive status from query data — single source of truth, no duplicated state
-  const paid = isVerified || data?.paymentStatus === "success";
+  const isRejected = !isVerified && (data?.ninStatus === "rejected" || user?.ninStatus === "rejected");
+  const paid =
+    isVerified ||
+    (data?.paymentStatus === "success" && data?.ninStatus === "pending");
   const verified = isVerified || data?.ninStatus === "verified";
 
   return {
     paid,
     verified,
+    isRejected,
     reason: data?.message ?? "",
     ninStatus: data?.ninStatus ?? user?.ninStatus ?? "pending",
     paymentStatus: data?.paymentStatus ?? "unpaid",

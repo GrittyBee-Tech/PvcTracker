@@ -2,6 +2,7 @@ import mongoose, { type QueryFilter } from "mongoose";
 import UserModel, { type IUser } from "../models/users.ts";
 import { decryptAES256GCM } from "../lib/crypto.ts";
 
+// Run * node --env-file=.env --experimental-strip-types scripts/rollback_nin_vin.ts
 interface RollbackStats {
   totalScanned: number;
   rolledBack: number;
@@ -40,7 +41,7 @@ async function executeBatch(
   operations: any[],
   docIds: string[],
   failures: FailedRecord[],
-  stats: RollbackStats
+  stats: RollbackStats,
 ): Promise<void> {
   if (operations.length === 0) return;
 
@@ -71,7 +72,8 @@ async function executeBatch(
       for (const id of docIds) {
         failures.push({
           docId: id,
-          reason: err.message || "Unknown batch execution error during rollback",
+          reason:
+            err.message || "Unknown batch execution error during rollback",
         });
         stats.failed++;
       }
@@ -89,7 +91,7 @@ export async function runRollback(): Promise<RollbackStats> {
   console.log("Starting NIN/VIN Schema Rollback Script");
   console.log(`Batch size: ${BATCH_SIZE}`);
   console.log(
-    `Database URI: ${MONGODB_URI ? MONGODB_URI.replace(/\/\/.*@/, "//<credentials>@") : "undefined"}`
+    `Database URI: ${MONGODB_URI ? MONGODB_URI.replace(/\/\/.*@/, "//<credentials>@") : "undefined"}`,
   );
   console.log("=================================================");
 
@@ -99,7 +101,7 @@ export async function runRollback(): Promise<RollbackStats> {
 
   if (!process.env.ENCRYPTION_KEY) {
     throw new Error(
-      "Pre-flight validation failed: ENCRYPTION_KEY is required to restore plaintext fields if missing."
+      "Pre-flight validation failed: ENCRYPTION_KEY is required to restore plaintext fields if missing.",
     );
   }
 
@@ -179,7 +181,7 @@ export async function runRollback(): Promise<RollbackStats> {
       batchOperations = [];
       batchDocIds = [];
       console.log(
-        `[Rollback Progress] Scanned: ${stats.totalScanned} | Rolled back: ${stats.rolledBack} | Failed: ${stats.failed}`
+        `[Rollback Progress] Scanned: ${stats.totalScanned} | Rolled back: ${stats.rolledBack} | Failed: ${stats.failed}`,
       );
     }
   }

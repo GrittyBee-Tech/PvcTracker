@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { withDb } from "@/lib/withDb";
 import TransactionModel from "@/models/transaction";
+import UserModel from "@/models/users";
 import VerificationSessionModel from "@/models/verificationSession";
 import {
   verifyFlutterwavePayment,
@@ -144,6 +145,11 @@ export const POST = withDb(async (request: Request) => {
           status_reason: "payment_verified",
         },
         { upsert: true, returnDocument: "after" },
+      );
+
+      await UserModel.updateOne(
+        { _id: transaction.user_id },
+        { ninStatus: "pending" },
       );
 
       return NextResponse.json(

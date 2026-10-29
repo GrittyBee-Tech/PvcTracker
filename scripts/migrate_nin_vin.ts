@@ -6,6 +6,8 @@ import {
   encryptAES256GCM,
 } from "../lib/crypto.ts";
 
+// To do this, run: node --env-file=.env --experimental-strip-types scripts/migrate_nin_vin.ts
+
 interface MigrationStats {
   totalScanned: number;
   migrated: number;
@@ -61,7 +63,7 @@ const MIGRATION_QUERY: QueryFilter<IUser> = {
 async function tagFailedRecord(
   docId: string,
   reason: string,
-  errorCode?: number
+  errorCode?: number,
 ): Promise<void> {
   try {
     await UserModel.updateOne(
@@ -69,17 +71,15 @@ async function tagFailedRecord(
       {
         $set: {
           migrationStatus: "failed",
-          migrationError: errorCode
-            ? `[Code ${errorCode}] ${reason}`
-            : reason,
+          migrationError: errorCode ? `[Code ${errorCode}] ${reason}` : reason,
           migrationAttemptedAt: new Date(),
         },
-      }
+      },
     );
   } catch (tagErr: any) {
     console.error(
       `[Quarantine Error] Failed to persist error tag on document ${docId}:`,
-      tagErr.message
+      tagErr.message,
     );
   }
 }
@@ -91,7 +91,7 @@ async function executeBatch(
   operations: any[],
   docIds: string[],
   failures: FailedRecord[],
-  stats: MigrationStats
+  stats: MigrationStats,
 ): Promise<void> {
   if (operations.length === 0) return;
 
@@ -114,7 +114,8 @@ async function executeBatch(
       for (const writeErr of writeErrors) {
         failedIndices.add(writeErr.index);
         const failedId = docIds[writeErr.index] || "unknown_id";
-        const reason = writeErr.errmsg || writeErr.message || "Bulk write error";
+        const reason =
+          writeErr.errmsg || writeErr.message || "Bulk write error";
 
         failures.push({
           docId: failedId,
@@ -150,7 +151,7 @@ export async function runMigration(): Promise<MigrationStats> {
   console.log("Starting NIN/VIN Zero-Downtime Migration");
   console.log(`Batch size: ${BATCH_SIZE}`);
   console.log(
-    `Database URI: ${MONGODB_URI ? MONGODB_URI.replace(/\/\/.*@/, "//<credentials>@") : "undefined"}`
+    `Database URI: ${MONGODB_URI ? MONGODB_URI.replace(/\/\/.*@/, "//<credentials>@") : "undefined"}`,
   );
   console.log("=================================================");
 
@@ -160,7 +161,7 @@ export async function runMigration(): Promise<MigrationStats> {
 
   if (!process.env.ENCRYPTION_KEY || !process.env.BLIND_INDEX_SECRET) {
     throw new Error(
-      "Pre-flight validation failed: ENCRYPTION_KEY and BLIND_INDEX_SECRET must be set."
+      "Pre-flight validation failed: ENCRYPTION_KEY and BLIND_INDEX_SECRET must be set.",
     );
   }
 
@@ -289,7 +290,7 @@ export async function runMigration(): Promise<MigrationStats> {
       batchOperations = [];
       batchDocIds = [];
       console.log(
-        `[Progress] Scanned: ${stats.totalScanned} | Migrated: ${stats.migrated} | Concurrently Modified: ${stats.concurrentlyModified} | Failed: ${stats.failed}`
+        `[Progress] Scanned: ${stats.totalScanned} | Migrated: ${stats.migrated} | Concurrently Modified: ${stats.concurrentlyModified} | Failed: ${stats.failed}`,
       );
     }
   }
@@ -308,14 +309,16 @@ export async function runMigration(): Promise<MigrationStats> {
   console.log(`Total scanned:           ${stats.totalScanned}`);
   console.log(`Total migrated:          ${stats.migrated}`);
   console.log(`Total skipped:           ${stats.skipped}`);
-  console.log(`Concurrently modified:   ${stats.concurrentlyModified} (preserved by optimistic lock)`);
+  console.log(
+    `Concurrently modified:   ${stats.concurrentlyModified} (preserved by optimistic lock)`,
+  );
   console.log(`Total quarantined/failed:${stats.failed}`);
   console.log(`Duration:                ${durationSec}s`);
   console.log("=================================================");
 
   if (failures.length > 0) {
     console.error(
-      `Migration encountered ${failures.length} errors (all quarantined with migrationStatus: "failed"):`
+      `Migration encountered ${failures.length} errors (all quarantined with migrationStatus: "failed"):`,
     );
     console.error(JSON.stringify(failures.slice(0, 50), null, 2));
     if (failures.length > 50) {
