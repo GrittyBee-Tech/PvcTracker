@@ -45,6 +45,7 @@ export const auth = betterAuth({
 
       void sendPasswordResetEmail(user?.email, name, url);
     },
+    resetPasswordTokenExpiresIn: 60 * 30, // 30 minutes
   },
   emailVerification: {
     sendVerificationEmail: async ({
@@ -157,8 +158,12 @@ export const auth = betterAuth({
 
             // Enforce uniqueness on VIN
             const existingUser = await findUserByVIN(normalizedVin);
-            const currentUserId = session.user.id || (session.user as any)._id?.toString();
-            if (existingUser && existingUser._id?.toString() !== currentUserId) {
+            const currentUserId =
+              session.user.id || (session.user as any)._id?.toString();
+            if (
+              existingUser &&
+              existingUser._id?.toString() !== currentUserId
+            ) {
               throw new APIError("CONFLICT", {
                 message: "A user with this VIN is already registered",
               });
