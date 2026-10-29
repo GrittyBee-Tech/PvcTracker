@@ -12,43 +12,71 @@ export const GET = withDb(async (request: Request) => {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const existingTransaction = await TransactionModel.findOne({
-      user_id: session.user.id,
-      purpose: "NIN Verification",
-    });
-
+    // Always fetch the latest verification session
     const latestSession = await VerificationSessionModel.findOne({
       user_id: session.user.id,
-    });
+    }).sort({ createdAt: -1 });
 
-    const paymentStatus: "success" | "pending" | "failed" =
-      existingTransaction?.status || "pending";
-    let ninStatus = "pending";
+    // Always fetch the latest transaction for NIN Verification
+    const latestTransaction = await TransactionModel.findOne({
+      user_id: session.user.id,
+      purpose: "NIN Verification",
+    }).sort({ createdAt: -1 });
 
-    if (existingTransaction) {
-      const usedSession = await VerificationSessionModel.findOne({
-        transaction_id: existingTransaction._id.toString(),
-        status: { $in: ["verified", "rejected"] },
-      });
-      if (usedSession?.status) {
-        ninStatus = usedSession?.status;
+    let paymentStatus: "success" | "pending" | "failed" = "pending";
+    let ninStatus: "pending" | "verified" | "rejected" = "pending";
+    let message = "";
+
+    if (latestSession) {
+      if (latestSession.status === "verified") {
+        paymentStatus = "success";
+        ninStatus = "verified";
+        message = "NIN verification completed";
+      } else if (latestSession.status === "pending") {
+        // Active credit ready to verify
+        paymentStatus = "success";
+        ninStatus = "pending";
+        message =
+          latestSession.status_reason ||
+          "Payment completed. Please verify your NIN.";
+      } else if (latestSession.status === "rejected") {
+        // Attempt consumed; user must pay again to start a new session
+        ninStatus = "rejected";
+        // Check if there is an in-flight pending transaction for a new attempt
+        if (
+          latestTransaction &&
+          latestTransaction.createdAt > latestSession.createdAt &&
+          latestTransaction.status === "pending"
+        ) {
+          paymentStatus = "pending";
+          message = "Payment is pending";
+        } else {
+          paymentStatus = "failed";
+          message =
+            latestSession.status_reason ||
+            "Your profile information does not match your official NIN record. Please pay and verify again.";
+        }
+      }
+    } else {
+      // No verification session created yet
+      if (latestTransaction?.status === "success") {
+        paymentStatus = "success";
+        ninStatus = "pending";
+        message = "Payment completed. Please verify your NIN.";
+      } else if (latestTransaction?.status === "pending") {
+        paymentStatus = "pending";
+        message = "Payment is pending";
+      } else {
+        paymentStatus = "failed";
+        message = "Payment is required for NIN verification.";
       }
     }
-    const reason = latestSession?.status_reason || "";
 
     return NextResponse.json(
       {
         paymentStatus,
         ninStatus,
-        message:
-          reason ||
-          (paymentStatus === "success"
-            ? "Payment completed"
-            : paymentStatus === "pending"
-              ? "Payment is pending"
-              : paymentStatus === "failed"
-                ? "Payment failed"
-                : "NIN verification pending"),
+        message,
       },
       { status: 200 },
     );
