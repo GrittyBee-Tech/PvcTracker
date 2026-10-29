@@ -3,7 +3,6 @@ import { withDb } from "@/lib/withDb";
 import UserModel from "@/models/users";
 import VerificationSessionModel from "@/models/verificationSession";
 import { verifyNIN } from "@/services/ninService";
-import { UserType } from "@/types";
 import { User } from "better-auth/types";
 import { NextResponse } from "next/server";
 
@@ -21,6 +20,7 @@ const compareNinInfoToDbInfo = async (
   ninData: Record<string, any>,
   user: User,
   sessionId: string,
+  providerResponse: Record<string, any>,
 ) => {
   const mismatchFields: string[] = [];
   const detailedMismatches: Array<{
@@ -64,7 +64,7 @@ const compareNinInfoToDbInfo = async (
 
   const mismatchMessage = `Your profile information (${mismatchFields.join(
     ", ",
-  )}) does not match your official NIN record.`;
+  )}) does not match your official NIN record. Please pay and verify again.`;
 
   if (mismatchFields.length > 0) {
     await Promise.all([
@@ -74,6 +74,7 @@ const compareNinInfoToDbInfo = async (
           mismatches: detailedMismatches,
           status: "rejected",
           status_reason: mismatchMessage,
+          provider_response: providerResponse,
         },
       ),
       UserModel.updateOne(
@@ -81,7 +82,7 @@ const compareNinInfoToDbInfo = async (
         { ninStatus: "rejected" },
       ),
     ]);
-    return { mismatchMessage, detailedMismatches, mismatchFields };
+    return { mismatchMessage, mismatchFields };
   }
 
   await Promise.all([
@@ -91,6 +92,7 @@ const compareNinInfoToDbInfo = async (
         mismatches: [],
         status: "verified",
         status_reason: "Your profile information matches your NIN",
+        provider_response: providerResponse,
       },
     ),
     UserModel.updateOne({ _id: user.id }, { ninStatus: "verified" }),
@@ -98,7 +100,6 @@ const compareNinInfoToDbInfo = async (
 
   return {
     mismatchMessage: "Your profile information matches your NIN",
-    detailedMismatches: [],
     mismatchFields: [],
   };
 };
@@ -128,6 +129,24 @@ export const POST = withDb(async (request: Request) => {
       );
     }
 
+    // Require an active, pending verification session (paid credit)
+    const activeSession = await VerificationSessionModel.findOne({
+      user_id: session.user.id,
+      status: "pending",
+    }).sort({ createdAt: -1 });
+
+    if (!activeSession) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "No active verification session found. Please complete payment to verify.",
+        },
+        { status: 402 },
+      );
+    }
+
+    // Update confirmed profile fields before verification
     if (firstName || lastName || nin) {
       const updateFields: {
         name?: string;
@@ -173,87 +192,83 @@ export const POST = withDb(async (request: Request) => {
       }
     }
 
-    const activeSession = await VerificationSessionModel.findOne({
-      user_id: session.user.id,
-    }).sort({ createdAt: -1 });
+    // Call identity verification provider
+    const ninResult = await verifyNIN(nin.trim());
 
-    if (!activeSession?.id) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Please pay for NIN verification",
-        },
-        { status: 403 },
-      );
-    }
-
-    let statusReason;
-    let status;
-    if (activeSession?.status === "rejected") {
-      return NextResponse.json(
-        {
-          success: false,
-          message: activeSession?.status_reason || "NIN Verification rejected",
-        },
-        { status: 403 },
-      );
-    } else if (activeSession.status === "pending") {
-      const data = await verifyNIN(nin);
-
-      if (!data.success || !data.summary?.verified) {
-        statusReason = data?.message || "NIN verification was unsuccessful";
-        status = "rejected";
-        await UserModel.updateOne({ _id: user._id }, { ninStatus: "rejected" });
-
-        return NextResponse.json(
-          {
-            success: false,
-            message: statusReason,
-            code: data.code,
-          },
-          { status: 400 },
-        );
-      } else if (data.success && data.summary?.verified) {
-        statusReason = "NIN verified successfully";
-        status = "verified";
-      }
-
+    // Case 1: System error (timeout, network outage, provider 5xx/429)
+    // Keep session as "pending" with a status reason so the user can retry without paying again
+    if (ninResult.isSystemError) {
       await VerificationSessionModel.updateOne(
         { _id: activeSession._id },
         {
-          status,
-          status_reason: statusReason,
-          provider_response: data,
+          status: "pending",
+          status_reason: ninResult.message,
         },
       );
 
-      // Compare database info against official NIN record
-      const updatedUser = await UserModel.findById(session.user.id);
-      const { detailedMismatches, mismatchFields, mismatchMessage } =
-        await compareNinInfoToDbInfo(
-          data.data,
-          updatedUser as User,
-          activeSession._id.toString(),
-        );
+      return NextResponse.json(
+        {
+          success: false,
+          systemError: true,
+          message: ninResult.message,
+        },
+        { status: 503 },
+      );
+    }
 
-      if (mismatchFields.length > 0) {
-        return NextResponse.json(
+    // Case 2: Definitive failure from provider (NIN not found, invalid format, etc.)
+    // Consume session -> Reject session and reject user
+    if (!ninResult.success || !ninResult.summary?.verified) {
+      const failureReason =
+        ninResult.message || "NIN verification was unsuccessful";
+
+      await Promise.all([
+        VerificationSessionModel.updateOne(
+          { _id: activeSession._id },
           {
-            success: false,
-            message: mismatchMessage,
-            mismatches: detailedMismatches,
+            status: "rejected",
+            status_reason: failureReason,
+            provider_response: ninResult.raw || ninResult,
           },
-          { status: 400 },
-        );
-      }
+        ),
+        UserModel.updateOne({ _id: user._id }, { ninStatus: "rejected" }),
+      ]);
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: `${failureReason}. Please pay and verify again.`,
+          code: ninResult.code,
+        },
+        { status: 400 },
+      );
+    }
+
+    // Case 3: Valid NIN record returned -> Compare with user profile
+    const updatedUser = await UserModel.findById(session.user.id);
+    const { mismatchFields, mismatchMessage } = await compareNinInfoToDbInfo(
+      ninResult.data || {},
+      updatedUser as User,
+      activeSession._id.toString(),
+      ninResult.raw || ninResult,
+    );
+
+    if (mismatchFields.length > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: mismatchMessage,
+        },
+        { status: 400 },
+      );
     }
 
     return NextResponse.json(
       {
-        success: status === "verified",
-        message: statusReason || "NIN verification completed",
+        success: true,
+        message: "NIN verified successfully",
       },
-      { status: status === "verified" ? 200 : 400 },
+      { status: 200 },
     );
   } catch (error) {
     console.error("NIN verification error:", error);

@@ -29,39 +29,35 @@ export const POST = withDb(async (request: Request) => {
       "http://localhost:3000";
     const redirectUrl = `${appUrl.replace(/\/$/, "")}/dashboard/user/verify-nin`;
 
-    const existingTransaction = await TransactionModel.findOne({
+    // Check if the user already has an active, unconsumed (pending) verification session
+    const activeSession = await VerificationSessionModel.findOne({
       user_id: user.id,
-      purpose: "NIN Verification",
-      status: "success",
-    });
+      status: "pending",
+    }).sort({ createdAt: -1 });
 
-    if (existingTransaction) {
-      // && existingTransaction.provider !== "flutterwave"
-      const usedSession = await VerificationSessionModel.findOne({
-        transaction_id: existingTransaction._id.toString(),
-        status: { $in: ["verified", "rejected"] },
-      });
-
-      if (!usedSession) {
-        return NextResponse.json(
-          {
-            message: "Payment already completed for NIN verification.",
-            access_code: existingTransaction.access_code,
-            payment_status: "success",
-            provider: existingTransaction.provider,
-          },
-          { status: 200 },
-        );
-      }
+    if (activeSession) {
+      return NextResponse.json(
+        {
+          message: "Payment already completed for NIN verification.",
+          payment_status: "success",
+        },
+        { status: 200 },
+      );
     }
 
+    // Check for an existing pending transaction created recently (< 2 hours) with same provider
     const pendingTransaction = await TransactionModel.findOne({
       user_id: user.id,
       purpose: "NIN Verification",
       status: "pending",
-    });
+    }).sort({ createdAt: -1 });
 
-    if (pendingTransaction) {
+    if (
+      pendingTransaction &&
+      pendingTransaction.provider === provider &&
+      Date.now() - new Date(pendingTransaction.createdAt).getTime() <
+        2 * 60 * 60 * 1000
+    ) {
       return NextResponse.json(
         {
           message: "Payment initialization resumed.",
@@ -75,6 +71,12 @@ export const POST = withDb(async (request: Request) => {
         },
         { status: 200 },
       );
+    }
+
+    // If an older pending transaction exists, mark it failed to avoid reference confusion
+    if (pendingTransaction) {
+      pendingTransaction.status = "failed";
+      await pendingTransaction.save();
     }
 
     if (provider === "flutterwave") {

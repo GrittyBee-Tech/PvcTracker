@@ -8,9 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "db:migrate:nin-vin": "node --env-file=.env --experimental-strip-types scripts/migrate_nin_vin.ts",
-    "db:rollback:nin-vin": "node --env-file=.env --experimental-strip-types scripts/rollback_nin_vin.ts"
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@better-auth/mongo-adapter": "^1.6.11",

@@ -45,7 +45,7 @@ export default function UserLayout({
 }) {
   const { user } = useAuth();
   const [agreedToPolicy, setAgreedToPolicy] = useState(false);
-  const { paid, verified, isLoading } = useNinStatus(user);
+  const { paid, verified, isRejected, reason, isLoading } = useNinStatus(user);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -84,7 +84,7 @@ export default function UserLayout({
             <Modal
               isOpen={!verified}
               containerClassName="fixed top-16 pt-4 right-0 bottom-0 left-0 md:left-60 z-20"
-              title="Verify Your Information"
+              title={isRejected ? "Retry NIN Verification" : "Verify Your Information"}
               closeButton={false}
               actions={
                 <>
@@ -93,7 +93,7 @@ export default function UserLayout({
                     onClick={handleVerify}
                     disabled={!agreedToPolicy}
                   >
-                    Pay and Verify
+                    {isRejected ? "Pay to Retry Verification" : "Pay and Verify"}
                   </button>
                 </>
               }
@@ -102,16 +102,30 @@ export default function UserLayout({
                 <p className="font-bold">
                   Hello, {user?.lastName} {user?.firstName}
                 </p>
+
+                {isRejected && (
+                  <div className="rounded-lg border border-red-300 bg-red-50 p-3.5 text-sm text-red-900 space-y-1">
+                    <p className="font-semibold text-red-950 flex items-center gap-1.5">
+                      <span>⚠️</span> Verification Unsuccessful
+                    </p>
+                    <p>
+                      {reason ||
+                        "Your previous verification attempt could not be verified. Please pay to try again."}
+                    </p>
+                  </div>
+                )}
+
                 <p className="text-primary">
-                  To complete your profile setup kindly verify your NIN
+                  {isRejected
+                    ? "A new verification fee is required to re-attempt your NIN verification."
+                    : "To complete your profile setup kindly verify your NIN"}
                 </p>
                 <div className="rounded-lg border border-yellow-400/30 bg-yellow-50 p-4 text-sm text-yellow-900">
                   <p className="font-semibold">Verification Fee</p>
                   <p>₦200 will be charged for this NIN verification request.</p>
                 </div>
                 <p className="text-primary font-dm-sans -mt-3">
-                  Please enter your NIN and continue to pay the verification
-                  fee.
+                  Please proceed to payment to verify your NIN.
                 </p>
 
                 <NoRefundPolicy

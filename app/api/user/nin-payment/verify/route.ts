@@ -5,6 +5,7 @@ import {
 } from "@/lib/paymentHelpers";
 import { withDb } from "@/lib/withDb";
 import TransactionModel from "@/models/transaction";
+import UserModel from "@/models/users";
 import VerificationSessionModel from "@/models/verificationSession";
 import { NextResponse } from "next/server";
 
@@ -51,11 +52,21 @@ export const POST = withDb(async (request: Request) => {
         existingTransaction.provider_reference = reference;
         await existingTransaction.save();
 
-        await VerificationSessionModel.create({
-          user_id: session.user.id,
-          transaction_id: existingTransaction._id.toString(),
-          status: "pending",
-        });
+        await VerificationSessionModel.findOneAndUpdate(
+          { transaction_id: existingTransaction._id.toString() },
+          {
+            user_id: session.user.id,
+            transaction_id: existingTransaction._id.toString(),
+            status: "pending",
+            status_reason: "payment_verified",
+          },
+          { upsert: true, returnDocument: "after" },
+        );
+
+        await UserModel.updateOne(
+          { _id: session.user.id },
+          { ninStatus: "pending" },
+        );
 
         return NextResponse.json(
           { message: "Payment verified successfully." },
@@ -76,11 +87,21 @@ export const POST = withDb(async (request: Request) => {
       existingTransaction.provider_reference = reference;
       await existingTransaction.save();
 
-      await VerificationSessionModel.create({
-        user_id: session.user.id,
-        transaction_id: existingTransaction._id.toString(),
-        status: "pending",
-      });
+      await VerificationSessionModel.findOneAndUpdate(
+        { transaction_id: existingTransaction._id.toString() },
+        {
+          user_id: session.user.id,
+          transaction_id: existingTransaction._id.toString(),
+          status: "pending",
+          status_reason: "payment_verified",
+        },
+        { upsert: true, returnDocument: "after" },
+      );
+
+      await UserModel.updateOne(
+        { _id: session.user.id },
+        { ninStatus: "pending" },
+      );
 
       return NextResponse.json(
         { message: "Payment verified successfully." },
