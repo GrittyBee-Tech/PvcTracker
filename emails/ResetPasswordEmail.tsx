@@ -140,7 +140,7 @@ export const ResetPasswordEmail = ({
               margin: "0 0 24px 0",
             }}
           >
-            ⏱️ This link will expire in 15 minutes.
+            ⏱️ This link will expire in 30 minutes.
           </Text>
 
           <Text
