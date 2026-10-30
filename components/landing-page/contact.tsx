@@ -202,7 +202,9 @@ const ContactPage = () => {
           <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
             <div className="text-3xl mb-2">📧</div>
             <h3 className="text-lg font-semibold text-white mb-2">Email</h3>
-            <p className="text-white break-all">info@abenolfoundation.org</p>
+            <p className="text-white break-all">
+              pvcsupport@abenolfoundation.org
+            </p>
           </div>
           <div className="bg-[#4B6F52] rounded-lg p-6 text-center">
             <div className="text-3xl mb-2">📞</div>
