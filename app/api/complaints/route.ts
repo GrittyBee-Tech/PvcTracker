@@ -1,5 +1,6 @@
 import { withDb } from "@/lib/withDb";
 import { createComplaint } from "@/services/complaintService";
+import { sendComplaintNotification } from "@/services/emailService";
 import { NextResponse } from "next/server";
 
 export const POST = withDb(async (request: Request) => {
@@ -24,9 +25,14 @@ export const POST = withDb(async (request: Request) => {
     }
 
     const complaint = await createComplaint(body);
+    const notification = await sendComplaintNotification(complaint);
 
     return NextResponse.json(
-      { message: "Complaint submitted successfully", complaint },
+      {
+        message: "Complaint submitted successfully",
+        complaint,
+        emailNotificationSent: notification.success,
+      },
       { status: 201 }
     );
   } catch (error) {
