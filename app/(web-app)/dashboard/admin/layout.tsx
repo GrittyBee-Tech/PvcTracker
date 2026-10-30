@@ -19,6 +19,11 @@ const adminLinks: DashboardLink[] = [
     label: "Volunteers",
     icon: "UserCheck",
   },
+  {
+    href: "/dashboard/admin/complaints",
+    label: "Complaints",
+    icon: "MessageSquareWarning",
+  },
   { href: "/dashboard/admin/centres", label: "Centres", icon: "MapPin" },
   {
     href: "/dashboard/admin/audit-logs",
