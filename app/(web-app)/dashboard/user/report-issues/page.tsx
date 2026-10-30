@@ -44,7 +44,9 @@ export default function ReportIssuePage() {
       if (response.ok) {
         await Swal.fire({
           title: "Success!",
-          text: "Thank you! Your complaint has been submitted successfully. We'll get back to you soon.",
+          text: data.emailNotificationSent
+            ? "Thank you! Your complaint has been submitted successfully. We'll get back to you soon."
+            : "Your complaint was saved successfully, but we couldn't send the email notification. Our team may not be notified yet.",
           icon: "success",
           confirmButtonColor: "#c9a84c",
         });
