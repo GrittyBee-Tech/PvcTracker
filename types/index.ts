@@ -3,6 +3,7 @@ export const PERMISSIONS = [
   "manage:users",
   "view:volunteers",
   "manage:volunteers",
+  "view:complaints",
   "view:admins",
   "manage:admins",
   "manage:centres",
