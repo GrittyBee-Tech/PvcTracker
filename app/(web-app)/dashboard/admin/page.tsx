@@ -146,14 +146,6 @@ export default function AdminPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="border-gray-200 shadow-sm lg:col-span-2">
-                    <CardHeader className="px-6 pb-3 pt-5">
-                        <CardTitle className="text-base">Top 10 states by registration</CardTitle>
-                    </CardHeader>
-                    <CardContent className="h-[340px] w-full px-4 pb-5 pt-2 sm:px-6">
-                        <StateDistributionChart data={data.charts.stateDistribution} />
-                    </CardContent>
-                </Card>
             </div>
 
             <UserDemographicsCharts
@@ -161,6 +153,15 @@ export default function AdminPage() {
                 zones={data.charts.geopoliticalZones}
                 ageRanges={data.charts.ageRanges}
             />
+
+            <Card className="border-gray-200 shadow-sm">
+                <CardHeader className="px-6 pb-3 pt-5">
+                    <CardTitle className="text-base">Top 10 states by registration</CardTitle>
+                </CardHeader>
+                <CardContent className="h-[340px] w-full px-4 pb-5 pt-2 sm:px-6">
+                    <StateDistributionChart data={data.charts.stateDistribution} />
+                </CardContent>
+            </Card>
         </div>
     );
 }
