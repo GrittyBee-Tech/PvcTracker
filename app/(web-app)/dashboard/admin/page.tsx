@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { Users, UserCheck, ShieldCheck, Clock } from "lucide-react";
 import StatusPieChart from "@/components/dashboard/analytics/StatusPieChart";
 import StateDistributionChart from "@/components/dashboard/analytics/StateDistributionChart";
-import UserDemographicsCharts from "@/components/dashboard/analytics/UserDemographicsCharts";
+import UserDemographicsCharts, {
+    UserAgeRangeChart,
+} from "@/components/dashboard/analytics/UserDemographicsCharts";
 
 interface AdminAnalyticsData {
     kpis: {
@@ -151,17 +153,20 @@ export default function AdminPage() {
             <UserDemographicsCharts
                 gender={data.charts.genderDistribution}
                 zones={data.charts.geopoliticalZones}
-                ageRanges={data.charts.ageRanges}
             />
 
-            <Card className="border-gray-200 shadow-sm">
-                <CardHeader className="px-6 pb-3 pt-5">
-                    <CardTitle className="text-base">Top 10 states by registration</CardTitle>
-                </CardHeader>
-                <CardContent className="h-[340px] w-full px-4 pb-5 pt-2 sm:px-6">
-                    <StateDistributionChart data={data.charts.stateDistribution} />
-                </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 items-start gap-5 sm:gap-6 lg:grid-cols-2">
+                <UserAgeRangeChart data={data.charts.ageRanges} />
+
+                <Card className="border-gray-200 shadow-sm">
+                    <CardHeader className="px-6 pb-3 pt-5">
+                        <CardTitle className="text-base">Top 10 states by registration</CardTitle>
+                    </CardHeader>
+                    <CardContent className="h-[300px] w-full px-3 pb-4 pt-0">
+                        <StateDistributionChart data={data.charts.stateDistribution} />
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
