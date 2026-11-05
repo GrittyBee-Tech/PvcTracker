@@ -22,7 +22,6 @@ interface DemographicDatum {
 interface UserDemographicsChartsProps {
   gender: DemographicDatum[];
   zones: DemographicDatum[];
-  ageRanges: DemographicDatum[];
 }
 
 const GENDER_COLORS = ["#2563EB", "#DB2777", "#9CA3AF"];
@@ -38,11 +37,9 @@ function NoDataMessage() {
 export default function UserDemographicsCharts({
   gender,
   zones,
-  ageRanges,
 }: UserDemographicsChartsProps) {
   const hasGenderData = gender.some((item) => item.value > 0);
   const hasZoneData = zones.some((item) => item.value > 0);
-  const hasAgeData = ageRanges.some((item) => item.value > 0);
 
   return (
     <section aria-labelledby="user-demographics-heading" className="space-y-4">
@@ -158,49 +155,55 @@ export default function UserDemographicsCharts({
           </CardContent>
         </Card>
 
-        <Card className="border-gray-200 shadow-sm lg:col-span-2">
-          <CardHeader className="px-6 pb-3 pt-5">
-            <CardTitle className="text-base">Users by age range</CardTitle>
-          </CardHeader>
-          <CardContent className="h-[300px] px-4 pb-4 pt-0 sm:px-6">
-            {hasAgeData ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={ageRanges}
-                  margin={{ top: 8, right: 12, bottom: 8, left: 8 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                  <XAxis
-                    dataKey="name"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "#6B7280", fontSize: 11 }}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "#6B7280", fontSize: 11 }}
-                  />
-                  <Tooltip
-                    formatter={(value) => [Number(value).toLocaleString(), "Users"]}
-                    contentStyle={{
-                      borderRadius: "8px",
-                      border: "none",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    }}
-                  />
-                  <Bar dataKey="value" fill="#1A5C38" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <NoDataMessage />
-            )}
-          </CardContent>
-        </Card>
       </div>
       <p className="text-xs text-gray-400">
         Users without a recognized state of origin are not included in the geopolitical zone totals.
       </p>
     </section>
+  );
+}
+
+export function UserAgeRangeChart({ data }: { data: DemographicDatum[] }) {
+  const hasAgeData = data.some((item) => item.value > 0);
+
+  return (
+    <Card className="border-gray-200 shadow-sm">
+      <CardHeader className="px-6 pb-3 pt-5">
+        <CardTitle className="text-base">Users by age range</CardTitle>
+      </CardHeader>
+      <CardContent className="h-[300px] px-3 pb-4 pt-0">
+        {hasAgeData ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+              <XAxis
+                dataKey="name"
+                interval={0}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#6B7280", fontSize: 10 }}
+              />
+              <YAxis
+                width={36}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#6B7280", fontSize: 10 }}
+              />
+              <Tooltip
+                formatter={(value) => [Number(value).toLocaleString(), "Users"]}
+                contentStyle={{
+                  borderRadius: "8px",
+                  border: "none",
+                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                }}
+              />
+              <Bar dataKey="value" fill="#1A5C38" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <NoDataMessage />
+        )}
+      </CardContent>
+    </Card>
   );
 }
