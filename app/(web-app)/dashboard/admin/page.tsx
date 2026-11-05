@@ -5,9 +5,27 @@ import { useEffect, useState } from "react";
 import { Users, UserCheck, ShieldCheck, Clock } from "lucide-react";
 import StatusPieChart from "@/components/dashboard/analytics/StatusPieChart";
 import StateDistributionChart from "@/components/dashboard/analytics/StateDistributionChart";
+import UserDemographicsCharts from "@/components/dashboard/analytics/UserDemographicsCharts";
+
+interface AdminAnalyticsData {
+    kpis: {
+        totalUsers: number;
+        totalVolunteers: number;
+        pendingVolunteers: number;
+        totalAdmins: number;
+    };
+    charts: {
+        pvcStatus: { name: string; value: number }[];
+        ninStatus: { name: string; value: number }[];
+        stateDistribution: { state: string; users: number }[];
+        genderDistribution: { name: string; value: number }[];
+        geopoliticalZones: { name: string; value: number }[];
+        ageRanges: { name: string; value: number }[];
+    };
+}
 
 export default function AdminPage() {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<AdminAnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -15,15 +33,15 @@ export default function AdminPage() {
         const fetchAnalytics = async () => {
             try {
                 const response = await fetch("/api/admin/analytics");
-                const result = await response.json();
+                const result: AdminAnalyticsData & { message?: string } = await response.json();
 
                 if (response.ok) {
                     setData(result);
                 } else {
                     throw new Error(result.message || "Failed to load analytics");
                 }
-            } catch (err: any) {
-                setError(err.message);
+            } catch (err: unknown) {
+                setError(err instanceof Error ? err.message : "Failed to load analytics");
             } finally {
                 setLoading(false);
             }
@@ -137,6 +155,12 @@ export default function AdminPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            <UserDemographicsCharts
+                gender={data.charts.genderDistribution}
+                zones={data.charts.geopoliticalZones}
+                ageRanges={data.charts.ageRanges}
+            />
         </div>
     );
 }
