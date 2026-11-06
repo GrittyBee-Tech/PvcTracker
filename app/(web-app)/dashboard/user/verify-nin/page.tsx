@@ -102,6 +102,11 @@ export default function VerifyNin() {
         user?.email ||
         "",
     },
+    // Echoed back by Flutterwave's verify API, where the server checks userId.
+    meta: {
+      userId: user?.id || "",
+      purpose: "nin_verification",
+    },
     customizations: {
       title: "PVC WAKA NIN Verification",
       description: "Complete your profile verification",

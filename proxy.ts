@@ -6,7 +6,8 @@ export async function proxy(request: NextRequest) {
   const { nextUrl } = request;
 
   // 0. Bypass webhooks (they are called by external payment providers and use signature verification)
-  if (nextUrl.pathname.includes("/webhook")) {
+  // Exact prefix only: a loose match would let e.g. /api/admin/users/webhook skip auth.
+  if (nextUrl.pathname.startsWith("/api/user/nin-payment/webhook")) {
     return NextResponse.next();
   }
 
