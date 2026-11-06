@@ -111,6 +111,18 @@ export const auth = betterAuth({
           ]) {
             delete rawBody[key];
           }
+
+          // pvcStatus stays user-editable (users report their own collection),
+          // but Better Auth writes with the native driver, so the Mongoose enum
+          // is never enforced. Validate it here.
+          if (
+            "pvcStatus" in rawBody &&
+            !["collected", "not_collected"].includes(rawBody.pvcStatus)
+          ) {
+            throw new APIError("BAD_REQUEST", {
+              message: "Invalid PVC status",
+            });
+          }
         }
       }
 

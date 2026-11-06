@@ -5,13 +5,13 @@ import AuditLogModel from "@/models/auditLog";
 import { checkPermission } from "@/lib/permissions";
 import { NextResponse } from "next/server";
 
-export const PATCH = withDb(async (request: Request, { params }: { params: { applicationId: string } }) => {
+export const PATCH = withDb(async (request: Request, { params }: { params: Promise<{ applicationId: string }> }) => {
   try {
     const { authorized, response, session } = await checkPermission(request, "manage:volunteers");
     if (!authorized && response) return response;
 
     const { action, note } = await request.json();
-    const { applicationId } = params;
+    const { applicationId } = await params;
 
     if (!["approve", "reject"].includes(action)) {
       return NextResponse.json({ message: "Invalid action" }, { status: 400 });

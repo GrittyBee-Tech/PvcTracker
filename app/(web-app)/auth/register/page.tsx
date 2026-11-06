@@ -238,7 +238,6 @@ export default function Register() {
     await authClient.signUp.email(
       {
         ...signupDetails,
-        role: "user",
         name: `${signupDetails.firstName} ${signupDetails.lastName}`,
         dateOfBirth: new Date(signupDetails.dateOfBirth),
         isDisabled: signupDetails.isDisabled !== "no",
