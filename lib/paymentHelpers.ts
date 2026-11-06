@@ -177,11 +177,16 @@ export async function initializePaystackPayment({
   };
 }
 
+/**
+ * Confirms with Flutterwave that `reference` (our tx_ref) was paid, and that the
+ * payment belongs to `expectedUserId` (the userId we sent in `meta` at init).
+ */
 export async function verifyFlutterwavePayment(
   reference: string,
+  expectedUserId: string,
 ): Promise<VerificationResult> {
   const response = await fetch(
-    `https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=${reference}`,
+    `https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref=${encodeURIComponent(reference)}`,
     {
       method: "GET",
       headers: {
@@ -191,22 +196,54 @@ export async function verifyFlutterwavePayment(
   );
 
   const data = await response.json();
+  const paid =
+    response.ok &&
+    data.status === "success" &&
+    data.data?.status === "successful";
 
-  return {
-    ok:
-      response.ok &&
-      data.status === "success" &&
-      data.data?.status === "successful",
-    status: response.status,
-    raw: data,
-  };
+  if (!paid) {
+    return { ok: false, status: response.status, raw: data };
+  }
+
+  if (data.data?.tx_ref !== reference) {
+    return {
+      ok: false,
+      status: 400,
+      error: "Payment reference mismatch",
+      raw: data,
+    };
+  }
+
+  // Prefer the userId echoed back in meta. Payments made through the inline
+  // modal before meta was sent from the client won't have it, so fall back to
+  // the userId embedded in our server-generated tx_ref (`nin-<userId>-<ts>`).
+  const metaUserId = data.data?.meta?.userId;
+  const paidByUserId = metaUserId
+    ? String(metaUserId)
+    : /^nin-(.+)-\d+$/.exec(String(data.data?.tx_ref ?? ""))?.[1];
+
+  if (paidByUserId !== String(expectedUserId)) {
+    return {
+      ok: false,
+      status: 403,
+      error: "Payment does not belong to this user",
+      raw: data,
+    };
+  }
+
+  return { ok: true, status: response.status, raw: data };
 }
 
+/**
+ * Confirms with Paystack that `reference` was paid, and that the payment
+ * belongs to `expectedUserId` (the userId we sent in `metadata` at init).
+ */
 export async function verifyPaystackPayment(
   reference: string,
+  expectedUserId: string,
 ): Promise<VerificationResult> {
   const response = await fetch(
-    `https://api.paystack.co/transaction/verify/${reference}`,
+    `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
     {
       method: "GET",
       headers: {
@@ -216,12 +253,32 @@ export async function verifyPaystackPayment(
   );
 
   const data = await response.json();
+  const paid =
+    response.ok && data.status === true && data.data?.status === "success";
 
-  return {
-    ok: response.ok && data.status === true && data.data?.status === "success",
-    status: response.status,
-    raw: data,
-  };
+  if (!paid) {
+    return { ok: false, status: response.status, raw: data };
+  }
+
+  if (data.data?.reference !== reference) {
+    return {
+      ok: false,
+      status: 400,
+      error: "Payment reference mismatch",
+      raw: data,
+    };
+  }
+
+  if (String(data.data?.metadata?.userId ?? "") !== String(expectedUserId)) {
+    return {
+      ok: false,
+      status: 403,
+      error: "Payment does not belong to this user",
+      raw: data,
+    };
+  }
+
+  return { ok: true, status: response.status, raw: data };
 }
 
 export type { PaymentProvider };

@@ -51,8 +51,7 @@ export default function UsersPage() {
 
   // Triggers for fetching
   const [currentPage, setCurrentPage] = useState(1);
-  // const [limit, setLimit] = useState(10);
-  const limit = 10;
+  const limit = 100;
   const [filters, setFilters] = useState({
     ninStatus: "all",
     pvcStatus: "all",

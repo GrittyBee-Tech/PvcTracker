@@ -7,7 +7,10 @@ import { NextResponse } from "next/server";
 
 // Update user status (e.g., restrict/active)
 export const PATCH = withDb(
-  async (request: Request, { params }: { params: { userId: string } }) => {
+  async (
+    request: Request,
+    { params }: { params: Promise<{ userId: string }> },
+  ) => {
     try {
       const { authorized, response, session } = await checkPermission(request, "manage:users");
       if (!authorized && response) return response;
@@ -24,6 +27,13 @@ export const PATCH = withDb(
       }
 
       if (role === "admin") {
+        // Promoting to admin grants permissions, so it needs manage:admins on
+        // top of manage:users.
+        const adminCheck = await checkPermission(request, "manage:admins");
+        if (!adminCheck.authorized && adminCheck.response) {
+          return adminCheck.response;
+        }
+
         user.role = "admin";
         await user.save();
 
@@ -95,12 +105,15 @@ export const PATCH = withDb(
 
 // Delete user (Soft delete by setting status)
 export const DELETE = withDb(
-  async (request: Request, { params }: { params: { userId: string } }) => {
+  async (
+    request: Request,
+    { params }: { params: Promise<{ userId: string }> },
+  ) => {
     try {
       const { authorized, response, session } = await checkPermission(request, "manage:users");
       if (!authorized && response) return response;
 
-      const { userId } = params;
+      const { userId } = await params;
       const user = await UserModel.findById(userId);
       if (!user) {
         return NextResponse.json(
