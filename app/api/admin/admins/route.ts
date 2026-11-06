@@ -153,12 +153,17 @@ export const POST = withDb(async (request: Request) => {
         dateOfBirth: dateOfBirth
           ? new Date(dateOfBirth)
           : new Date("1970-01-01"),
-        role: "admin",
-        ninStatus: "verified",
       },
     });
 
     const newAdmin = signUpResult.user;
+
+    // role and ninStatus are server-controlled (input: false), so sign-up
+    // ignores them; set them directly on the new account.
+    await UserModel.updateOne(
+      { _id: newAdmin.id },
+      { role: "admin", ninStatus: "verified" },
+    );
 
     await AdminProfileModel.create({
       userId: newAdmin.id,

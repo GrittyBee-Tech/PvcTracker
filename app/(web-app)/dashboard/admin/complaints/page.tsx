@@ -2,6 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useState } from "react";
+import { ChevronDown, Download } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Complaint = {
   _id: string;
@@ -27,10 +34,24 @@ function formatComplaintType(type: string) {
     .join(" ");
 }
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
+}
+
 export default function ComplaintsPage() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [exporting, setExporting] = useState<"doc" | "pdf" | null>(null);
 
   const fetchComplaints = useCallback(async () => {
     setLoading(true);
@@ -61,6 +82,105 @@ export default function ComplaintsPage() {
     void fetchComplaints();
   }, [fetchComplaints]);
 
+  const handleExport = async (format: "doc" | "pdf") => {
+    setExporting(format);
+
+    try {
+      const fileDate = new Date().toISOString().slice(0, 10);
+      const rows = complaints.map((complaint) => ({
+        name: complaint.name,
+        email: complaint.email,
+        phone: complaint.phone || "",
+        type: formatComplaintType(complaint.complaintType),
+        message: complaint.message,
+        status: complaint.status.replace("-", " "),
+        submitted: new Date(complaint.createdAt).toLocaleString(),
+      }));
+
+      if (format === "doc") {
+        const tableRows = rows
+          .map(
+            (complaint) => `
+              <tr>
+                <td>${escapeHtml(complaint.name)}</td>
+                <td>${escapeHtml(complaint.email)}<br>${escapeHtml(complaint.phone)}</td>
+                <td>${escapeHtml(complaint.type)}</td>
+                <td>${escapeHtml(complaint.message).replace(/\n/g, "<br>")}</td>
+                <td>${escapeHtml(complaint.status)}</td>
+                <td>${escapeHtml(complaint.submitted)}</td>
+              </tr>`,
+          )
+          .join("");
+        const documentContent = `
+          <!DOCTYPE html>
+          <html>
+            <head><meta charset="utf-8"><title>Complaints</title></head>
+            <body>
+              <h1>Complaints</h1>
+              <p>${rows.length} ${rows.length === 1 ? "complaint" : "complaints"}</p>
+              <table border="1" cellspacing="0" cellpadding="6">
+                <thead>
+                  <tr><th>Name</th><th>Email / Phone</th><th>Type</th><th>Complaint</th><th>Status</th><th>Submitted</th></tr>
+                </thead>
+                <tbody>${tableRows}</tbody>
+              </table>
+            </body>
+          </html>`;
+        const blob = new Blob(["\ufeff", documentContent], {
+          type: "application/msword;charset=utf-8",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `complaints-${fileDate}.doc`;
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      } else {
+        const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+          import("jspdf"),
+          import("jspdf-autotable"),
+        ]);
+        const pdf = new jsPDF({ orientation: "landscape", format: "a4" });
+        pdf.setFontSize(16);
+        pdf.text("Complaints", 14, 15);
+        pdf.setFontSize(9);
+        pdf.text(`Records: ${rows.length}`, 14, 21);
+        autoTable(pdf, {
+          head: [["Name", "Email / Phone", "Type", "Complaint", "Status", "Submitted"]],
+          body: rows.map((complaint) => [
+            complaint.name,
+            [complaint.email, complaint.phone].filter(Boolean).join("\n"),
+            complaint.type,
+            complaint.message,
+            complaint.status,
+            complaint.submitted,
+          ]),
+          startY: 26,
+          styles: { fontSize: 7, cellPadding: 2, overflow: "linebreak" },
+          headStyles: { fillColor: [31, 41, 55] },
+          columnStyles: {
+            0: { cellWidth: 30 },
+            1: { cellWidth: 40 },
+            2: { cellWidth: 30 },
+            3: { cellWidth: 100 },
+            4: { cellWidth: 24 },
+            5: { cellWidth: 32 },
+          },
+        });
+        pdf.save(`complaints-${fileDate}.pdf`);
+      }
+    } catch (exportError) {
+      console.error("Failed to export complaints:", exportError);
+      setError(
+        exportError instanceof Error
+          ? exportError.message
+          : "Failed to export complaints",
+      );
+    } finally {
+      setExporting(null);
+    }
+  };
+
   return (
     <div className="space-y-6 text-black">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -70,13 +190,32 @@ export default function ComplaintsPage() {
             View complaints submitted by users.
           </p>
         </div>
-        <Button
-          onClick={() => void fetchComplaints()}
-          disabled={loading}
-          variant="outline"
-        >
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" disabled={loading || exporting !== null}>
+                <Download className="mr-2 h-4 w-4" aria-hidden="true" />
+                {exporting ? "Exporting..." : "Export"}
+                <ChevronDown className="ml-2 h-4 w-4" aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => void handleExport("doc")}>
+                Export as DOC
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void handleExport("pdf")}>
+                Export as PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button
+            onClick={() => void fetchComplaints()}
+            disabled={loading}
+            variant="outline"
+          >
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {error && (

@@ -4,7 +4,8 @@ export const userAdditionalFields = {
     enum: ["user", "admin", "volunteer"] as const,
     required: false,
     defaultValue: "user",
-    input: true,
+    // Server-controlled: roles are only changed by admins via /api/admin routes.
+    input: false,
   },
   firstName: {
     type: "string",
@@ -71,6 +72,8 @@ export const userAdditionalFields = {
   ninStatus: {
     type: "string",
     defaultValue: "pending",
+    // Server-controlled: only set by the NIN verification flow.
+    input: false,
   },
   pvcStatus: {
     type: "string",
@@ -110,7 +113,8 @@ export const userAdditionalFields = {
   status: {
     type: "string",
     defaultValue: "active",
-    input: true,
+    // Server-controlled: only admins restrict/activate/delete accounts.
+    input: false,
   },
   createdAt: {
     type: "date",

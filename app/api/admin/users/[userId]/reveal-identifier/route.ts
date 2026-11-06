@@ -7,18 +7,17 @@ import { NextResponse } from "next/server";
 export const POST = withDb(
   async (
     request: Request,
-    { params }: { params: Promise<{ userId: string }> | { userId: string } }
+    { params }: { params: Promise<{ userId: string }> }
   ) => {
     try {
       const { authorized, response, session } = await checkPermission(
         request,
-        "view:users"
+        "reveal:nin"
       );
       if (!authorized && response) return response;
 
       const { identifier, reason } = await request.json();
-      const resolvedParams = await params;
-      const { userId } = resolvedParams;
+      const { userId } = await params;
 
       if (!identifier || !["nin", "vin"].includes(identifier)) {
         return NextResponse.json(

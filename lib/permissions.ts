@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import AdminProfileModel from "@/models/adminProfile";
-import { Permission, PERMISSIONS } from "@/types";
+import { Permission } from "@/types";
 import { User } from "better-auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -34,11 +34,12 @@ export async function checkPermission(
     userId: session.user.id,
   });
 
-  // Auto-migrate the root/first admin to have all permissions if they don't have a profile yet
+  // Admins without a profile get read-only access; further permissions must be
+  // granted explicitly by an admin with manage:admins.
   if (!adminProfile) {
     adminProfile = await AdminProfileModel.create({
       userId: session.user.id,
-      permissions: Object.values(PERMISSIONS),
+      permissions: ["view:users"] satisfies Permission[],
       status: "active",
     });
   }

@@ -110,7 +110,10 @@ export const POST = withDb(async (request: Request) => {
     if (status === "successful") {
       // 5. Security best practice: re-query Flutterwave's verify API
       const verification = id
-        ? await verifyFlutterwavePayment(String(tx_ref))
+        ? await verifyFlutterwavePayment(
+            transaction.reference,
+            transaction.user_id,
+          )
         : { ok: false, status: 400, raw: null };
 
       if (!verification.ok) {

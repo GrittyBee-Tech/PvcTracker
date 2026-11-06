@@ -14,7 +14,6 @@ export async function verifyNIN(
   id_number: string,
 ): Promise<NinVerificationResponse> {
   const apiKey = process.env.LUMIID_SECRET_KEY;
-  console.info("LUMIID API KEY:", apiKey);
 
   if (!apiKey) {
     console.error(
