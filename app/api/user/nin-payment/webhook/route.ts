@@ -36,7 +36,6 @@ function verifyPaystackSignature(
     .createHmac("sha512", secret)
     .update(rawBody)
     .digest("hex");
-  console.log("Computed Hash:", hash);
 
   return hash === signature;
 }
