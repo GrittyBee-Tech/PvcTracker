@@ -782,7 +782,7 @@ const UserActionsCell = ({
           </>
         }
       >
-        <p className="text-black">
+        <p className="text-black whitespace-break-spaces">
           Are you sure you want to delete{" "}
           <strong>
             {user.firstName} {user.lastName}
