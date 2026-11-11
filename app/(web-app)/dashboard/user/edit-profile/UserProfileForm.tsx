@@ -16,7 +16,8 @@ type UpdateProfileFormType = {
   datePvcCollected?: Date;
   firstName: string;
   lastName: string;
-  dateOfBirth: Date;
+  // Kept as a "YYYY-MM-DD" string so it maps 1:1 to the date input.
+  dateOfBirth: string;
   phoneNumber: string;
   stateOfOrigin: string;
   lgaOfOrigin: string;
@@ -42,6 +43,14 @@ interface UserProfileFormProps {
   };
 }
 
+// DOB is stored as UTC midnight (see register page), so read it back in UTC
+// to avoid the input showing the previous day in negative-offset timezones.
+const toDobInputValue = (date?: Date | string) => {
+  if (!date) return "";
+  const d = new Date(date);
+  return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
+};
+
 export default function UserProfileForm({ user }: UserProfileFormProps) {
   // 1. Initialize states directly from the validated user prop context
   const [updateProfileData, setUpdateProfileData] =
@@ -50,7 +59,7 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
       lastName: user.lastName || "",
       pvcStatus: user.pvcStatus || "not_collected",
       datePvcCollected: user?.datePvcCollected,
-      dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : new Date(),
+      dateOfBirth: toDobInputValue(user.dateOfBirth),
       phoneNumber: user.phoneNumber || "",
       stateOfOrigin: user.stateOfOrigin || "",
       lgaOfOrigin: user.lgaOfOrigin || "",
@@ -76,7 +85,7 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
     updateProfileData.lastName === (user.lastName || "") &&
     updateProfileData.pvcStatus === (user.pvcStatus || "not_collected") &&
     updateProfileData.datePvcCollected === user.datePvcCollected &&
-    updateProfileData.dateOfBirth === user.dateOfBirth &&
+    updateProfileData.dateOfBirth === toDobInputValue(user.dateOfBirth) &&
     updateProfileData.phoneNumber === (user.phoneNumber || "") &&
     updateProfileData.stateOfOrigin === (user.stateOfOrigin || "") &&
     updateProfileData.lgaOfOrigin === (user.lgaOfOrigin || "") &&
@@ -104,6 +113,10 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
         return;
       }
     }
+    if (field === "dateOfBirth" && value && new Date(value) > new Date()) {
+      showToast("error", "Date of birth can't be in the future");
+      return;
+    }
     setUpdateProfileData((prev) => {
       const newData = { ...prev, [field]: value.trim() };
       if (field === "stateOfOrigin") {
@@ -124,9 +137,11 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
   };
 
   const handleUpdateProfileAPICall = async (data: UpdateProfileFormType) => {
+    const { dateOfBirth, ...rest } = data;
     await authClient.updateUser(
       {
-        ...data,
+        ...rest,
+        ...(dateOfBirth ? { dateOfBirth: new Date(dateOfBirth) } : {}),
         name: `${data.firstName} ${data.lastName}`,
       },
       {
@@ -143,6 +158,10 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isFormUnchanged) return;
+    if (!updateProfileData.dateOfBirth) {
+      showToast("error", "Date of birth is required");
+      return;
+    }
 
     Swal.fire({
       icon: "warning",
@@ -357,10 +376,9 @@ export default function UserProfileForm({ user }: UserProfileFormProps) {
               label="Date of Birth"
               name="dateOfBirth"
               onChange={handleChange}
-              disabled={!!user.dateOfBirth}
               placeholder="Change your date of birth"
               type="date"
-              value={formatToInputDate(updateProfileData.dateOfBirth)}
+              value={updateProfileData.dateOfBirth}
             />
           </div>
 
