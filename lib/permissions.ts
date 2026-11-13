@@ -20,7 +20,7 @@ export async function checkPermission(
     };
   }
   const user = session?.user as typeof session.user & Partial<User>;
-  if (!user || user?.role !== "admin") {
+  if (!user || user?.role !== "admin" || user?.status === "deleted") {
     return {
       authorized: false,
       response: NextResponse.json(

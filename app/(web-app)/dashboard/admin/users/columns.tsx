@@ -204,9 +204,11 @@ const UserActionsCell = ({
       });
 
       if (response.ok) {
+        const result = await response.json();
         Swal.fire({
           icon: "success",
           title: "User Deleted",
+          text: `Reference ${result.reference}. Data will be anonymized on ${new Date(result.scheduledFor).toLocaleDateString()}.`,
           toast: true,
           position: "top",
           showConfirmButton: false,
@@ -780,13 +782,14 @@ const UserActionsCell = ({
           </>
         }
       >
-        <p className="text-black">
+        <p className="text-black whitespace-break-spaces">
           Are you sure you want to delete{" "}
           <strong>
             {user.firstName} {user.lastName}
           </strong>
-          ? This action will mark the user as deleted and hide them from normal
-          views.
+          ? They will be signed out and hidden immediately. Their personal data
+          will be permanently anonymized in 30 days. Until then, you can
+          restore them from the Deletion Log.
         </p>
       </Modal>
     </>

@@ -36,6 +36,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // 2b. Guard: deleted accounts. Their sessions are revoked on delete, so this
+  // only catches a request racing the deletion.
+  if ((session.user as { status?: string }).status === "deleted") {
+    if (nextUrl.pathname.startsWith("/api/")) {
+      return new NextResponse(
+        JSON.stringify({ success: false, message: "Account deleted" }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+    return NextResponse.redirect(new URL("/auth/login", nextUrl));
+  }
+
   // 3. Guard: Authenticated but unauthorized users trying to access Admin endpoints
   if (isAdminRoute) {
     const user = session.user as typeof session.user & Partial<User>;

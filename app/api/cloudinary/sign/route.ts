@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createHash } from "node:crypto";
+import { buildCloudinarySignature } from "@/lib/cloudinary";
 import { auth } from "@/lib/auth";
 
 type SignPayload = {
@@ -10,16 +10,6 @@ type SignPayload = {
   uploadPreset: string;
   folder?: string;
 };
-
-function buildCloudinarySignature(params: Record<string, string>, secret: string) {
-  const toSign = Object.entries(params)
-    .filter(([, value]) => value !== "")
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return createHash("sha1").update(`${toSign}${secret}`).digest("hex");
-}
 
 export const POST = async (request: Request) => {
   try {

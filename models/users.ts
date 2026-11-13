@@ -105,6 +105,9 @@ const UserSchema = new Schema<IUser, IUserModel, IUserMethods>(
       default: "active",
       required: true,
     },
+    // Set when an admin deletes the account; anonymization runs 30 days later.
+    deletedAt: { type: Date, required: false },
+    anonymizedAt: { type: Date, required: false },
   },
   {
     timestamps: true,
