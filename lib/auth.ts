@@ -14,7 +14,7 @@ import {
   getSessionFromCtx,
 } from "better-auth/api";
 import { userAdditionalFields } from "./user-fields";
-import { findUserByNIN, findUserByVIN } from "@/models/users";
+import UserModel, { findUserByNIN, findUserByVIN } from "@/models/users";
 import { customSession } from "better-auth/plugins";
 import {
   decryptAES256GCM,
@@ -69,6 +69,23 @@ export const auth = betterAuth({
     modelName: "users",
   },
   databaseHooks: {
+    session: {
+      create: {
+        // Covers every sign-in path (password, auto sign-in after
+        // verification), so deleted accounts can never get a session.
+        before: async (session) => {
+          await connectDB();
+          const owner = await UserModel.findById(session.userId)
+            .select("status")
+            .lean();
+          if (owner?.status === "deleted") {
+            throw new APIError("FORBIDDEN", {
+              message: "This account has been deleted.",
+            });
+          }
+        },
+      },
+    },
     user: {
       create: {
         before: async (user: User) => {
