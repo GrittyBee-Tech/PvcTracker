@@ -63,6 +63,7 @@ export function DataTable<TData, TValue>({
     { name: "Approve Volunteer", value: "APPROVE_VOLUNTEER" },
     { name: "Reject Volunteer", value: "REJECT_VOLUNTEER" },
     { name: "Delete User", value: "DELETE_USER" },
+    { name: "Restore User", value: "RESTORE_USER" },
     { name: "Restrict User", value: "RESTRICT_USER" },
   ];
 

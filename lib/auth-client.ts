@@ -10,5 +10,5 @@ export const authClient = createAuthClient({
       user: userAdditionalFields,
     }),
   ],
-  pollingInterval: 60,
+  pollingInterval: 90,
 });

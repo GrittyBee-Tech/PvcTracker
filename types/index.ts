@@ -91,6 +91,8 @@ export interface UserType {
   homeAddress?: string;
   isDisabled?: boolean;
   status: "active" | "restricted" | "deleted";
+  deletedAt?: Date;
+  anonymizedAt?: Date;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }

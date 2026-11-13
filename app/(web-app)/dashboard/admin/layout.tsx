@@ -26,6 +26,11 @@ const adminLinks: DashboardLink[] = [
   },
   { href: "/dashboard/admin/centres", label: "Centres", icon: "MapPin" },
   {
+    href: "/dashboard/admin/deletion-requests",
+    label: "Deletion Log",
+    icon: "UserX",
+  },
+  {
     href: "/dashboard/admin/audit-logs",
     label: "Audit Logs",
     icon: "ClipboardList",

@@ -81,6 +81,18 @@ export function DataTable<TData, TValue>({
     const selectedIds = Object.keys(rowSelection);
     if (selectedIds.length === 0) return;
 
+    if (action === "delete") {
+      const confirmation = await Swal.fire({
+        icon: "warning",
+        title: `Delete ${selectedIds.length} user(s)?`,
+        text: "They will be signed out and hidden immediately. Their personal data will be permanently anonymized in 30 days unless restored from the Deletion Log.",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        confirmButtonColor: "#dc2626",
+      });
+      if (!confirmation.isConfirmed) return;
+    }
+
     setBulkLoading(true);
     try {
       const response = await fetch("/api/admin/users/bulk", {
@@ -90,10 +102,14 @@ export function DataTable<TData, TValue>({
       });
 
       if (response.ok) {
+        const result = await response.json();
         Swal.fire({
-          icon: "success",
+          icon: result.skipped?.length ? "warning" : "success",
           title: `Bulk ${action} Successful`,
-          text: `${selectedIds.length} users have been ${action}d.`,
+          text:
+            action === "delete"
+              ? result.message
+              : `${result.count ?? selectedIds.length} users have been ${action}d.`,
           toast: true,
           position: "top",
           showConfirmButton: false,
